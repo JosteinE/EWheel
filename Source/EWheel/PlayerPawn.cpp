@@ -64,17 +64,12 @@ void APlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FVector moveDirection;
-	if (movementInput.X != 0)
-		moveDirection += GetActorRightVector() * movementInput.X;
-
-	if (movementInput.Y != 0)
-		moveDirection +=GetActorForwardVector() * movementInput.Y;
-
-	moveDirection.Normalize();
-
-	//UE_LOG(LogTemp, Warning, TEXT("MoveDirection { %f, %f, %f }"), moveDirection.X, moveDirection.Y, moveDirection.Z);
-	SetActorLocation(GetActorLocation() + moveDirection * moveSpeed * DeltaTime, false);
+	//Move the actor based on input
+	SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetClaculatedSpeed(DeltaTime), false);
+	//Rotate the actor based on input
+	SetActorRotation(GetActorRotation() + FRotator{0, movementInput.X, 0} * turnSpeed * DeltaTime);
+	if(movementInput.Y > 0)
+		SetActorRotation(GetActorRotation() + FRotator{ 0, movementInput.X, 0 } *turnSpeed * DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -84,6 +79,20 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerPawn::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerPawn::MoveRight);
+}
+
+float APlayerPawn::GetClaculatedSpeed(float DeltaTime)
+{
+	float acceleration = maxSpeed / accelerationRate * DeltaTime;
+
+	if (movementInput.Y == 0)
+		acceleration *= -friction;
+	else
+		acceleration *= movementInput.Y;
+
+	currentSpeed = FMath::Clamp(currentSpeed + acceleration, 0.0f, maxSpeed);
+
+	return currentSpeed;
 }
 
 void APlayerPawn::MoveForward(float input)

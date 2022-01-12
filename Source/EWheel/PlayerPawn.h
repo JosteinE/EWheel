@@ -27,9 +27,25 @@ class EWHEEL_API APlayerPawn : public APawn
 	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* SpringArm;
 
-	/** Spring arm that will offset the camera */
-	UPROPERTY(Category = VehicleSpecs, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	float moveSpeed = 300;
+	/** Forward movement speed of the vehicle */
+	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
+	float maxSpeed = 10.f;
+
+	/** Acceleration Rate of the vehicle in seconds (MaxSpeed/Seconds) */
+	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
+	float accelerationRate = 2.f;
+
+	/** Current speed of the vehicle */
+	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere)
+	float currentSpeed = 0.f;
+
+	/** Turn speed of the vehicle */
+	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
+	float turnSpeed = 50.f;
+
+	/** How fast the vehicle naturally slows down without input (0-1)  */
+	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
+	float friction = 0.5f;
 
 public:
 	// Sets default values for this pawn's properties
@@ -48,6 +64,9 @@ public:
 
 	FVector movementInput;
 
+	float GetClaculatedSpeed(float DeltaTime);
+
+	// User inputs
 	/** Handle pressing forwards */
 	void MoveForward(float input);
 	/** Handle pressing right */
