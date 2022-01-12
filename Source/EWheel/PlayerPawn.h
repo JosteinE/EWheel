@@ -72,9 +72,11 @@ public:
 
 private:
 	FVector movementInput;
-	float currentBoardTilt = 0.f;
-	float maxBoardTiltRotation = 15.f;
+	FRotator currentBoardTilt;
+	float maxBoardTiltPitch = 15.f;
+	float maxBoardTiltRoll = 35;
 	float boardTiltSpeed = 100.f;
+	float boardTiltResetSpeed = 10.f;
 
 	float GetClaculatedSpeed(float DeltaTime);
 	void BoardTilt(float DeltaTime);

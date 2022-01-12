@@ -38,8 +38,8 @@ APlayerPawn::APlayerPawn()
 	SpringArm->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
 	SpringArm->SetupAttachment(RootComponent);
 	SpringArm->TargetArmLength = 600.0f;
-	//SpringArm->bEnableCameraRotationLag = true;
-	//SpringArm->CameraRotationLagSpeed = 7.f;
+	SpringArm->bEnableCameraRotationLag = true;
+	SpringArm->CameraRotationLagSpeed = 7.f;
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 7.f;
 	SpringArm->bInheritPitch = false;
@@ -106,16 +106,25 @@ void APlayerPawn::BoardTilt(float DeltaTime)
 	//if (movementInput.Y == 0) <----BORING
 	//	currentBoardTilt += 0 - currentBoardTilt * DeltaTime;
 	
-	// Tilt the board forwards/back based on user input
-	currentBoardTilt += movementInput.Y * boardTiltSpeed * DeltaTime;
+	// Tilt the board forwards/back based on forward/back input
+	currentBoardTilt.Pitch += movementInput.Y * boardTiltSpeed * DeltaTime;
 	// Gradually reset the rotation of the board if there is no user input
-	currentBoardTilt += 0 - currentBoardTilt * ((1 - FMath::Sqrt(FMath::Pow(movementInput.Y, 2.f))) / 1) * DeltaTime;
+	currentBoardTilt.Pitch += 0 - currentBoardTilt.Pitch * ((1 - FMath::Pow(movementInput.Y, 2.f)) / 1) * boardTiltResetSpeed * DeltaTime;
 	// Clamp the rotation
-	currentBoardTilt = FMath::Clamp(currentBoardTilt, -maxBoardTiltRotation, maxBoardTiltRotation);
+	currentBoardTilt.Pitch = FMath::Clamp(currentBoardTilt.Pitch, -maxBoardTiltPitch, maxBoardTiltPitch);
+
+	// Tilt the board left/right based on left/right input
+	currentBoardTilt.Roll += movementInput.X * boardTiltSpeed * DeltaTime;
+	// Gradually reset the rotation of the board if there is no user input
+	currentBoardTilt.Roll += 0 - currentBoardTilt.Roll * ((1 - FMath::Pow(movementInput.X, 2.f)) / 1) * boardTiltResetSpeed * DeltaTime;
+	// Clamp the rotation
+	currentBoardTilt.Roll = FMath::Clamp(currentBoardTilt.Roll, -maxBoardTiltRoll, maxBoardTiltRoll);
 
 	FRotator newRotation = GetMesh()->GetRelativeRotation();
-	newRotation.Pitch = -currentBoardTilt;
-	UE_LOG(LogTemp, Warning, TEXT("Board Pitch: %f"), newRotation.Pitch);
+	newRotation.Pitch = -currentBoardTilt.Pitch;
+	newRotation.Roll = currentBoardTilt.Roll;
+	UE_LOG(LogTemp, Warning, TEXT("Pitch: %f"), newRotation.Pitch);
+	UE_LOG(LogTemp, Warning, TEXT("Roll: %f"), newRotation.Roll);
 	GetMesh()->SetRelativeRotation(newRotation);
 }
 
