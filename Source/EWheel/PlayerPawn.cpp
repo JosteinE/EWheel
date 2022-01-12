@@ -41,7 +41,7 @@ APlayerPawn::APlayerPawn()
 	SpringArm->bEnableCameraRotationLag = true;
 	SpringArm->CameraRotationLagSpeed = 2.f;
 	SpringArm->bEnableCameraLag = true;
-	SpringArm->CameraLagSpeed = 7.f;
+	SpringArm->CameraLagSpeed = 3.f;
 	SpringArm->bInheritPitch = false;
 	SpringArm->bInheritRoll = false;
 
