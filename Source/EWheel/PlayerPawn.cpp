@@ -36,10 +36,10 @@ APlayerPawn::APlayerPawn()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm0"));
 	SpringArm->TargetOffset = FVector(0.f, 0.f, 200.f);
 	SpringArm->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
-	SpringArm->SetupAttachment(RootComponent);
+	SpringArm->SetupAttachment(PlayerMesh);
 	SpringArm->TargetArmLength = 600.0f;
 	SpringArm->bEnableCameraRotationLag = true;
-	SpringArm->CameraRotationLagSpeed = 7.f;
+	SpringArm->CameraRotationLagSpeed = 2.f;
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 7.f;
 	SpringArm->bInheritPitch = false;

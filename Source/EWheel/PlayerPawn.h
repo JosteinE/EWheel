@@ -49,7 +49,7 @@ class EWHEEL_API APlayerPawn : public APawn
 
 	/** Turn speed of the vehicle */
 	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
-	float turnSpeed = 50.f;
+	float turnSpeed = 100.f;
 
 	/** How fast the vehicle naturally slows down without input (0-1)  */
 	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
