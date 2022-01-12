@@ -21,12 +21,16 @@ APlayerPawn::APlayerPawn()
 	//static ConstructorHelpers::FClassFinder<UObject> AnimBPClass(TEXT("/Game/Vehicle/Sedan/Sedan_AnimBP"));
 	//GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
 
+	// Root component, seperate from the mesh to avoid problems when rotating/tilting the board
+	PlayerRoot = CreateDefaultSubobject<USceneComponent>(TEXT("PlayerRootComponent"));
+	RootComponent = PlayerRoot;
+
 	// Player Mesh
 	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMeshComponent"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Game/Meshes/TempPlayerWheel.TempPlayerWheel'"));
 	if(MeshAsset.Succeeded())
 		GetMesh()->SetStaticMesh(MeshAsset.Object);
-	RootComponent = PlayerMesh;
+	PlayerMesh->SetupAttachment(RootComponent);
 
 	// Create a spring arm component
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm0"));
@@ -67,9 +71,9 @@ void APlayerPawn::Tick(float DeltaTime)
 	//Move the actor based on input
 	SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetClaculatedSpeed(DeltaTime), false);
 	//Rotate the actor based on input
-	SetActorRotation(GetActorRotation() + FRotator{0, movementInput.X, 0} * turnSpeed * DeltaTime);
-	if(movementInput.Y > 0)
-		SetActorRotation(GetActorRotation() + FRotator{ 0, movementInput.X, 0 } *turnSpeed * DeltaTime);
+	SetActorRotation(GetActorRotation() + FRotator{ 0, movementInput.X, 0 } *turnSpeed * DeltaTime);
+	//Tilt the board in the direction of movement
+	BoardTilt(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -83,16 +87,36 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 float APlayerPawn::GetClaculatedSpeed(float DeltaTime)
 {
-	float acceleration = maxSpeed / accelerationRate * DeltaTime;
+	currentAcceleration = maxSpeed / accelerationRate * DeltaTime;
 
 	if (movementInput.Y == 0)
-		acceleration *= -friction;
+		currentSpeed += currentAcceleration * -friction;
 	else
-		acceleration *= movementInput.Y;
+		currentSpeed += currentAcceleration * movementInput.Y;
 
-	currentSpeed = FMath::Clamp(currentSpeed + acceleration, 0.0f, maxSpeed);
+	currentSpeed = FMath::Clamp(currentSpeed, 0.f, maxSpeed);
+	//currentSpeed = FMath::Clamp(currentSpeed + currentAcceleration, 0.f, maxSpeed);
 
 	return currentSpeed;
+}
+
+void APlayerPawn::BoardTilt(float DeltaTime)
+{
+	//currentBoardTilt = FMath::Clamp(currentBoardTilt + movementInput.Y * boardTiltSpeed * DeltaTime, -maxBoardTiltRotation, maxBoardTiltRotation);
+	//if (movementInput.Y == 0) <----BORING
+	//	currentBoardTilt += 0 - currentBoardTilt * DeltaTime;
+	
+	// Tilt the board forwards/back based on user input
+	currentBoardTilt += movementInput.Y * boardTiltSpeed * DeltaTime;
+	// Gradually reset the rotation of the board if there is no user input
+	currentBoardTilt += 0 - currentBoardTilt * ((1 - FMath::Sqrt(FMath::Pow(movementInput.Y, 2.f))) / 1) * DeltaTime;
+	// Clamp the rotation
+	currentBoardTilt = FMath::Clamp(currentBoardTilt, -maxBoardTiltRotation, maxBoardTiltRotation);
+
+	FRotator newRotation = GetMesh()->GetRelativeRotation();
+	newRotation.Pitch = -currentBoardTilt;
+	UE_LOG(LogTemp, Warning, TEXT("Board Pitch: %f"), newRotation.Pitch);
+	GetMesh()->SetRelativeRotation(newRotation);
 }
 
 void APlayerPawn::MoveForward(float input)

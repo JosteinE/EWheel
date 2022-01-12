@@ -16,6 +16,10 @@ class EWHEEL_API APlayerPawn : public APawn
 	GENERATED_BODY()
 
 	/** Static Mesh component that will represent our Player */
+	UPROPERTY(Category = Root, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	USceneComponent* PlayerRoot;
+
+	/** Static Mesh component that will represent our Player */
 	UPROPERTY(Category = Mesh, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* PlayerMesh;
 
@@ -31,13 +35,17 @@ class EWHEEL_API APlayerPawn : public APawn
 	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
 	float maxSpeed = 10.f;
 
+	/** Current speed of the vehicle */
+	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere)
+	float currentSpeed = 0.f;
+
 	/** Acceleration Rate of the vehicle in seconds (MaxSpeed/Seconds) */
 	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
 	float accelerationRate = 2.f;
 
-	/** Current speed of the vehicle */
+	/** Current acceleration of the vehicle */
 	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere)
-	float currentSpeed = 0.f;
+	float currentAcceleration = 0.f;
 
 	/** Turn speed of the vehicle */
 	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
@@ -62,15 +70,22 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
 	FVector movementInput;
+	float currentBoardTilt = 0.f;
+	float maxBoardTiltRotation = 15.f;
+	float boardTiltSpeed = 100.f;
 
 	float GetClaculatedSpeed(float DeltaTime);
+	void BoardTilt(float DeltaTime);
 
 	// User inputs
 	/** Handle pressing forwards */
 	void MoveForward(float input);
 	/** Handle pressing right */
 	void MoveRight(float input);
+
+public:
 
 
 	/** Returns the player mesh subobject **/
