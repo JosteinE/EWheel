@@ -15,8 +15,10 @@ ASplineActor::ASplineActor()
 	if (SplineComponent)
 		RootComponent = SplineComponent;
 
-	Mesh = CreateDefaultSubobject<UStaticMesh>(TEXT("SplineStaticMesh"));
+	//If there is trouble converting this actor from code to blueprint, comment this out!
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Game/Meshes/TempPlayerWheel.TempPlayerWheel'"));
+	if (MeshAsset.Succeeded())
+		Mesh = MeshAsset.Object;
 }
 
 void ASplineActor::OnConstruction(const FTransform& Transform)

@@ -9,7 +9,7 @@
 
 class USplineComponent;
 
-UCLASS()
+UCLASS(Blueprintable)
 class EWHEEL_API ASplineActor : public AActor
 {
 	GENERATED_BODY()
@@ -26,10 +26,10 @@ public:
 	TEnumAsByte<ESplineMeshAxis::Type> ForwardAxis;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
-	class UMaterialInterface* DefaultMaterial;
+	class UMaterialInterface* DefaultMaterial = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
-	class UMaterialInterface* AlternativeMaterial;
+	class UMaterialInterface* AlternativeMaterial = nullptr;
 
 	// Sets default values for this actor's properties
 	ASplineActor();
