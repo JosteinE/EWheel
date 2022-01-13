@@ -3,23 +3,42 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SplineComponent.h"
 #include "GameFramework/Actor.h"
+#include "Components/SplineMeshComponent.h"
 #include "SplineActor.generated.h"
+
+class USplineComponent;
 
 UCLASS()
 class EWHEEL_API ASplineActor : public AActor
 {
 	GENERATED_BODY()
 
+public:
 	UPROPERTY(VisibleAnywhere, Category = "Spline")
 	USplineComponent* SplineComponent;
 
-public:	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
+	UStaticMesh* Mesh; 
+	
+	// Using TEnumAsByte to expose the enum to blueprints. This lets us rotate our mesh to match the forward direction of the spline
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
+	TEnumAsByte<ESplineMeshAxis::Type> ForwardAxis;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
+	class UMaterialInterface* DefaultMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
+	class UMaterialInterface* AlternativeMaterial;
+
 	// Sets default values for this actor's properties
 	ASplineActor();
 
 protected:
+
+	// 
+	void OnConstruction(const FTransform& Transform) override;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
