@@ -44,10 +44,10 @@ void ASplineActor::OnConstruction(const FTransform& Transform)
 		//Create a next node along our curve
 		const FVector EndPoint = SplineComponent->GetLocationAtSplinePoint(SplineCount + 1, ESplineCoordinateSpace::Local);
 		//Get the tangent belonging to our new node
-		const FVector StartTangent = SplineComponent->GetTangentAtSplinePoint(SplineCount + 1, ESplineCoordinateSpace::Local);
+		const FVector EndTangent = SplineComponent->GetTangentAtSplinePoint(SplineCount + 1, ESplineCoordinateSpace::Local);
 
 		//Connect the two points
-		SplineMeshComponent->SetStartAndEnd(StartingPoint, StartTangent, EndPoint, StartTangent);
+		SplineMeshComponent->SetStartAndEnd(StartingPoint, StartTangent, EndPoint, EndTangent);
 		//Enable collision for the spline mesh
 		SplineMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //Note: consider changing this if physics is not being used
 
