@@ -21,7 +21,7 @@ APlayerPawn::APlayerPawn()
 	//static ConstructorHelpers::FClassFinder<UObject> AnimBPClass(TEXT("/Game/Vehicle/Sedan/Sedan_AnimBP"));
 	//GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
 
-	// Root component, seperate from the mesh to avoid problems when rotating/tilting the board
+	// Root component. Seperate from the mesh to avoid problems when rotating/tilting the board
 	PlayerRoot = CreateDefaultSubobject<USceneComponent>(TEXT("PlayerRootComponent"));
 	RootComponent = PlayerRoot;
 
@@ -34,14 +34,14 @@ APlayerPawn::APlayerPawn()
 
 	// Create a spring arm component
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm0"));
-	SpringArm->TargetOffset = FVector(0.f, 0.f, 200.f);
+	SpringArm->TargetOffset = FVector(0.f, 0.f, 60.f);
 	SpringArm->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
 	SpringArm->SetupAttachment(PlayerMesh);
-	SpringArm->TargetArmLength = 600.0f;
+	SpringArm->TargetArmLength = 300.0f;
 	SpringArm->bEnableCameraRotationLag = true;
 	SpringArm->CameraRotationLagSpeed = 2.f;
 	SpringArm->bEnableCameraLag = true;
-	SpringArm->CameraLagSpeed = 3.f;
+	SpringArm->CameraLagSpeed = 7.f;
 	SpringArm->bInheritPitch = false;
 	SpringArm->bInheritRoll = false;
 
@@ -71,7 +71,7 @@ void APlayerPawn::Tick(float DeltaTime)
 	//Move the actor based on input
 	SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetClaculatedSpeed(DeltaTime), false);
 	//Rotate the actor based on input
-	SetActorRotation(GetActorRotation() + FRotator{ 0, movementInput.X, 0 } *turnSpeed * DeltaTime);
+	SetActorRotation(GetActorRotation() + FRotator{ 0, movementInput.X, 0 } * turnSpeed * DeltaTime);
 	//Tilt the board in the direction of movement
 	BoardTilt(DeltaTime);
 }
@@ -123,8 +123,7 @@ void APlayerPawn::BoardTilt(float DeltaTime)
 	FRotator newRotation = GetMesh()->GetRelativeRotation();
 	newRotation.Pitch = -currentBoardTilt.Pitch;
 	newRotation.Roll = currentBoardTilt.Roll;
-	UE_LOG(LogTemp, Warning, TEXT("Pitch: %f"), newRotation.Pitch);
-	UE_LOG(LogTemp, Warning, TEXT("Roll: %f"), newRotation.Roll);
+
 	GetMesh()->SetRelativeRotation(newRotation);
 }
 
