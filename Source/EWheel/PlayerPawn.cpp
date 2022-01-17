@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
 //#include "Engine/SkeletalMesh.h"
+#include "DrawDebugHelpers.h"
 #include "Components/StaticMeshComponent.h"
 
 // Sets default values
@@ -22,15 +23,17 @@ APlayerPawn::APlayerPawn()
 	//GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
 
 	// Root component. Seperate from the mesh to avoid problems when rotating/tilting the board
-	PlayerRoot = CreateDefaultSubobject<USceneComponent>(TEXT("PlayerRootComponent"));
-	RootComponent = PlayerRoot;
+	//PlayerRoot = CreateDefaultSubobject<USceneComponent>(TEXT("PlayerRootComponent"));
+	//RootComponent = PlayerRoot;
 
 	// Player Mesh
 	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMeshComponent"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Game/Meshes/TempPlayerWheel.TempPlayerWheel'"));
 	if(MeshAsset.Succeeded())
 		GetMesh()->SetStaticMesh(MeshAsset.Object);
-	PlayerMesh->SetupAttachment(RootComponent);
+	PlayerMesh->SetCollisionProfileName("Pawn");
+	PlayerMesh->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
+	RootComponent = PlayerMesh;
 
 	// Create a spring arm component
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm0"));
@@ -68,12 +71,20 @@ void APlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//Move the actor based on input
-	SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetClaculatedSpeed(DeltaTime), false);
-	//Rotate the actor based on input
-	SetActorRotation(GetActorRotation() + FRotator{ 0, movementInput.X, 0 } * turnSpeed * DeltaTime);
-	//Tilt the board in the direction of movement
-	BoardTilt(DeltaTime);
+	if (!ValidateGroundContact() && !PlayerMesh->IsSimulatingPhysics())
+		PlayerMesh->SetSimulatePhysics(true);
+	else if (bGroundContact && PlayerMesh->IsSimulatingPhysics())
+		PlayerMesh->SetSimulatePhysics(false);
+
+	if(bGroundContact)
+	{
+		//Move the actor based on input
+		MoveBoard(DeltaTime);
+		//Rotate the actor based on input
+		SetActorRotation(GetActorRotation() + FRotator{ 0, movementInput.X, 0 } *turnSpeed * DeltaTime);
+		//Tilt the board in the direction of movement
+		BoardTilt(DeltaTime);
+	}
 }
 
 // Called to bind functionality to input
@@ -83,6 +94,13 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerPawn::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerPawn::MoveRight);
+}
+
+void APlayerPawn::MoveBoard(float DeltaTime)
+{
+	FVector forwardDirection = GetActorForwardVector();
+	forwardDirection.Z = 0;
+	SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime), false);
 }
 
 float APlayerPawn::GetClaculatedSpeed(float DeltaTime)
@@ -125,6 +143,53 @@ void APlayerPawn::BoardTilt(float DeltaTime)
 	newRotation.Roll = currentBoardTilt.Roll;
 
 	GetMesh()->SetRelativeRotation(newRotation);
+}
+
+bool APlayerPawn::ValidateGroundContact()
+{
+	FVector RaycastStartPos = GetActorLocation() - GetActorUpVector() * groundContactRayOffset;
+	FVector RaycastEndPos = GetActorLocation() - GetActorUpVector() * (groundContactRayOffset + groundContactRayLength);
+	FVector SideRayCastOffset = GetActorRightVector() * groundContactRaySideOffset;
+
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	FHitResult leftRay, midRay, rightRay;
+
+	bool checkLHit = GetWorld()->LineTraceSingleByChannel(leftRay, RaycastStartPos - SideRayCastOffset, RaycastEndPos - SideRayCastOffset, ECC_Visibility, CollisionParams);
+	bool checkMHit = GetWorld()->LineTraceSingleByChannel(midRay, RaycastStartPos, RaycastEndPos, ECC_Visibility, CollisionParams);
+	bool checkRHit = GetWorld()->LineTraceSingleByChannel(rightRay, RaycastStartPos + SideRayCastOffset, RaycastEndPos + SideRayCastOffset, ECC_Visibility, CollisionParams);
+
+	// DrawDebugLines
+	if(checkLHit)
+		DrawDebugLine(GetWorld(), RaycastStartPos - SideRayCastOffset, RaycastEndPos - SideRayCastOffset, FColor::Green, false);
+	else
+		DrawDebugLine(GetWorld(), RaycastStartPos - SideRayCastOffset, RaycastEndPos - SideRayCastOffset, FColor::Red, false);
+
+	if (checkMHit)
+		DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Green, false);
+	else
+		DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Red, false);
+
+	if (checkRHit)
+		DrawDebugLine(GetWorld(), RaycastStartPos + SideRayCastOffset, RaycastEndPos + SideRayCastOffset, FColor::Green, false);
+	else
+		DrawDebugLine(GetWorld(), RaycastStartPos + SideRayCastOffset, RaycastEndPos + SideRayCastOffset, FColor::Red, false);
+
+	//Validate contact with surface
+	if (checkMHit)
+		bGroundContact = true;
+	else if (checkLHit && checkRHit)
+		bGroundContact = true;
+	else
+		bGroundContact = false;
+
+	return bGroundContact;
+}
+
+void APlayerPawn::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	//PlayerMesh->SetSimulatePhysics(true);
 }
 
 void APlayerPawn::MoveForward(float input)

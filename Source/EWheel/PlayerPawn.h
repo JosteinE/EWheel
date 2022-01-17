@@ -55,6 +55,10 @@ class EWHEEL_API APlayerPawn : public APawn
 	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
 	float friction = 0.5f;
 
+	/** True if ground contact was successfully validated  */
+	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere)
+	bool bGroundContact = true;
+
 public:
 	// Sets default values for this pawn's properties
 	APlayerPawn();
@@ -77,9 +81,20 @@ private:
 	float maxBoardTiltRoll = 35;
 	float boardTiltSpeed = 100.f;
 	float boardTiltResetSpeed = 10.f;
+	float groundContactRayOffset = 50.f;
+	float groundContactRayLength = 25.f;
+	float groundContactRaySideOffset = 30.f;
 
-	float GetClaculatedSpeed(float DeltaTime);
+	float gravity = 9.81f;
+
+	void MoveBoard(float DeltaTime);
 	void BoardTilt(float DeltaTime);
+	bool ValidateGroundContact(); // 3x Raycasts that determine if the board has sufficient contact with the ground to keep moving  
+	float GetClaculatedSpeed(float DeltaTime);
+
+
+	UFUNCTION()
+	void OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	// User inputs
 	/** Handle pressing forwards */

@@ -34,7 +34,7 @@ void ASplineActor::OnConstruction(const FTransform& Transform)
 		SplineMeshComponent->SetMobility(EComponentMobility::Movable);
 		//Ensure that construction is done using this method
 		SplineMeshComponent->CreationMethod = EComponentCreationMethod::UserConstructionScript;
-		//Register the node to the world to have it spawn during runtime
+		//Register the mesh to the world to have it spawn during runtime
 		SplineMeshComponent->RegisterComponentWithWorld(GetWorld());
 		//Add spline node relative to the curve
 		SplineMeshComponent->AttachToComponent(SplineComponent, FAttachmentTransformRules::KeepRelativeTransform);
