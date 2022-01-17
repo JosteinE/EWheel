@@ -55,9 +55,13 @@ class EWHEEL_API APlayerPawn : public APawn
 	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
 	float friction = 0.5f;
 
-	/** True if ground contact was successfully validated  */
+	/** True if the wheel is in the right orientation and contact with the ground was successfully validated  */
 	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere)
-	bool bGroundContact = true;
+	bool bWheelContact = true;
+
+	/** True if the board is colliding with the ground  */
+	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere)
+	bool bIsCollidingWithGround = false;
 
 public:
 	// Sets default values for this pawn's properties
@@ -84,8 +88,6 @@ private:
 	float groundContactRayOffset = 50.f;
 	float groundContactRayLength = 25.f;
 	float groundContactRaySideOffset = 30.f;
-
-	float gravity = 9.81f;
 
 	void MoveBoard(float DeltaTime);
 	void BoardTilt(float DeltaTime);

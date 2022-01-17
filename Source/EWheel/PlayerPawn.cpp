@@ -71,12 +71,15 @@ void APlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+	// Simulate physics if the board is not colliding
 	if (!ValidateGroundContact() && !PlayerMesh->IsSimulatingPhysics())
 		PlayerMesh->SetSimulatePhysics(true);
-	else if (bGroundContact && PlayerMesh->IsSimulatingPhysics())
+	else if (bWheelContact && PlayerMesh->IsSimulatingPhysics() && bIsCollidingWithGround)
 		PlayerMesh->SetSimulatePhysics(false);
+	bIsCollidingWithGround = false;
 
-	if(bGroundContact)
+	if(!PlayerMesh->IsSimulatingPhysics())
 	{
 		//Move the actor based on input
 		MoveBoard(DeltaTime);
@@ -178,18 +181,19 @@ bool APlayerPawn::ValidateGroundContact()
 
 	//Validate contact with surface
 	if (checkMHit)
-		bGroundContact = true;
+		bWheelContact = true;
 	else if (checkLHit && checkRHit)
-		bGroundContact = true;
+		bWheelContact = true;
 	else
-		bGroundContact = false;
+		bWheelContact = false;
 
-	return bGroundContact;
+	return bWheelContact;
 }
 
 void APlayerPawn::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	//PlayerMesh->SetSimulatePhysics(true);
+	UE_LOG(LogTemp, Warning, TEXT("BOARD HIT!"), bIsCollidingWithGround);
+	bIsCollidingWithGround = Hit.bBlockingHit;
 }
 
 void APlayerPawn::MoveForward(float input)
