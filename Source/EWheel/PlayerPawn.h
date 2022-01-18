@@ -16,6 +16,7 @@ class EWHEEL_API APlayerPawn : public APawn
 {
 	GENERATED_BODY()
 
+
 	/** ############################################## */
 	UPROPERTY(Category = Root, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* PlayerRoot;
@@ -33,35 +34,35 @@ class EWHEEL_API APlayerPawn : public APawn
 	USpringArmComponent* SpringArm;
 
 	/** Forward movement speed of the vehicle */
-	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
+	UPROPERTY(Category = VehicleSpecs, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float maxSpeed = 10.f;
 
 	/** Current speed of the vehicle */
-	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere)
+	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float currentSpeed = 0.f;
 
 	/** Acceleration Rate of the vehicle in seconds (MaxSpeed/Seconds) */
-	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
+	UPROPERTY(Category = VehicleSpecs, EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	float accelerationRate = 2.f;
 
 	/** Current acceleration of the vehicle */
-	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere)
+	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	float currentAcceleration = 0.f;
 
 	/** Turn speed of the vehicle */
-	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
+	UPROPERTY(Category = VehicleSpecs, EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	float turnSpeed = 100.f;
 
 	/** How fast the vehicle naturally slows down without input (0-1)  */
-	UPROPERTY(Category = VehicleSpecs, EditAnywhere)
+	UPROPERTY(Category = VehicleSpecs, EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	float friction = 0.5f;
 
 	/** True if the wheel is in the right orientation and contact with the ground was successfully validated  */
-	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere)
+	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	bool bWheelContact = true;
 
 	/** True if the board is colliding with the ground  */
-	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere)
+	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	bool bIsCollidingWithGround = false;
 
 public:

@@ -24,7 +24,6 @@ APlayerPawn::APlayerPawn()
 	PlayerMesh->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
 	RootComponent = PlayerMesh;
 
-
 	//static ConstructorHelpers::FClassFinder<UObject> AnimBPClass(TEXT("/Game/Vehicle/Sedan/Sedan_AnimBP"));
 	//GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
 
@@ -92,7 +91,7 @@ void APlayerPawn::Tick(float DeltaTime)
 		//Rotate the actor based on input
 		SetActorRotation(GetActorRotation() + FRotator{ 0, movementInput.X, 0 } *turnSpeed * DeltaTime);
 		//Tilt the board in the direction of movement
-		BoardTilt(DeltaTime);
+		//BoardTilt(DeltaTime);
 	}
 }
 
@@ -132,7 +131,7 @@ void APlayerPawn::BoardTilt(float DeltaTime)
 	//currentBoardTilt = FMath::Clamp(currentBoardTilt + movementInput.Y * boardTiltSpeed * DeltaTime, -maxBoardTiltRotation, maxBoardTiltRotation);
 	//if (movementInput.Y == 0) <----BORING
 	//	currentBoardTilt += 0 - currentBoardTilt * DeltaTime;
-	
+
 	// Tilt the board forwards/back based on forward/back input
 	currentBoardTilt.Pitch += movementInput.Y * boardTiltSpeed * DeltaTime;
 	// Gradually reset the rotation of the board if there is no user input
@@ -151,7 +150,12 @@ void APlayerPawn::BoardTilt(float DeltaTime)
 	newRotation.Pitch = -currentBoardTilt.Pitch;
 	newRotation.Roll = currentBoardTilt.Roll;
 
+	//Move the pivot the board around the center of the wheel by first moving the mesh origin to the center of the wheel, rotating, then moving it back
+	//Couldnt get this to work without the board visually teleporting in game
+	//FVector centerOfWheel = GetActorLocation() + GetActorUpVector() * 15.f;
+	//GetMesh()->SetWorldLocation(centerOfWheel - GetActorLocation());
 	GetMesh()->SetRelativeRotation(newRotation);
+	//GetMesh()->SetWorldLocation(GetActorLocation() - centerOfWheel);
 }
 
 bool APlayerPawn::ValidateGroundContact()
