@@ -8,20 +8,21 @@
 
 class UCameraComponent;
 class USpringArmComponent;
-class UStaticMeshComponent;
+class USkeletalMeshComponent;
+//class UStaticMeshComponent;
 
 UCLASS()
 class EWHEEL_API APlayerPawn : public APawn
 {
 	GENERATED_BODY()
 
-	/** Static Mesh component that will represent our Player */
+	/** ############################################## */
 	UPROPERTY(Category = Root, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* PlayerRoot;
 
 	/** Static Mesh component that will represent our Player */
 	UPROPERTY(Category = Mesh, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* PlayerMesh;
+	USkeletalMeshComponent* PlayerMesh;
 
 	/** Camera component that will be our viewpoint */
 	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -85,9 +86,9 @@ private:
 	float maxBoardTiltRoll = 35;
 	float boardTiltSpeed = 100.f;
 	float boardTiltResetSpeed = 10.f;
-	float groundContactRayOffset = 50.f;
-	float groundContactRayLength = 25.f;
-	float groundContactRaySideOffset = 30.f;
+	float groundContactRayOffset = 0.f;
+	float groundContactRayLength = 5.f;
+	float groundContactRaySideOffset = 5.f;
 
 	void MoveBoard(float DeltaTime);
 	void BoardTilt(float DeltaTime);
@@ -108,7 +109,7 @@ public:
 
 
 	/** Returns the player mesh subobject **/
-	FORCEINLINE UStaticMeshComponent* GetMesh() const { return PlayerMesh; }
+	FORCEINLINE USkeletalMeshComponent* GetMesh() const { return PlayerMesh; }
 	/** Returns Camera subobject **/
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
 	/** Returns SpringArm subobject **/
