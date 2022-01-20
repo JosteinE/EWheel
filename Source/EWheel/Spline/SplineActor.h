@@ -17,24 +17,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Spline")
 	USplineComponent* SplineComponent;
 
-	// TEMP
-	//UPROPERTY(VisibleAnywhere, Category = "Spline")
-	//USplineMeshComponent* SplineMeshComponent;
-	//
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline", meta = (AllowPrivateAccess = "true"))
-	UStaticMesh* Mesh; 
-	
-	// Using TEnumAsByte to expose the enum to blueprints. This lets us rotate our mesh to match the forward direction of the spline
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline", meta = (AllowPrivateAccess = "true"))
-	TEnumAsByte<ESplineMeshAxis::Type> ForwardAxis;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline", meta = (AllowPrivateAccess = "true"))
-	class UMaterialInterface* DefaultMaterial = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline", meta = (AllowPrivateAccess = "true"))
-	class UMaterialInterface* AlternativeMaterial = nullptr;
-
+public:
 	// Sets default values for this actor's properties
 	ASplineActor();
 
@@ -55,6 +38,8 @@ public:
 
 	// Removes the first point along the spline
 	void RemoveFirstSplinePoint(bool bUpdateSpline = true);
+
+	void RemoveSplinePoint(int index, bool bUpdateSpline = true);
 
 	/** Returns the player mesh subobject **/
 	FORCEINLINE USplineComponent* GetSpline() const { return SplineComponent; }

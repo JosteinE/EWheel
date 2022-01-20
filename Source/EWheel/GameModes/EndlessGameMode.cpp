@@ -3,7 +3,7 @@
 
 #include "EWheel/GameModes/EndlessGameMode.h"
 #include "EWheel/PlayerPawn.H"
-#include "EWheel/Spline/SplineActor.h"
+#include "EWheel/Spline/MeshSplineActor.h"
 
 AEndlessGameMode::AEndlessGameMode()
 {
@@ -23,7 +23,7 @@ void AEndlessGameMode::BeginPlay()
 	// Spawn the path
 	FActorSpawnParameters pathSpawnParams;
 	pathSpawnParams.Owner = this;
-	mainPath = GetWorld()->SpawnActor<ASplineActor>(ASplineActor::StaticClass(), FVector{ 0.f, 0.f, splineSpawnVerticalOffset }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
+	mainPath = GetWorld()->SpawnActor<AMeshSplineActor>(AMeshSplineActor::StaticClass(), FVector{ 0.f, 0.f, splineSpawnVerticalOffset }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
 	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 }
 
@@ -40,11 +40,11 @@ void AEndlessGameMode::Tick(float DeltaTime)
 		// Remove the first point in the spline if it exceedes the max number of spline points.
 		if (mainPath->GetSpline()->GetNumberOfSplinePoints() + 1 > maxNumSplinePoints)
 		{
-			mainPath->AddSplinePoint(newLocation, false);
-			mainPath->RemoveFirstSplinePoint(true);
+			mainPath->AddSplinePointAndMesh(newLocation, 0);
+			mainPath->RemoveFirstSplinePointAndMesh(true);
 		}
 		else
-			mainPath->AddSplinePoint(newLocation, true);
+			mainPath->AddSplinePointAndMesh(newLocation, 0);
 
 		lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 	}

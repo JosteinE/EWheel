@@ -8,7 +8,7 @@
 /**
  * 
  */
-class ASplineActor;
+class AMeshSplineActor;
 UCLASS()
 class EWHEEL_API AEndlessGameMode : public AGameModeBase
 {
@@ -25,7 +25,7 @@ public:
 
 private:
 	APawn* mainPlayer;
-	ASplineActor* mainPath;
+	AMeshSplineActor* mainPath;
 	APlayerController* mainPlayerController;
 
 	float splineSpawnVerticalOffset = 10.f;
