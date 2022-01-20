@@ -37,7 +37,7 @@ void AEndlessGameMode::Tick(float DeltaTime)
 		const FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 		const FVector newLocation = mainPlayer->GetActorLocation() + mainPlayer->GetActorForwardVector() * FVector { distToNextSplinePoint, distToNextSplinePoint, 0 };
 
-		// Remove the first point in the spline if it exceedes the max number of spline points.
+		// Remove the first point in the spline if adding 1 exceedes the max number of spline points.
 		if (mainPath->GetSpline()->GetNumberOfSplinePoints() + 1 > maxNumSplinePoints)
 		{
 			mainPath->AddSplinePointAndMesh(newLocation, 0);

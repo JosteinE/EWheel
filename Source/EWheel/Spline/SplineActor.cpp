@@ -36,12 +36,9 @@ void ASplineActor::Tick(float DeltaTime)
 void ASplineActor::AddSplinePoint(const FVector newPointLocation, bool bUpdateSpline)
 {
 	SplineComponent->AddSplineLocalPoint(newPointLocation);
-	UE_LOG(LogTemp, Warning, TEXT("SplinePoint Added"));
 
 	if (bUpdateSpline)
-	{
 		SplineComponent->UpdateSpline();
-	}
 }
 
 void ASplineActor::RemoveFirstSplinePoint(bool bUpdateSpline)
@@ -53,8 +50,6 @@ void ASplineActor::RemoveSplinePoint(int index, bool bUpdateSpline)
 {
 	if (SplineComponent->GetNumberOfSplinePoints() <= 0 || index > SplineComponent->GetNumberOfSplinePoints()) return;
 
-	FVector splineToRemoveLoc = SplineComponent->GetLocationAtSplinePoint(index, ESplineCoordinateSpace::World);
-	UE_LOG(LogTemp, Warning, TEXT("Removing spline point: %f, %f, %f "), splineToRemoveLoc.X, splineToRemoveLoc.Y, splineToRemoveLoc.Z);
 	SplineComponent->RemoveSplinePoint(index, bUpdateSpline);
 }
 

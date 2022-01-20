@@ -95,9 +95,10 @@ void AMeshSplineActor::RemoveFirstSplinePointAndMesh(bool bRemovePoint)
 
 void AMeshSplineActor::RemoveAllSplineMesh(bool bRemovePoints)
 {
-	for (int i = 0; i < SplineMeshComponent.Num(); i++)
+	int numMeshToRemove = SplineMeshComponent.Num();
+	for (int i = 0; i < numMeshToRemove; i++)
 	{
-		RemoveSplineMesh(i, bRemovePoints);
+		RemoveSplineMesh(0, bRemovePoints);
 	}
 }
 
