@@ -2,7 +2,6 @@
 
 
 #include "EWheel/Spline/SplineActor.h"
-#include "Components/SplineComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 // Sets default values
@@ -76,14 +75,28 @@ void ASplineActor::Tick(float DeltaTime)
 
 }
 
-void ASplineActor::AddPoint(const FVector* newPointLocation)
+void ASplineActor::AddSplinePoint(const FVector newPointLocation, bool bUpdateSpline)
 {
-	SplineComponent->AddSplineLocalPoint(*newPointLocation);
-	SplineComponent->UpdateSpline();
+	SplineComponent->AddSplineLocalPoint(newPointLocation);
+	UE_LOG(LogTemp, Warning, TEXT("SplinePoint Added"));
+
+	if (bUpdateSpline)
+	{
+		SplineComponent->UpdateSpline();
+		OnConstruction(GetActorTransform());
+	}
 }
 
-void ASplineActor::RemoveFirstPoint()
+void ASplineActor::RemoveFirstSplinePoint(bool bUpdateSpline)
 {
-	SplineComponent->RemoveSplinePoint(0, true);
+	FVector splineToRemoveLoc = SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World);
+	UE_LOG(LogTemp, Warning, TEXT("Removing spline point: %f, %f, %f "), splineToRemoveLoc.X, splineToRemoveLoc.Y, splineToRemoveLoc.Z);
+	SplineComponent->RemoveSplinePoint(0, bUpdateSpline);
+	UE_LOG(LogTemp, Warning, TEXT("SplinePoint Removed"));
+
+	if (bUpdateSpline)
+	{
+		OnConstruction(GetActorTransform());
+	}
 }
 

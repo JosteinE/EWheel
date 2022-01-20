@@ -5,30 +5,29 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/SplineMeshComponent.h"
+#include "Components/SplineComponent.h"
 #include "SplineActor.generated.h"
-
-class USplineComponent;
 
 UCLASS(Blueprintable)
 class EWHEEL_API ASplineActor : public AActor
 {
 	GENERATED_BODY()
 
-public:
+private:
 	UPROPERTY(VisibleAnywhere, Category = "Spline")
 	USplineComponent* SplineComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline", meta = (AllowPrivateAccess = "true"))
 	UStaticMesh* Mesh; 
 	
 	// Using TEnumAsByte to expose the enum to blueprints. This lets us rotate our mesh to match the forward direction of the spline
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline", meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<ESplineMeshAxis::Type> ForwardAxis;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline", meta = (AllowPrivateAccess = "true"))
 	class UMaterialInterface* DefaultMaterial = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline", meta = (AllowPrivateAccess = "true"))
 	class UMaterialInterface* AlternativeMaterial = nullptr;
 
 	// Sets default values for this actor's properties
@@ -46,9 +45,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Adds a point
-	void AddPoint(const FVector* newPointLocation);
+	// Adds a point to the spline
+	void AddSplinePoint(const FVector newPointLocation, bool bUpdateSpline = true);
 
 	// Removes the first point along the spline
-	void RemoveFirstPoint();
+	void RemoveFirstSplinePoint(bool bUpdateSpline = true);
+
+	/** Returns the player mesh subobject **/
+	FORCEINLINE USplineComponent* GetSpline() const { return SplineComponent; }
 }; 
