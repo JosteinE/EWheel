@@ -76,3 +76,14 @@ void ASplineActor::Tick(float DeltaTime)
 
 }
 
+void ASplineActor::AddPoint(const FVector* newPointLocation)
+{
+	SplineComponent->AddSplineLocalPoint(*newPointLocation);
+	SplineComponent->UpdateSpline();
+}
+
+void ASplineActor::RemoveFirstPoint()
+{
+	SplineComponent->RemoveSplinePoint(0, true);
+}
+

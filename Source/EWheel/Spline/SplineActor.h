@@ -46,4 +46,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Adds a point
+	void AddPoint(const FVector* newPointLocation);
+
+	// Removes the first point along the spline
+	void RemoveFirstPoint();
 }; 

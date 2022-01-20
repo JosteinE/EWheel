@@ -91,7 +91,7 @@ void APlayerPawn::Tick(float DeltaTime)
 		//Rotate the actor based on input
 		SetActorRotation(GetActorRotation() + FRotator{ 0, movementInput.X, 0 } *turnSpeed * DeltaTime);
 		//Tilt the board in the direction of movement
-		//BoardTilt(DeltaTime);
+		BoardTilt(DeltaTime);
 	}
 }
 
