@@ -77,14 +77,14 @@ void APlayerPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	// Simulate physics if the board is not colliding
-	if (!ValidateGroundContact() && !PlayerMesh->IsSimulatingPhysics())
-		PlayerMesh->SetSimulatePhysics(true);
-	else if (bWheelContact && PlayerMesh->IsSimulatingPhysics() && bIsCollidingWithGround)
-		PlayerMesh->SetSimulatePhysics(false);
-	bIsCollidingWithGround = false;
+	//// Simulate physics if the board is not colliding
+	//if (!ValidateGroundContact() && !PlayerMesh->IsSimulatingPhysics())
+	//	PlayerMesh->SetSimulatePhysics(true);
+	//else if (bWheelContact && PlayerMesh->IsSimulatingPhysics() && bIsCollidingWithGround)
+	//	PlayerMesh->SetSimulatePhysics(false);
+	//bIsCollidingWithGround = false;
 
-	if(!PlayerMesh->IsSimulatingPhysics())
+	//if(!PlayerMesh->IsSimulatingPhysics())
 	{
 		//Move the actor based on input
 		MoveBoard(DeltaTime);

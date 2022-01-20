@@ -15,7 +15,7 @@ ASplineActor::ASplineActor()
 		RootComponent = SplineComponent;
 
 	//If there is trouble converting this actor from code to blueprint, comment this out!
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Game/Meshes/TempPlayerWheel.TempPlayerWheel'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_Ex_SN_150x150.Ground_Pit_Ex_SN_150x150'"));
 	if (MeshAsset.Succeeded())
 		Mesh = MeshAsset.Object;
 }
@@ -92,7 +92,6 @@ void ASplineActor::RemoveFirstSplinePoint(bool bUpdateSpline)
 	FVector splineToRemoveLoc = SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World);
 	UE_LOG(LogTemp, Warning, TEXT("Removing spline point: %f, %f, %f "), splineToRemoveLoc.X, splineToRemoveLoc.Y, splineToRemoveLoc.Z);
 	SplineComponent->RemoveSplinePoint(0, bUpdateSpline);
-	UE_LOG(LogTemp, Warning, TEXT("SplinePoint Removed"));
 
 	if (bUpdateSpline)
 	{

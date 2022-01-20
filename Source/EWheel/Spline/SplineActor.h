@@ -17,6 +17,11 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Spline")
 	USplineComponent* SplineComponent;
 
+	// TEMP
+	//UPROPERTY(VisibleAnywhere, Category = "Spline")
+	//USplineMeshComponent* SplineMeshComponent;
+	//
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline", meta = (AllowPrivateAccess = "true"))
 	UStaticMesh* Mesh; 
 	

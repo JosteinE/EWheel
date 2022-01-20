@@ -23,7 +23,7 @@ void AEndlessGameMode::BeginPlay()
 	// Spawn the path
 	FActorSpawnParameters pathSpawnParams;
 	pathSpawnParams.Owner = this;
-	mainPath = GetWorld()->SpawnActor<ASplineActor>(ASplineActor::StaticClass(), FVector{ 0.f, 0.f, -2.f }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
+	mainPath = GetWorld()->SpawnActor<ASplineActor>(ASplineActor::StaticClass(), FVector{ 0.f, 0.f, splineSpawnVerticalOffset }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
 	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 }
 
@@ -35,9 +35,9 @@ void AEndlessGameMode::Tick(float DeltaTime)
 	if ((lastSplinePointLoc - mainPlayer->GetActorLocation()).Size() < minDistToLastSplinePoint)
 	{
 		const FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-		//const FVector newLocation = lastSplinePointLoc + LastSPlinePointDirection * maxDistFromLastSplinePoint;
 		const FVector newLocation = mainPlayer->GetActorLocation() + mainPlayer->GetActorForwardVector() * FVector { distToNextSplinePoint, distToNextSplinePoint, 0 };
 
+		// Remove the first point in the spline if it exceedes the max number of spline points.
 		if (mainPath->GetSpline()->GetNumberOfSplinePoints() + 1 > maxNumSplinePoints)
 		{
 			mainPath->AddSplinePoint(newLocation, false);
