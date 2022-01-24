@@ -43,5 +43,5 @@ private:
 	int maxNumSplinePoints = 5;
 	FVector lastSplinePointLoc;
 
-	UStaticMesh* testMesh;
+	AActor* testMesh;
 };

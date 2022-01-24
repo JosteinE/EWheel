@@ -6,6 +6,8 @@
 #include "EWheel/Spline/MeshSplineActor.h"
 #include "EWheel/MeshGenerator.h"
 
+#include "Components/StaticMeshComponent.h"
+
 AEndlessGameMode::AEndlessGameMode()
 {
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -27,8 +29,15 @@ void AEndlessGameMode::BeginPlay()
 	mainPath = GetWorld()->SpawnActor<AMeshSplineActor>(AMeshSplineActor::StaticClass(), FVector{ 0.f, 0.f, splineSpawnVerticalOffset }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
 	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 
+	//TEST
 	MeshGenerator meshGen;
-	//testMesh = meshGen.GenerateStaticMeshFromTile();
+	testMesh = GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector{ 0,0,0 }, FRotator{ 0,0,0 }, playerSpawnParams);
+	UStaticMesh* testMeshMesh = meshGen.GenerateStaticMeshFromTile();
+	UStaticMeshComponent* meshComp = NewObject<UStaticMeshComponent>(testMesh);
+	meshComp->SetStaticMesh(testMeshMesh);
+	meshComp->RegisterComponent();
+
+	UE_LOG(LogTemp, Warning, TEXT("FUCKING DID IT"));
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)

@@ -24,7 +24,14 @@ UProceduralMeshComponent* MeshGenerator::GenerateMeshFromTile(int MESH_ENUM)
 	UProceduralMeshComponent* generatedMesh = NewObject<UProceduralMeshComponent>();
 	generatedMesh->CreateMeshSection(0, *pLib.GetVertices(), *pLib.GetTriangles(), *pLib.GetNormals(), *pLib.GetUVs(), 
 									TArray<FColor>(), TArray<FProcMeshTangent>(), true);
-	generatedMesh->RegisterComponent();
+
+	UE_LOG(LogTemp, Warning, TEXT("Vertices: %i"), pLib.GetVertices()->Num());
+	UE_LOG(LogTemp, Warning, TEXT("Triangles: %i"), pLib.GetTriangles()->Num());
+	UE_LOG(LogTemp, Warning, TEXT("Normals: %i"), pLib.GetNormals()->Num());
+	UE_LOG(LogTemp, Warning, TEXT("UVs: %i"), pLib.GetUVs()->Num());
+
+	UE_LOG(LogTemp, Warning, TEXT("Stage 1 complete"));
+
 	return generatedMesh;
 }
 
@@ -91,8 +98,8 @@ UStaticMesh* MeshGenerator::GenerateStaticMeshFromTile()
 			//StaticMesh->ImportVersion = EImportStaticMeshVersion::LastVersion;
 
 			//// Build mesh from source
-			//StaticMesh->Build(false);
-			//StaticMesh->PostEditChange();
+			StaticMesh->Build(false);
+			StaticMesh->PostEditChange();
 
 			return StaticMesh;
 		}
