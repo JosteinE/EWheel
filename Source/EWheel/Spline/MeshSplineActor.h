@@ -50,4 +50,5 @@ private:
 
 	int numMeshToReConPostInit = 0;
 	int tilesPerRow = 3;
+	float tileOffset = 150.f;
 };
