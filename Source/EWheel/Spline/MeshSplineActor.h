@@ -49,4 +49,5 @@ private:
 	void RemoveSplineMesh(int index, bool bRemovePoint = true);
 
 	int numMeshToReConPostInit = 0;
+	int tilesPerRow = 3;
 };

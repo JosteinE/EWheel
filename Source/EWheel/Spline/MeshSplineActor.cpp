@@ -46,6 +46,18 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, int MeshType)
 	else
 		return;
 
+	//Use the previous point as the starting location
+	const FVector StartingPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
+	//Get the tangent belonging to our previous point
+	const FVector StartTangent = GetSpline()->GetTangentAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
+	//Get the next point along our curve
+	const FVector EndPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex + 1, ESplineCoordinateSpace::Local);
+	//Get the tangent belonging to our next point
+	const FVector EndTangent = GetSpline()->GetTangentAtSplinePoint(SplineIndex + 1, ESplineCoordinateSpace::Local);
+
+	//Set the index account for the number of rows/meshes.
+	SplineIndex *= tilesPerRow;
+
 	// Construct our new mesh component
 	SplineMeshComponent.Emplace(NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass()));
 	// Assign mesh to the new component
@@ -59,16 +71,7 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, int MeshType)
 	//Add spline node relative to the curve
 	SplineMeshComponent[SplineIndex]->AttachToComponent(GetSpline(), FAttachmentTransformRules::KeepRelativeTransform);
 
-	//Use the previous node as a starting point
-	const FVector StartingPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
-	//Get the tangent belonging to our previous node
-	const FVector StartTangent = GetSpline()->GetTangentAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
-	//Create a next node along our curve
-	const FVector EndPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex + 1, ESplineCoordinateSpace::Local);
-	//Get the tangent belonging to our new node
-	const FVector EndTangent = GetSpline()->GetTangentAtSplinePoint(SplineIndex + 1, ESplineCoordinateSpace::Local);
-
-	//Connect the two points
+	//Set the start and end point for the mesh
 	SplineMeshComponent[SplineIndex]->SetStartAndEnd(StartingPoint, StartTangent, EndPoint, EndTangent);
 	//Enable collision for the spline mesh
 	SplineMeshComponent[SplineIndex]->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //Note: consider changing this if physics is not being used
@@ -79,6 +82,27 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, int MeshType)
 	//Apply material
 	if (DefaultMaterial)
 		SplineMeshComponent[SplineIndex]->SetMaterial(0, DefaultMaterial);
+
+	if (tilesPerRow > 0)
+	{
+		for (int i = 1; i < tilesPerRow; i++)
+		{
+			SplineMeshComponent.Emplace(NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass()));
+			SplineMeshComponent[SplineIndex + i]->SetStaticMesh(mesh);
+			SplineMeshComponent[SplineIndex + i]->SetMobility(EComponentMobility::Movable);
+			SplineMeshComponent[SplineIndex + i]->CreationMethod = EComponentCreationMethod::UserConstructionScript;
+			SplineMeshComponent[SplineIndex + i]->RegisterComponentWithWorld(GetWorld());
+			SplineMeshComponent[SplineIndex + i]->AttachToComponent(GetSpline(), FAttachmentTransformRules::KeepRelativeTransform);
+			SplineMeshComponent[SplineIndex + i]->SetStartAndEnd(StartingPoint, StartTangent, EndPoint, EndTangent);
+			SplineMeshComponent[SplineIndex + i]->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //Note: consider changing this if physics is not being used
+			SplineMeshComponent[SplineIndex + i]->SetForwardAxis(ForwardAxis);
+
+			SplineMeshComponent[SplineIndex + i]->AddLocalOffset(GetSpline()->GetRightVectorAtSplinePoint(GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::Local) * (tileOffset * (1 - (2 * (i % 2)))));
+
+			if (DefaultMaterial)
+				SplineMeshComponent[SplineIndex]->SetMaterial(0, DefaultMaterial);
+		}
+	}
 }
 
 void AMeshSplineActor::AddSplinePointAndMesh(const FVector newPointLocation, int meshType)
@@ -91,6 +115,11 @@ void AMeshSplineActor::AddSplinePointAndMesh(const FVector newPointLocation, int
 void AMeshSplineActor::RemoveFirstSplinePointAndMesh(bool bRemovePoint)
 {
 	RemoveSplineMesh(0, bRemovePoint);
+
+	for (int i = 1; i < tilesPerRow; i++)
+	{
+		RemoveSplineMesh(0, false);
+	}
 }
 
 void AMeshSplineActor::RemoveAllSplineMesh(bool bRemovePoints)
