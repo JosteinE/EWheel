@@ -10,6 +10,8 @@
 #include "MeshDescription.h"
 #include "ProceduralMeshConversion.h"
 
+#include "KismetProceduralMeshLibrary.h"
+
 MeshGenerator::MeshGenerator()
 {
 }
@@ -37,9 +39,19 @@ UProceduralMeshComponent* MeshGenerator::GenerateMeshFromTile(int MESH_ENUM)
 
 UStaticMesh* MeshGenerator::GenerateStaticMeshFromTile()
 {
-	UProceduralMeshComponent* ProcMeshComp = GenerateMeshFromTile(0);
+	UObject* MeshAsset = StaticLoadObject(UStaticMesh::StaticClass(), nullptr, TEXT("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_Ex_SN_150x150.Ground_Pit_Ex_SN_150x150'"));
+	if (!MeshAsset) return nullptr;
+	UStaticMesh* staticMeshAsset = Cast<UStaticMesh>(MeshAsset);
+	UStaticMeshComponent* meshComp = NewObject<UStaticMeshComponent>();
+	meshComp->SetStaticMesh(staticMeshAsset);
 
-	// Find first selected ProcMeshComp
+	UProceduralMeshComponent* ProcMeshComp = NewObject<UProceduralMeshComponent>();
+
+
+	UKismetProceduralMeshLibrary::CopyProceduralMeshFromStaticMeshComponent(meshComp, 0, ProcMeshComp, true);
+	//UProceduralMeshComponent* ProcMeshComp = GenerateMeshFromTile(0);
+
+	//// Find first selected ProcMeshComp
 	if (ProcMeshComp != nullptr)
 	{
 		FMeshDescription MeshDescription = BuildMeshDescription(ProcMeshComp);
