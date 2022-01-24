@@ -19,11 +19,11 @@ void PointLibrary::AddMeshToLibrary(FString fileRef)
 	if (MeshAsset.Succeeded())
 		MeshAsset.Object;
 
-	if (MeshAsset.Object->RenderData->LODResources.Num() > 0)
+	if (MeshAsset.Object->GetRenderData()->LODResources.Num() > 0)
 	{
 		FPositionVertexBuffer* VertexBuffer = &MeshAsset.Object->GetRenderData()->LODResources[0].VertexBuffers.PositionVertexBuffer;
 
-		for (int i = 0; i < VertexBuffer->GetNumVertices(); i++)
+		for (unsigned int i = 0; i < VertexBuffer->GetNumVertices(); i++)
 		{
 			StoredVertices.Emplace(VertexBuffer->VertexPosition(i));
 		}

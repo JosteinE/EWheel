@@ -4,6 +4,7 @@
 #include "EWheel/GameModes/EndlessGameMode.h"
 #include "EWheel/PlayerPawn.H"
 #include "EWheel/Spline/MeshSplineActor.h"
+#include "EWheel/PointLibrary.h"
 
 AEndlessGameMode::AEndlessGameMode()
 {
