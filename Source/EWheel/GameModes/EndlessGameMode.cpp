@@ -4,7 +4,7 @@
 #include "EWheel/GameModes/EndlessGameMode.h"
 #include "EWheel/PlayerPawn.H"
 #include "EWheel/Spline/MeshSplineActor.h"
-#include "EWheel/PointLibrary.h"
+#include "EWheel/MeshGenerator.h"
 
 AEndlessGameMode::AEndlessGameMode()
 {
@@ -26,6 +26,9 @@ void AEndlessGameMode::BeginPlay()
 	pathSpawnParams.Owner = this;
 	mainPath = GetWorld()->SpawnActor<AMeshSplineActor>(AMeshSplineActor::StaticClass(), FVector{ 0.f, 0.f, splineSpawnVerticalOffset }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
 	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+
+	MeshGenerator meshGen;
+	//testMesh = meshGen.GenerateStaticMeshFromTile();
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)

@@ -15,22 +15,48 @@ PointLibrary::~PointLibrary()
 
 void PointLibrary::AddMeshToLibrary(FString fileRef)
 {
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(*fileRef);
-	if (MeshAsset.Succeeded())
-		MeshAsset.Object;
+	UObject* MeshAsset = StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *fileRef);
+	if (!MeshAsset) return;
 
-	if (MeshAsset.Object->GetRenderData()->LODResources.Num() > 0)
+	UStaticMesh* StaticMesh = Cast<UStaticMesh>(MeshAsset);
+
+	if (StaticMesh->GetRenderData()->LODResources.Num() > 0)
 	{
-		FPositionVertexBuffer* VertexBuffer = &MeshAsset.Object->GetRenderData()->LODResources[0].VertexBuffers.PositionVertexBuffer;
+		FStaticMeshVertexBuffers* meshVertexBuffer = &StaticMesh->GetRenderData()->LODResources[0].VertexBuffers;
+		unsigned int numVertices = meshVertexBuffer->PositionVertexBuffer.GetNumVertices();
 
-		for (unsigned int i = 0; i < VertexBuffer->GetNumVertices(); i++)
+		for (unsigned int i = 0; i < numVertices; i++)
 		{
-			StoredVertices.Emplace(VertexBuffer->VertexPosition(i));
+			StoredVertices.Emplace(meshVertexBuffer->PositionVertexBuffer.VertexPosition(i));
+			//FVector4 verTan = meshVertexBuffer->StaticMeshVertexBuffer.VertexTangentX(i);
+			StoredNormals.Emplace(FVector{ meshVertexBuffer->StaticMeshVertexBuffer.VertexTangentX(i) });
+			StoredUVs.Emplace(FVector2D{ meshVertexBuffer->PositionVertexBuffer.VertexPosition(i) });
+		}
+
+		// Assumes the vertices are placed in the order of their triangles. Every 4th point is the start of a new triangle
+		for (unsigned int i = 0; i < numVertices; i += 3)
+		{
+			StoredTriangles.Emplace(i);
 		}
 	}
 }
 
-TArray<FVector>* PointLibrary::GetStoredMesh()
+TArray<FVector>* PointLibrary::GetVertices()
 {
 	return &StoredVertices;
+}
+
+TArray<int>* PointLibrary::GetTriangles()
+{
+	return &StoredTriangles;
+}
+
+TArray<FVector>* PointLibrary::GetNormals()
+{
+	return &StoredNormals;
+}
+
+TArray<FVector2D>* PointLibrary::GetUVs()
+{
+	return &StoredUVs;
 }
