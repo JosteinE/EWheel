@@ -37,18 +37,54 @@ UProceduralMeshComponent* MeshGenerator::GenerateMeshFromTile(int MESH_ENUM)
 	return generatedMesh;
 }
 
-UStaticMesh* MeshGenerator::GenerateStaticMeshFromTile()
+UStaticMesh* MeshGenerator::GenerateStaticMeshFromTile(TArray<FString>& meshPaths)
 {
-	UObject* MeshAsset = StaticLoadObject(UStaticMesh::StaticClass(), nullptr, TEXT("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_Ex_SN_150x150.Ground_Pit_Ex_SN_150x150'"));
-	if (!MeshAsset) return nullptr;
-	UStaticMesh* staticMeshAsset = Cast<UStaticMesh>(MeshAsset);
-	UStaticMeshComponent* meshComp = NewObject<UStaticMeshComponent>();
-	meshComp->SetStaticMesh(staticMeshAsset);
+	//UObject* MeshAsset = StaticLoadObject(UStaticMesh::StaticClass(), nullptr, TEXT("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_Ex_SN_150x150.Ground_Pit_Ex_SN_150x150'"));
+	//if (!MeshAsset) return nullptr;
+
+	//UStaticMesh* staticMeshAsset = Cast<UStaticMesh>(MeshAsset);
+	//UStaticMeshComponent* meshComp = NewObject<UStaticMeshComponent>();
+	//meshComp->SetStaticMesh(staticMeshAsset);
 
 	UProceduralMeshComponent* ProcMeshComp = NewObject<UProceduralMeshComponent>();
+	UStaticMesh* staticMeshAsset;
+	//UKismetProceduralMeshLibrary::CopyProceduralMeshFromStaticMeshComponent(meshComp, 0, ProcMeshComp, true);
+
+	for (int i = 0; i < meshPaths.Num(); i++)
+	{
+		UObject* MeshAsset = StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *meshPaths[i]);
+		if (!MeshAsset) return nullptr;
+		staticMeshAsset = Cast<UStaticMesh>(MeshAsset);
+
+		TArray<FVector> Vertices;
+		TArray<int32> Triangles;
+		TArray<FVector> Normals;
+		TArray<FVector2D> UVs;
+		TArray<FProcMeshTangent> Tangents;
+
+		UKismetProceduralMeshLibrary::GetSectionFromStaticMesh(staticMeshAsset, 0, 0, Vertices, Triangles, Normals, UVs, Tangents);
+		
+		if (i != 0)
+		{ // Move the vertices of t
+			for (int ii = 0; ii < Vertices.Num(); ii++)
+			{
+				Vertices[ii] += FVector{ 0.f, 150.f, 0.f } * ((2 * (i % 2)) - 1);
+			}
+		}
 
 
-	UKismetProceduralMeshLibrary::CopyProceduralMeshFromStaticMeshComponent(meshComp, 0, ProcMeshComp, true);
+		ProcMeshComp->CreateMeshSection(i, Vertices, Triangles, Normals, UVs, TArray<FColor>(), Tangents, true);
+
+		//ProcMeshComp->Bounds.Origin = FVector{ 0, 150, 0 } * ((2 * (i % 2)) - 1);
+
+
+		//ProcMeshComp->GetProcMeshSection(i)->SectionLocalBox(FVector{ 0, 150, 0 } *((2 * (i % 2)) - 1));
+		//ProcMeshComp->GetProcMeshSection(i)->bEnableCollision = false;
+		//ProcMeshComp->SetRelativeLocation_Direct(FVector{ 0, 150, 0 } * ((2 * (i % 2)) - 1));
+		UE_LOG(LogTemp, Warning, TEXT("ProcLoc: %f, %f, %f"), ProcMeshComp->GetComponentLocation().X, ProcMeshComp->GetComponentLocation().Y, ProcMeshComp->GetComponentLocation().Z);
+	}
+	ProcMeshComp->CalcLocalBounds();
+
 	//UProceduralMeshComponent* ProcMeshComp = GenerateMeshFromTile(0);
 
 	//// Find first selected ProcMeshComp
@@ -90,24 +126,24 @@ UStaticMesh* MeshGenerator::GenerateStaticMeshFromTile()
 				NewBodySetup->CreatePhysicsMeshes();
 			}
 
-			////// MATERIALS
-			//TSet<UMaterialInterface*> UniqueMaterials;
-			//const int32 NumSections = ProcMeshComp->GetNumSections();
-			//for (int32 SectionIdx = 0; SectionIdx < NumSections; SectionIdx++)
-			//{
-			//	FProcMeshSection* ProcSection =
-			//		ProcMeshComp->GetProcMeshSection(SectionIdx);
-			//	UMaterialInterface* Material = ProcMeshComp->GetMaterial(SectionIdx);
-			//	UniqueMaterials.Add(Material);
-			//}
-			//// Copy materials to new mesh
-			//for (auto* Material : UniqueMaterials)
-			//{
-			//	StaticMesh->GetStaticMaterials().Add(FStaticMaterial(Material));
-			//}
+			//// MATERIALS
+			TSet<UMaterialInterface*> UniqueMaterials;
+			const int32 NumSections = ProcMeshComp->GetNumSections();
+			for (int32 SectionIdx = 0; SectionIdx < NumSections; SectionIdx++)
+			{
+				FProcMeshSection* ProcSection =
+					ProcMeshComp->GetProcMeshSection(SectionIdx);
+				UMaterialInterface* Material = ProcMeshComp->GetMaterial(SectionIdx);
+				UniqueMaterials.Add(Material);
+			}
+			// Copy materials to new mesh
+			for (auto* Material : UniqueMaterials)
+			{
+				StaticMesh->GetStaticMaterials().Add(FStaticMaterial(Material));
+			}
 
-			////Set the Imported version before calling the build
-			//StaticMesh->ImportVersion = EImportStaticMeshVersion::LastVersion;
+			//Set the Imported version before calling the build
+			StaticMesh->ImportVersion = EImportStaticMeshVersion::LastVersion;
 
 			//// Build mesh from source
 			StaticMesh->Build(false);

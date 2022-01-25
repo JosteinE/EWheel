@@ -19,7 +19,7 @@ public:
 	~MeshGenerator();
 
 	UProceduralMeshComponent* GenerateMeshFromTile(int MESH_ENUM);
-	UStaticMesh* GenerateStaticMeshFromTile();
+	UStaticMesh* GenerateStaticMeshFromTile(TArray<FString>& meshPaths);
 
 private:
 	PointLibrary pLib;

@@ -32,10 +32,16 @@ void AEndlessGameMode::BeginPlay()
 	//TEST
 	MeshGenerator meshGen;
 	testMesh = GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector{ 0,0,0 }, FRotator{ 0,0,0 }, playerSpawnParams);
-	UStaticMesh* testMeshMesh = meshGen.GenerateStaticMeshFromTile();
+	TArray<FString> meshPaths;
+	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_Ex_SN_150x150.Ground_Pit_Ex_SN_150x150'");
+	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_150x150.Ground_Pit_150x150'");
+	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/DefaultGround_150x150.DefaultGround_150x150'");
+	UStaticMesh* testMeshMesh = meshGen.GenerateStaticMeshFromTile(meshPaths);
 	UStaticMeshComponent* meshComp = NewObject<UStaticMeshComponent>(testMesh);
 	meshComp->SetStaticMesh(testMeshMesh);
+	meshComp->SetMobility(EComponentMobility::Movable);
 	meshComp->RegisterComponent();
+	meshComp->CreateSceneProxy();
 
 	UE_LOG(LogTemp, Warning, TEXT("FUCKING DID IT"));
 }
