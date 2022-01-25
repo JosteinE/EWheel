@@ -41,7 +41,6 @@ void AEndlessGameMode::BeginPlay()
 	meshComp->SetStaticMesh(testMeshMesh);
 	meshComp->SetMobility(EComponentMobility::Movable);
 	meshComp->RegisterComponent();
-	meshComp->CreateSceneProxy();
 
 	UE_LOG(LogTemp, Warning, TEXT("FUCKING DID IT"));
 }

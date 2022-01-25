@@ -39,56 +39,46 @@ UProceduralMeshComponent* MeshGenerator::GenerateMeshFromTile(int MESH_ENUM)
 
 UStaticMesh* MeshGenerator::GenerateStaticMeshFromTile(TArray<FString>& meshPaths)
 {
-	//UObject* MeshAsset = StaticLoadObject(UStaticMesh::StaticClass(), nullptr, TEXT("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_Ex_SN_150x150.Ground_Pit_Ex_SN_150x150'"));
-	//if (!MeshAsset) return nullptr;
-
-	//UStaticMesh* staticMeshAsset = Cast<UStaticMesh>(MeshAsset);
-	//UStaticMeshComponent* meshComp = NewObject<UStaticMeshComponent>();
-	//meshComp->SetStaticMesh(staticMeshAsset);
-
 	UProceduralMeshComponent* ProcMeshComp = NewObject<UProceduralMeshComponent>();
 	UStaticMesh* staticMeshAsset;
-	//UKismetProceduralMeshLibrary::CopyProceduralMeshFromStaticMeshComponent(meshComp, 0, ProcMeshComp, true);
 
 	for (int i = 0; i < meshPaths.Num(); i++)
 	{
+		// Import the mesh
 		UObject* MeshAsset = StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *meshPaths[i]);
 		if (!MeshAsset) return nullptr;
 		staticMeshAsset = Cast<UStaticMesh>(MeshAsset);
 
+		// Arrays to store the mesh data
 		TArray<FVector> Vertices;
 		TArray<int32> Triangles;
 		TArray<FVector> Normals;
 		TArray<FVector2D> UVs;
 		TArray<FProcMeshTangent> Tangents;
 
+		// Copy the mesh data into the arrays
 		UKismetProceduralMeshLibrary::GetSectionFromStaticMesh(staticMeshAsset, 0, 0, Vertices, Triangles, Normals, UVs, Tangents);
 		
 		if (i != 0)
-		{ // Move the vertices of t
+		{ // Move the vertices of the secondary tiles to the side of the center tile.  
 			for (int ii = 0; ii < Vertices.Num(); ii++)
-			{
-				Vertices[ii] += FVector{ 0.f, 150.f, 0.f } * ((2 * (i % 2)) - 1);
+			{	// Tileoffset is increased for every 2nd tile placed after the inital one
+				// Tileoffset is also alternates between positive and negative for every tile placed (right first, then left)
+				Vertices[ii] += FVector{ 0.f, tileOffset * FMath::Floor((i+1)/2), 0.f } * ((2 * (i % 2)) - 1);
 			}
 		}
 
-
+		// Create a section using the data copied from the original mesh
 		ProcMeshComp->CreateMeshSection(i, Vertices, Triangles, Normals, UVs, TArray<FColor>(), Tangents, true);
-
-		//ProcMeshComp->Bounds.Origin = FVector{ 0, 150, 0 } * ((2 * (i % 2)) - 1);
-
-
-		//ProcMeshComp->GetProcMeshSection(i)->SectionLocalBox(FVector{ 0, 150, 0 } *((2 * (i % 2)) - 1));
-		//ProcMeshComp->GetProcMeshSection(i)->bEnableCollision = false;
-		//ProcMeshComp->SetRelativeLocation_Direct(FVector{ 0, 150, 0 } * ((2 * (i % 2)) - 1));
-		UE_LOG(LogTemp, Warning, TEXT("ProcLoc: %f, %f, %f"), ProcMeshComp->GetComponentLocation().X, ProcMeshComp->GetComponentLocation().Y, ProcMeshComp->GetComponentLocation().Z);
 	}
-	ProcMeshComp->CalcLocalBounds();
 
-	//UProceduralMeshComponent* ProcMeshComp = GenerateMeshFromTile(0);
+	ProcMeshComp->bUseComplexAsSimpleCollision = true;
 
-	//// Find first selected ProcMeshComp
-	if (ProcMeshComp != nullptr)
+	//The code below is copied from the "FProceduralMeshComponentDetails::ClickedOnConvertToStaticMesh"
+	//function, and trimmed to exclude any unnecessary unreal backend editor configurations. 
+
+	// Find first selected ProcMeshComp
+	if (ProcMeshComp == nullptr)
 	{
 		FMeshDescription MeshDescription = BuildMeshDescription(ProcMeshComp);
 

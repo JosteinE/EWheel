@@ -23,4 +23,5 @@ public:
 
 private:
 	PointLibrary pLib;
+	float tileOffset = 150.f;
 };
