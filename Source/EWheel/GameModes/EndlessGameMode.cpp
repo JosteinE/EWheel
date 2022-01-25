@@ -35,12 +35,9 @@ void AEndlessGameMode::BeginPlay()
 	TArray<FString> meshPaths;
 	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_Ex_SN_150x150.Ground_Pit_Ex_SN_150x150'");
 	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_150x150.Ground_Pit_150x150'");
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/DefaultGround_150x150.DefaultGround_150x150'");
-	UStaticMesh* testMeshMesh = meshGen.GenerateStaticMeshFromTile(meshPaths);
-	UStaticMeshComponent* meshComp = NewObject<UStaticMeshComponent>(testMesh);
-	meshComp->SetStaticMesh(testMeshMesh);
-	meshComp->SetMobility(EComponentMobility::Movable);
-	meshComp->RegisterComponent();
+	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/DefaultGround_150x150_Sub.DefaultGround_150x150_Sub'");
+
+	mainPath->SetDefaultMesh(meshGen.GenerateStaticMeshFromTile(meshPaths));
 
 	UE_LOG(LogTemp, Warning, TEXT("FUCKING DID IT"));
 }

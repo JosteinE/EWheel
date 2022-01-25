@@ -78,7 +78,7 @@ UStaticMesh* MeshGenerator::GenerateStaticMeshFromTile(TArray<FString>& meshPath
 	//function, and trimmed to exclude any unnecessary unreal backend editor configurations. 
 
 	// Find first selected ProcMeshComp
-	if (ProcMeshComp == nullptr)
+	if (ProcMeshComp != nullptr)
 	{
 		FMeshDescription MeshDescription = BuildMeshDescription(ProcMeshComp);
 

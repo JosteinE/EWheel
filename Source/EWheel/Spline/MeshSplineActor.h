@@ -44,11 +44,13 @@ public:
 	// Removes the first point along the spline
 	void RemoveFirstSplinePointAndMesh(bool bRemovePoint = true);
 
+	void SetDefaultMesh(UStaticMesh* StaticMesh);
+
 private:
 	void RemoveAllSplineMesh(bool bRemovePoints = true);
 	void RemoveSplineMesh(int index, bool bRemovePoint = true);
 
 	int numMeshToReConPostInit = 0;
-	int tilesPerRow = 3;
+	int tilesPerRow = 1;
 	float tileOffset = 150.f;
 };

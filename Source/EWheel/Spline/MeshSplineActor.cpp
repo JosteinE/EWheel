@@ -122,6 +122,11 @@ void AMeshSplineActor::RemoveFirstSplinePointAndMesh(bool bRemovePoint)
 	}
 }
 
+void AMeshSplineActor::SetDefaultMesh(UStaticMesh* StaticMesh)
+{
+	DefaultMesh = StaticMesh;
+}
+
 void AMeshSplineActor::RemoveAllSplineMesh(bool bRemovePoints)
 {
 	int numMeshToRemove = SplineMeshComponent.Num();
