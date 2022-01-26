@@ -15,7 +15,7 @@ class EWHEEL_API AMeshSplineActor : public ASplineActor
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, Category = "SplineMesh")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SplineMesh", meta = (AllowPrivateAccess = "true"))
 	TArray<USplineMeshComponent*> SplineMeshComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SplineMesh", meta = (AllowPrivateAccess = "true"))

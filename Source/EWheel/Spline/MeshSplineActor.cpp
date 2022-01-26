@@ -3,6 +3,7 @@
 
 #include "EWheel/Spline/MeshSplineActor.h"
 #include "UObject/ConstructorHelpers.h"
+#include "PhysicsEngine/BodySetup.h"
 
 AMeshSplineActor::AMeshSplineActor()
 {
@@ -57,7 +58,6 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, int MeshType)
 
 	//Set the index account for the number of rows/meshes.
 	SplineIndex *= tilesPerRow;
-
 	// Construct our new mesh component
 	SplineMeshComponent.Emplace(NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass()));
 	// Assign mesh to the new component
@@ -70,21 +70,21 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, int MeshType)
 	SplineMeshComponent[SplineIndex]->RegisterComponentWithWorld(GetWorld());
 	//Add spline node relative to the curve
 	SplineMeshComponent[SplineIndex]->AttachToComponent(GetSpline(), FAttachmentTransformRules::KeepRelativeTransform);
-
 	//Set the start and end point for the mesh
 	SplineMeshComponent[SplineIndex]->SetStartAndEnd(StartingPoint, StartTangent, EndPoint, EndTangent);
 	//Enable collision for the spline mesh
 	SplineMeshComponent[SplineIndex]->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //Note: consider changing this if physics is not being used
-
 	//Rotate mesh in the direction of the spline's forward Axis
 	SplineMeshComponent[SplineIndex]->SetForwardAxis(ForwardAxis);
 
-	//Apply material
+	SplineMeshComponent[SplineIndex]->GetBodySetup()->CollisionTraceFlag = ECollisionTraceFlag::CTF_UseComplexAsSimple;
+	SplineMeshComponent[SplineIndex]->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+
 	if (DefaultMaterial)
 		SplineMeshComponent[SplineIndex]->SetMaterial(0, DefaultMaterial);
 
-	if (tilesPerRow > 0)
-	{
+	if (tilesPerRow > 1)
+	{ // TEMP
 		for (int i = 1; i < tilesPerRow; i++)
 		{
 			SplineMeshComponent.Emplace(NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass()));
@@ -98,6 +98,8 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, int MeshType)
 			SplineMeshComponent[SplineIndex + i]->SetForwardAxis(ForwardAxis);
 
 			SplineMeshComponent[SplineIndex + i]->AddLocalOffset(GetSpline()->GetRightVectorAtSplinePoint(GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::Local) * (tileOffset * (1 - (2 * (i % 2)))));
+
+			SplineMeshComponent[SplineIndex]->GetBodySetup()->CollisionTraceFlag = ECollisionTraceFlag::CTF_UseComplexAsSimple;
 
 			if (DefaultMaterial)
 				SplineMeshComponent[SplineIndex]->SetMaterial(0, DefaultMaterial);
@@ -116,9 +118,12 @@ void AMeshSplineActor::RemoveFirstSplinePointAndMesh(bool bRemovePoint)
 {
 	RemoveSplineMesh(0, bRemovePoint);
 
-	for (int i = 1; i < tilesPerRow; i++)
+	if (tilesPerRow > 1)
 	{
-		RemoveSplineMesh(0, false);
+		for (int i = 1; i < tilesPerRow; i++)
+		{
+			RemoveSplineMesh(0, false);
+		}
 	}
 }
 

@@ -29,7 +29,7 @@ private:
 	AMeshSplineActor* mainPath;
 	APlayerController* mainPlayerController;
 
-	float splineSpawnVerticalOffset = 10.f;
+	float splineSpawnVerticalOffset = 0.f;
 	// Add a new point if the player is within this range to the last spline point
 	float minDistToLastSplinePoint = 100.f;
 	

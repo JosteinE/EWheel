@@ -71,13 +71,13 @@ UStaticMesh* MeshGenerator::GenerateStaticMeshFromTile(TArray<FString>& meshPath
 		ProcMeshComp->CreateMeshSection(i, Vertices, Triangles, Normals, UVs, TArray<FColor>(), Tangents, true);
 	}
 
-	ProcMeshComp->bUseComplexAsSimpleCollision = true;
+	ProcMeshComp->bUseComplexAsSimpleCollision = false;
 
 	//The code below is copied from the "FProceduralMeshComponentDetails::ClickedOnConvertToStaticMesh"
 	//function, and trimmed to exclude any unnecessary unreal backend editor configurations. 
 
 	// Find first selected ProcMeshComp
-	if (ProcMeshComp != nullptr)
+	if(ProcMeshComp)
 	{
 		FMeshDescription MeshDescription = BuildMeshDescription(ProcMeshComp);
 
