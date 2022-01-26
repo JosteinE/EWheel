@@ -5,9 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 
-//TempForTetst
-#include "Engine/StaticMesh.h"
-
 #include "EndlessGameMode.generated.h"
 /**
  * 
@@ -42,6 +39,4 @@ private:
 	// Max number of spline & mesh points along the curve
 	int maxNumSplinePoints = 5;
 	FVector lastSplinePointLoc;
-
-	AActor* testMesh;
 };

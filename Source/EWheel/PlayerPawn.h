@@ -8,8 +8,7 @@
 
 class UCameraComponent;
 class USpringArmComponent;
-class USkeletalMeshComponent;
-//class UStaticMeshComponent;
+class UStaticMeshComponent;
 
 UCLASS()
 class EWHEEL_API APlayerPawn : public APawn
@@ -22,8 +21,12 @@ class EWHEEL_API APlayerPawn : public APawn
 	USceneComponent* PlayerRoot;
 
 	/** Static Mesh component that will represent our Player */
-	UPROPERTY(Category = Mesh, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* PlayerMesh;
+	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* PlayerMesh;
+
+	/** Static Mesh component that will represent our Player */
+	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* WheelMesh;
 
 	/** Camera component that will be our viewpoint */
 	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -110,7 +113,9 @@ public:
 
 
 	/** Returns the player mesh subobject **/
-	FORCEINLINE USkeletalMeshComponent* GetMesh() const { return PlayerMesh; }
+	FORCEINLINE UStaticMeshComponent* GetMesh() const { return PlayerMesh; }
+	/** Returns the player's wheel mesh subobject **/
+	FORCEINLINE UStaticMeshComponent* GetWheelMesh() const { return WheelMesh; }
 	/** Returns Camera subobject **/
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
 	/** Returns SpringArm subobject **/

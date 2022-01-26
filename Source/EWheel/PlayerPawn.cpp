@@ -5,9 +5,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
-#include "Engine/SkeletalMesh.h"
+#include "Engine/StaticMesh.h"
 #include "DrawDebugHelpers.h"
-//#include "Components/StaticMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMeshSocket.h"
 
 // Sets default values
 APlayerPawn::APlayerPawn()
@@ -16,13 +17,13 @@ APlayerPawn::APlayerPawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Player mesh
-	PlayerMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PlayerMeshComponent"));
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh>BoardMesh(TEXT("SkeletalMesh'/Game/Meshes/EWheel/EWheel.EWheel'"));
-	if (BoardMesh.Succeeded())
-		GetMesh()->SetSkeletalMesh(BoardMesh.Object);
-	PlayerMesh->SetCollisionProfileName("Pawn");
-	PlayerMesh->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
-	RootComponent = PlayerMesh;
+	//PlayerMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PlayerMeshComponent"));
+	//static ConstructorHelpers::FObjectFinder<USkeletalMesh>BoardMesh(TEXT("SkeletalMesh'/Game/Meshes/EWheel/EWheel.EWheel'"));
+	//if (BoardMesh.Succeeded())
+	//	GetMesh()->SetSkeletalMesh(BoardMesh.Object);
+	//PlayerMesh->SetCollisionProfileName("Pawn");
+	//PlayerMesh->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
+	//RootComponent = PlayerMesh;
 
 	//static ConstructorHelpers::FClassFinder<UObject> AnimBPClass(TEXT("/Game/Vehicle/Sedan/Sedan_AnimBP"));
 	//GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
@@ -32,13 +33,22 @@ APlayerPawn::APlayerPawn()
 	//RootComponent = PlayerRoot;
 
 	// Player Mesh
-	//PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMeshComponent"));
-	//static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Game/Meshes/TempPlayerWheel.TempPlayerWheel'"));
-	//if(MeshAsset.Succeeded())
-	//	GetMesh()->SetStaticMesh(MeshAsset.Object);
-	//PlayerMesh->SetCollisionProfileName("Pawn");
-	//PlayerMesh->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
-	//RootComponent = PlayerMesh;
+	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMeshComponent"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>BoardMeshAsset(TEXT("StaticMesh'/Game/Meshes/EWheel/EWheel_CO_Board.EWheel_CO_Board'"));
+	if(BoardMeshAsset.Succeeded())
+		GetMesh()->SetStaticMesh(BoardMeshAsset.Object);
+	PlayerMesh->SetCollisionProfileName("Pawn");
+	PlayerMesh->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
+	RootComponent = PlayerMesh;
+
+	// Add the wheel mesh to the player mesh wheel socket
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>WheelMeshAsset(TEXT("StaticMesh'/Game/Meshes/EWheel/EWheel_CO_Wheel.EWheel_CO_Wheel'"));
+	if (WheelMeshAsset.Succeeded() && PlayerMesh->DoesSocketExist("WheelSocket"))
+	{
+		WheelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshComponent"));
+		WheelMesh->SetStaticMesh(WheelMeshAsset.Object);
+		WheelMesh->AttachToComponent(PlayerMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), "WheelSocket");
+	}
 
 	// Create a spring arm component
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm0"));

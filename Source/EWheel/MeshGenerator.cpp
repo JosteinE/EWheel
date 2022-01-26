@@ -6,7 +6,6 @@
 #include "Engine/StaticMesh.h"
 
 #include "GameFramework/Actor.h"
-#include "Engine/StaticMesh.h"
 #include "MeshDescription.h"
 #include "ProceduralMeshConversion.h"
 

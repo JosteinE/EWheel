@@ -2,11 +2,12 @@
 
 
 #include "EWheel/GameModes/EndlessGameMode.h"
-#include "EWheel/PlayerPawn.H"
+#include "EWheel/PlayerPawn.h"
 #include "EWheel/Spline/MeshSplineActor.h"
 #include "EWheel/MeshGenerator.h"
 
 #include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
 
 AEndlessGameMode::AEndlessGameMode()
 {
@@ -20,6 +21,7 @@ void AEndlessGameMode::BeginPlay()
 	TSubclassOf<APawn> pawnClass = LoadObject<UBlueprint>(NULL, TEXT("Blueprint'/Game/Blueprints/PlayerPawnBP.PlayerPawnBP'"))->GeneratedClass;
 	FActorSpawnParameters playerSpawnParams;
 	playerSpawnParams.Owner = this;
+	playerSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	mainPlayer = GetWorld()->SpawnActor<APawn>(pawnClass, FVector{ 0,0,0 }, FRotator{ 0,0,0 }, playerSpawnParams);
 	GetWorld()->GetFirstPlayerController()->Possess(mainPlayer);
 
@@ -30,13 +32,11 @@ void AEndlessGameMode::BeginPlay()
 	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 
 	//TEST
-	MeshGenerator meshGen;
-	testMesh = GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector{ 0,0,0 }, FRotator{ 0,0,0 }, playerSpawnParams);
 	TArray<FString> meshPaths;
 	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_Ex_SN_150x150.Ground_Pit_Ex_SN_150x150'");
 	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_150x150.Ground_Pit_150x150'");
 	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/DefaultGround_150x150_Sub.DefaultGround_150x150_Sub'");
-
+	MeshGenerator meshGen;
 	mainPath->SetDefaultMesh(meshGen.GenerateStaticMeshFromTile(meshPaths));
 
 	UE_LOG(LogTemp, Warning, TEXT("FUCKING DID IT"));
