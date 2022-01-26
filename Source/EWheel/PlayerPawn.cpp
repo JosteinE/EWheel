@@ -48,6 +48,9 @@ APlayerPawn::APlayerPawn()
 		WheelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshComponent"));
 		WheelMesh->SetStaticMesh(WheelMeshAsset.Object);
 		WheelMesh->AttachToComponent(PlayerMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), "WheelSocket");
+		
+		WheelMesh->IgnoreComponentWhenMoving(PlayerMesh, true);
+		PlayerMesh->IgnoreComponentWhenMoving(WheelMesh, true);
 	}
 
 	// Create a spring arm component
