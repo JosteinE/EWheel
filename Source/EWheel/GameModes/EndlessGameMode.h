@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 
+#include "EWheel/MeshGenerator.h"
+
 #include "EndlessGameMode.generated.h"
 /**
  * 
@@ -39,10 +41,14 @@ private:
 	float distToNextSplinePoint = 300.f;
 	
 	// Max number of spline & mesh points along the curve
-	int maxNumSplinePoints = 5;
+	int maxNumSplinePoints = 20;
 	// 
-	int extendFromSplinePoint = 3;
+	int extendFromSplinePoint = 2;
 	FVector lastSplinePointLoc;
+
+	// Test
+	MeshGenerator meshGen;
+	TArray<FString> meshPathLib;
 
 	AActor* PointObject;
 	UStaticMeshComponent* PointObjectMeshComponent;

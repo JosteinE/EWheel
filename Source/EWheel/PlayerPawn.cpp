@@ -49,7 +49,7 @@ APlayerPawn::APlayerPawn()
 		WheelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshComponent"));
 		WheelMesh->SetStaticMesh(WheelMeshAsset.Object);
 		WheelMesh->AttachToComponent(PlayerMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), "WheelSocket");
-		
+		//WheelMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WheelMesh->IgnoreComponentWhenMoving(PlayerMesh, true);
 		PlayerMesh->IgnoreComponentWhenMoving(WheelMesh, true);
 
@@ -129,6 +129,7 @@ void APlayerPawn::MoveBoard(float DeltaTime)
 	FVector forwardDirection = GetActorForwardVector();
 	forwardDirection.Z = 0;
 	SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime), true);
+	//GetMesh()->AddForce(forwardDirection * GetClaculatedSpeed(DeltaTime) * 1000.f);
 	//GetWheelMesh()->AddTorque(GetActorRightVector() * GetClaculatedSpeed(DeltaTime));
 }
 

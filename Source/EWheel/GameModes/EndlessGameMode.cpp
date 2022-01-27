@@ -4,7 +4,6 @@
 #include "EWheel/GameModes/EndlessGameMode.h"
 #include "EWheel/PlayerPawn.h"
 #include "EWheel/Spline/MeshSplineActor.h"
-#include "EWheel/MeshGenerator.h"
 
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
@@ -38,12 +37,19 @@ void AEndlessGameMode::BeginPlay()
 	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 
 	//TEST
-	TArray<FString> meshPaths;
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_Ex_SN_150x150.Ground_Pit_Ex_SN_150x150'");
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_150x150.Ground_Pit_150x150'");
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/DefaultGround_150x150_Sub.DefaultGround_150x150_Sub'");
-	MeshGenerator meshGen;
-	mainPath->SetDefaultMesh(meshGen.GenerateStaticMeshFromTile(meshPaths));
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/DefaultGround_150x150_Sub.DefaultGround_150x150_Sub'");
+	// Pits
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_150x150.Ground_Pit_150x150'");
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_Ex_SN_150x150.Ground_Pit_Ex_SN_150x150'");
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_4W_150x150.Ground_Pit_4W_150x150'");
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_EndP_SN_150x150.Ground_Pit_EndP_SN_150x150'");
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_L_SNW_150x150.Ground_Pit_L_SNW_150x150'");
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_T_SN_150x150.Ground_Pit_T_SN_150x150'");
+	// Ramps
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_N_150x150.Ground_Ramp_N_150x150'");
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_NE_150x150.Ground_Ramp_NE_150x150'");
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_NW_150x150.Ground_Ramp_NW_150x150'");
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_Single_150x150.Ground_Ramp_Single_150x150'");
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)
@@ -51,9 +57,9 @@ void AEndlessGameMode::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// If the player is further than the max distance from the last point, add a new point.
-	int pathIndex = mainPath->GetSpline()->GetNumberOfSplinePoints() - extendFromSplinePoint;
-	if (pathIndex < 0)
-		pathIndex = 0;
+	int pathIndex = extendFromSplinePoint;
+	if (pathIndex > mainPath->GetSpline()->GetNumberOfSplinePoints() - 1)
+		pathIndex = mainPath->GetSpline()->GetNumberOfSplinePoints() - 1;
 
 	if ((mainPath->GetSpline()->GetWorldLocationAtSplinePoint(pathIndex) - mainPlayer->GetActorLocation()).Size() < minDistToSplinePoint)
 	{
@@ -77,11 +83,20 @@ void AEndlessGameMode::Tick(float DeltaTime)
 
 void AEndlessGameMode::ExtendPath()
 {
+	// Randomly select tiles
+	TArray<FString> meshPaths;
+	for (int i = 0; i < 3; i++)
+	{
+		meshPaths.Emplace(meshPathLib[2]); //meshPathLib[FMath::RandRange(0, meshPathLib.Num() - 1)]
+	}
+	mainPath->SetDefaultMesh(meshGen.GenerateStaticMeshFromTile(meshPaths));
+
+	// Calculate the next spline point position
 	FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-	//LastSPlinePointDirection.X += FMath::RandRange(-1000, 1000);
-	LastSPlinePointDirection.Y += FMath::RandRange(-0.5, 0.5f);
+	LastSPlinePointDirection.Y += FMath::RandRange(-0.5f, 0.5f);
+	//LastSPlinePointDirection.Z += FMath::RandRange(-100.f, 100.f);
 	LastSPlinePointDirection.Normalize();
-	const FVector newLocation = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints()) * FVector { 1, 1, 0 } + LastSPlinePointDirection * FVector{ distToNextSplinePoint, distToNextSplinePoint, 0 };
+	const FVector newLocation = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints()) * FVector { 1, 1, 0 } + LastSPlinePointDirection * FVector{ distToNextSplinePoint, distToNextSplinePoint, 1 };
 
 	// Remove the first point in the spline if adding 1 exceedes the max number of spline points.
 	mainPath->AddSplinePointAndMesh(newLocation, 0);
