@@ -78,8 +78,8 @@ void AEndlessGameMode::Tick(float DeltaTime)
 void AEndlessGameMode::ExtendPath()
 {
 	FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-	LastSPlinePointDirection.X += FMath::RandRange(0, 1000);
-	LastSPlinePointDirection.Y += FMath::RandRange(0, 1000);
+	//LastSPlinePointDirection.X += FMath::RandRange(-1000, 1000);
+	LastSPlinePointDirection.Y += FMath::RandRange(-0.5, 0.5f);
 	LastSPlinePointDirection.Normalize();
 	const FVector newLocation = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints()) * FVector { 1, 1, 0 } + LastSPlinePointDirection * FVector{ distToNextSplinePoint, distToNextSplinePoint, 0 };
 

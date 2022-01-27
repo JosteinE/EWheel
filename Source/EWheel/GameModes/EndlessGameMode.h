@@ -33,7 +33,7 @@ private:
 
 	float splineSpawnVerticalOffset = -50.f;
 	// Add a new point if the player is within this range to the last spline point
-	float minDistToSplinePoint = 100.f;
+	float minDistToSplinePoint = 225.f;
 	
 	// Distance to the next spline point;
 	float distToNextSplinePoint = 300.f;
