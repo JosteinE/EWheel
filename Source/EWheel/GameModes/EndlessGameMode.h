@@ -42,8 +42,8 @@ private:
 	int maxNumSplinePoints = 20;
 	FVector lastSplinePointLoc;
 
-	int tileSpawnedCounter = 0;
 	AActor* PointObject;
 	UStaticMeshComponent* PointObjectMeshComponent;
 	UStaticMesh* PointObjectMesh;
+	int32 PointObjectSpawnChance = 25;
 };

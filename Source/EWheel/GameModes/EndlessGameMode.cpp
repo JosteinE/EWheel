@@ -53,15 +53,15 @@ void AEndlessGameMode::Tick(float DeltaTime)
 	{
 		ExtendPath();
 
-		tileSpawnedCounter++;
-
 		// Spawn a point object
-		if (tileSpawnedCounter > 3)
+		if (FMath::RandRange(0, 99) < PointObjectSpawnChance)
 		{
 			FVector previousSplinePointLoc = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2);
-			FVector pointObjectSpawnLocation = previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + FVector{ 0.f, 150.f, 50.f };
+
+			int32 pointObjecOffset = FMath::RandRange(-1, 1);
+
+			FVector pointObjectSpawnLocation = previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + FVector{ 0.f, 150.f * pointObjecOffset, 50.f };
 			SpawnPointObject(pointObjectSpawnLocation);
-			tileSpawnedCounter = 0;
 		}
 	}
 
