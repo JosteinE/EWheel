@@ -33,13 +33,15 @@ private:
 
 	float splineSpawnVerticalOffset = -50.f;
 	// Add a new point if the player is within this range to the last spline point
-	float minDistToLastSplinePoint = 100.f;
+	float minDistToSplinePoint = 100.f;
 	
 	// Distance to the next spline point;
 	float distToNextSplinePoint = 300.f;
 	
 	// Max number of spline & mesh points along the curve
 	int maxNumSplinePoints = 5;
+	// 
+	int extendFromSplinePoint = 3;
 	FVector lastSplinePointLoc;
 
 	AActor* PointObject;

@@ -51,7 +51,11 @@ void AEndlessGameMode::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// If the player is further than the max distance from the last point, add a new point.
-	if ((lastSplinePointLoc - mainPlayer->GetActorLocation()).Size() < minDistToLastSplinePoint)
+	int pathIndex = mainPath->GetSpline()->GetNumberOfSplinePoints() - extendFromSplinePoint;
+	if (pathIndex < 0)
+		pathIndex = 0;
+
+	if ((mainPath->GetSpline()->GetWorldLocationAtSplinePoint(pathIndex) - mainPlayer->GetActorLocation()).Size() < minDistToSplinePoint)
 	{
 		ExtendPath();
 
@@ -73,17 +77,16 @@ void AEndlessGameMode::Tick(float DeltaTime)
 
 void AEndlessGameMode::ExtendPath()
 {
-	const FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-	const FVector newLocation = mainPlayer->GetActorLocation() + mainPlayer->GetActorForwardVector() * FVector { distToNextSplinePoint, distToNextSplinePoint, 0 };
+	FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+	LastSPlinePointDirection.X += FMath::RandRange(0, 1000);
+	LastSPlinePointDirection.Y += FMath::RandRange(0, 1000);
+	LastSPlinePointDirection.Normalize();
+	const FVector newLocation = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints()) * FVector { 1, 1, 0 } + LastSPlinePointDirection * FVector{ distToNextSplinePoint, distToNextSplinePoint, 0 };
 
 	// Remove the first point in the spline if adding 1 exceedes the max number of spline points.
-	if (mainPath->GetSpline()->GetNumberOfSplinePoints() + 1 > maxNumSplinePoints)
-	{
-		mainPath->AddSplinePointAndMesh(newLocation, 0);
+	mainPath->AddSplinePointAndMesh(newLocation, 0);
+	if (mainPath->GetSpline()->GetNumberOfSplinePoints() > maxNumSplinePoints)
 		mainPath->RemoveFirstSplinePointAndMesh(true);
-	}
-	else
-		mainPath->AddSplinePointAndMesh(newLocation, 0);
 
 	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 }
@@ -103,8 +106,6 @@ void AEndlessGameMode::SpawnPointObject(FVector& location)
 	PointObjectMeshComponent->SetRelativeRotation(FRotator{ 90.f, 0.f, 0.f });
 	PointObjectMeshComponent->RegisterComponent();
 }
-
-
 
 void AEndlessGameMode::EndGame()
 {
