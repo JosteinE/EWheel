@@ -64,9 +64,9 @@ class EWHEEL_API APlayerPawn : public APawn
 	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	bool bWheelContact = true;
 
-	/** True if the board is colliding with the ground  */
-	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
-	bool bIsCollidingWithGround = false;
+	/** Current speed of the vehicle */
+	UPROPERTY(Category = Score, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	int pointsCollected = 0;
 
 public:
 	// Sets default values for this pawn's properties

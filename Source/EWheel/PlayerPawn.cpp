@@ -224,11 +224,11 @@ bool APlayerPawn::ValidateGroundContact()
 void APlayerPawn::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	UE_LOG(LogTemp, Warning, TEXT("BOARD HIT! %s"), *OtherComp->GetName());
-	bIsCollidingWithGround = Hit.bBlockingHit;
 
 	if (*OtherComp->GetName() == FString{ "PointObjectMeshComponent" })
 	{
 		OtherActor->Destroy();
+		pointsCollected++;
 	}
 }
 

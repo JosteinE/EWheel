@@ -17,6 +17,8 @@ AEndlessGameMode::AEndlessGameMode()
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>ObjectMeshAsset(TEXT("StaticMesh'/Game/Meshes/PointObject.PointObject'"));
 	if (ObjectMeshAsset.Succeeded())
 		PointObjectMesh = ObjectMeshAsset.Object;
+
+	this->HUDClass = LoadObject<UBlueprint>(NULL, TEXT("Blueprint'/Game/Blueprints/PlayerHud.PlayerHUD'"))->GeneratedClass;
 }
 
 void AEndlessGameMode::BeginPlay()
