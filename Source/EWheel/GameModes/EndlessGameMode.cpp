@@ -92,7 +92,7 @@ void AEndlessGameMode::SpawnPointObject(FVector& location)
 	PointObjectSpawnParams.Owner = this;
 	PointObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	PointObject = GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector(), FRotator(), PointObjectSpawnParams);
-	PointObjectMeshComponent = NewObject<UStaticMeshComponent>(PointObject, UStaticMeshComponent::StaticClass());
+	PointObjectMeshComponent = NewObject<UStaticMeshComponent>(PointObject, UStaticMeshComponent::StaticClass(), TEXT("PointObjectMeshComponent"));
 	PointObject->SetRootComponent(PointObjectMeshComponent);
 	PointObjectMeshComponent->SetStaticMesh(PointObjectMesh);
 	PointObjectMeshComponent->SetMobility(EComponentMobility::Movable);

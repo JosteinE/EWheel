@@ -128,7 +128,7 @@ void APlayerPawn::MoveBoard(float DeltaTime)
 {
 	FVector forwardDirection = GetActorForwardVector();
 	forwardDirection.Z = 0;
-	SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime), false);
+	SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime), true);
 	//GetWheelMesh()->AddTorque(GetActorRightVector() * GetClaculatedSpeed(DeltaTime));
 }
 
@@ -223,8 +223,13 @@ bool APlayerPawn::ValidateGroundContact()
 
 void APlayerPawn::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Warning, TEXT("BOARD HIT!"), bIsCollidingWithGround);
+	UE_LOG(LogTemp, Warning, TEXT("BOARD HIT! %s"), *OtherComp->GetName());
 	bIsCollidingWithGround = Hit.bBlockingHit;
+
+	if (*OtherComp->GetName() == FString{ "PointObjectMeshComponent" })
+	{
+		OtherActor->Destroy();
+	}
 }
 
 void APlayerPawn::MoveForward(float input)
