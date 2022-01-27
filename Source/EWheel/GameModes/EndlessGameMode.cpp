@@ -13,6 +13,10 @@ AEndlessGameMode::AEndlessGameMode()
 {
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>ObjectMeshAsset(TEXT("StaticMesh'/Game/Meshes/PointObject.PointObject'"));
+	if (ObjectMeshAsset.Succeeded())
+		PointObjectMesh = ObjectMeshAsset.Object;
 }
 
 void AEndlessGameMode::BeginPlay()
@@ -38,8 +42,6 @@ void AEndlessGameMode::BeginPlay()
 	meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/DefaultGround_150x150_Sub.DefaultGround_150x150_Sub'");
 	MeshGenerator meshGen;
 	mainPath->SetDefaultMesh(meshGen.GenerateStaticMeshFromTile(meshPaths));
-
-	UE_LOG(LogTemp, Warning, TEXT("FUCKING DID IT"));
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)
@@ -49,20 +51,53 @@ void AEndlessGameMode::Tick(float DeltaTime)
 	// If the player is further than the max distance from the last point, add a new point.
 	if ((lastSplinePointLoc - mainPlayer->GetActorLocation()).Size() < minDistToLastSplinePoint)
 	{
-		const FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-		const FVector newLocation = mainPlayer->GetActorLocation() + mainPlayer->GetActorForwardVector() * FVector { distToNextSplinePoint, distToNextSplinePoint, 0 };
+		ExtendPath();
 
-		// Remove the first point in the spline if adding 1 exceedes the max number of spline points.
-		if (mainPath->GetSpline()->GetNumberOfSplinePoints() + 1 > maxNumSplinePoints)
+		tileSpawnedCounter++;
+		if (tileSpawnedCounter > 3)
 		{
-			mainPath->AddSplinePointAndMesh(newLocation, 0);
-			mainPath->RemoveFirstSplinePointAndMesh(true);
-		}
-		else
-			mainPath->AddSplinePointAndMesh(newLocation, 0);
+			FVector previousSplinePointLoc = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2);
+			SpawnPointObject(previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + FVector{ 0.f, 0.f, 50.f });
 
-		lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+			tileSpawnedCounter = 0;
+		}
 	}
+
+	if (PointObject)
+		PointObject->AddActorWorldRotation(FRotator{ 0.f, 100.f * DeltaTime, 0.f });
+}
+
+void AEndlessGameMode::ExtendPath()
+{
+	const FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+	const FVector newLocation = mainPlayer->GetActorLocation() + mainPlayer->GetActorForwardVector() * FVector { distToNextSplinePoint, distToNextSplinePoint, 0 };
+
+	// Remove the first point in the spline if adding 1 exceedes the max number of spline points.
+	if (mainPath->GetSpline()->GetNumberOfSplinePoints() + 1 > maxNumSplinePoints)
+	{
+		mainPath->AddSplinePointAndMesh(newLocation, 0);
+		mainPath->RemoveFirstSplinePointAndMesh(true);
+	}
+	else
+		mainPath->AddSplinePointAndMesh(newLocation, 0);
+
+	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+}
+
+void AEndlessGameMode::SpawnPointObject(FVector& location)
+{
+	FActorSpawnParameters PointObjectSpawnParams;
+	PointObjectSpawnParams.Owner = this;
+	PointObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	PointObject = GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector(), FRotator(), PointObjectSpawnParams);
+	PointObjectMeshComponent = NewObject<UStaticMeshComponent>(PointObject, UStaticMeshComponent::StaticClass());
+	PointObject->SetRootComponent(PointObjectMeshComponent);
+	PointObjectMeshComponent->SetStaticMesh(PointObjectMesh);
+	PointObjectMeshComponent->SetMobility(EComponentMobility::Movable);
+	PointObjectMeshComponent->SetWorldScale3D(FVector{ 0.33f, 0.33f, 0.33f });
+	PointObject->SetActorLocation(location);
+	PointObjectMeshComponent->SetRelativeRotation(FRotator{ 90.f, 0.f, 0.f });
+	PointObjectMeshComponent->RegisterComponent();
 }
 
 

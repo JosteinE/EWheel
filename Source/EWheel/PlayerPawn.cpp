@@ -39,6 +39,7 @@ APlayerPawn::APlayerPawn()
 		GetMesh()->SetStaticMesh(BoardMeshAsset.Object);
 	PlayerMesh->SetCollisionProfileName("Pawn");
 	PlayerMesh->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
+	PlayerMesh->SetSimulatePhysics(false);
 	RootComponent = PlayerMesh;
 
 	// Add the wheel mesh to the player mesh wheel socket

@@ -20,6 +20,8 @@ class EWHEEL_API AEndlessGameMode : public AGameModeBase
 private:
 	void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	void ExtendPath();
+	void SpawnPointObject(FVector &location);
 
 public:
 	void EndGame();
@@ -29,14 +31,19 @@ private:
 	AMeshSplineActor* mainPath;
 	APlayerController* mainPlayerController;
 
-	float splineSpawnVerticalOffset = 0.f;
+	float splineSpawnVerticalOffset = -50.f;
 	// Add a new point if the player is within this range to the last spline point
 	float minDistToLastSplinePoint = 100.f;
 	
 	// Distance to the next spline point;
-	float distToNextSplinePoint = 200.f;
+	float distToNextSplinePoint = 300.f;
 	
 	// Max number of spline & mesh points along the curve
-	int maxNumSplinePoints = 5;
+	int maxNumSplinePoints = 20;
 	FVector lastSplinePointLoc;
+
+	int tileSpawnedCounter = 0;
+	AActor* PointObject;
+	UStaticMeshComponent* PointObjectMeshComponent;
+	UStaticMesh* PointObjectMesh;
 };
