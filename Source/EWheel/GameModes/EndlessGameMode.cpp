@@ -54,11 +54,13 @@ void AEndlessGameMode::Tick(float DeltaTime)
 		ExtendPath();
 
 		tileSpawnedCounter++;
+
+		// Spawn a point object
 		if (tileSpawnedCounter > 3)
 		{
 			FVector previousSplinePointLoc = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2);
-			SpawnPointObject(previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + FVector{ 0.f, 0.f, 50.f });
-
+			FVector pointObjectSpawnLocation = previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + FVector{ 0.f, 150.f, 50.f };
+			SpawnPointObject(pointObjectSpawnLocation);
 			tileSpawnedCounter = 0;
 		}
 	}

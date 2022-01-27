@@ -52,6 +52,13 @@ APlayerPawn::APlayerPawn()
 		
 		WheelMesh->IgnoreComponentWhenMoving(PlayerMesh, true);
 		PlayerMesh->IgnoreComponentWhenMoving(WheelMesh, true);
+
+		WheelMesh->SetSimulatePhysics(true);
+		WheelMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+		WheelMesh->GetBodyInstance()->bLockZTranslation = true;
+		WheelMesh->GetBodyInstance()->bLockYTranslation = true;
+		WheelMesh->GetBodyInstance()->bLockXTranslation = true;
+		WheelMesh->GetBodyInstance()->SetDOFLock(EDOFMode::SixDOF);
 	}
 
 	// Create a spring arm component
@@ -122,7 +129,8 @@ void APlayerPawn::MoveBoard(float DeltaTime)
 {
 	FVector forwardDirection = GetActorForwardVector();
 	forwardDirection.Z = 0;
-	SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime), false);
+	//SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime), false);
+	GetWheelMesh()->AddTorque(GetActorRightVector() * GetClaculatedSpeed(DeltaTime));
 }
 
 float APlayerPawn::GetClaculatedSpeed(float DeltaTime)
