@@ -22,11 +22,11 @@ class EWHEEL_API APlayerPawn : public APawn
 
 	/** Static Mesh component that will represent our Player */
 	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* PlayerMesh;
+	UStaticMeshComponent* WheelMesh;
 
 	/** Static Mesh component that will represent our Player */
 	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* WheelMesh;
+	UStaticMeshComponent* BoardMesh;
 
 	/** Camera component that will be our viewpoint */
 	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -113,9 +113,9 @@ public:
 
 
 	/** Returns the player mesh subobject **/
-	FORCEINLINE UStaticMeshComponent* GetMesh() const { return PlayerMesh; }
+	FORCEINLINE UStaticMeshComponent* GetMesh() const { return WheelMesh; }
 	/** Returns the player's wheel mesh subobject **/
-	FORCEINLINE UStaticMeshComponent* GetWheelMesh() const { return WheelMesh; }
+	FORCEINLINE UStaticMeshComponent* GetBoardMesh() const { return BoardMesh; }
 	/** Returns Camera subobject **/
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
 	/** Returns SpringArm subobject **/

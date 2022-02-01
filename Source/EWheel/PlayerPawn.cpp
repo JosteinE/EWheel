@@ -33,25 +33,25 @@ APlayerPawn::APlayerPawn()
 	//RootComponent = PlayerRoot;
 
 	// Player Mesh
-	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMeshComponent"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>BoardMeshAsset(TEXT("StaticMesh'/Game/Meshes/EWheel/EWheel_CO_Board.EWheel_CO_Board'"));
-	if(BoardMeshAsset.Succeeded())
-		GetMesh()->SetStaticMesh(BoardMeshAsset.Object);
-	PlayerMesh->SetCollisionProfileName("Pawn");
-	PlayerMesh->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
-	PlayerMesh->SetSimulatePhysics(false);
-	RootComponent = PlayerMesh;
+	WheelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshComponent"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>WheelMeshAsset(TEXT("StaticMesh'/Game/Meshes/EWheel/EWheel_CO_Wheel.EWheel_CO_Wheel'"));
+	if(WheelMeshAsset.Succeeded())
+		GetMesh()->SetStaticMesh(WheelMeshAsset.Object);
+	WheelMesh->SetCollisionProfileName("Pawn");
+	WheelMesh->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
+	WheelMesh->SetSimulatePhysics(false);
+	RootComponent = WheelMesh;
 
 	// Add the wheel mesh to the player mesh wheel socket
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>WheelMeshAsset(TEXT("StaticMesh'/Game/Meshes/EWheel/EWheel_CO_Wheel.EWheel_CO_Wheel'"));
-	if (WheelMeshAsset.Succeeded() && PlayerMesh->DoesSocketExist("WheelSocket"))
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>BoardMeshAsset(TEXT("StaticMesh'/Game/Meshes/EWheel/EWheel_CO_Board.EWheel_CO_Board'"));
+	if (BoardMeshAsset.Succeeded() && WheelMesh->DoesSocketExist("BoardSocket"))
 	{
-		WheelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshComponent"));
-		WheelMesh->SetStaticMesh(WheelMeshAsset.Object);
-		WheelMesh->AttachToComponent(PlayerMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), "WheelSocket");
+		BoardMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BoardMeshComponent"));
+		BoardMesh->SetStaticMesh(BoardMeshAsset.Object);
+		BoardMesh->AttachToComponent(WheelMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), "WheelSocket");
 		//WheelMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		WheelMesh->IgnoreComponentWhenMoving(PlayerMesh, true);
-		PlayerMesh->IgnoreComponentWhenMoving(WheelMesh, true);
+		//BoardMesh->IgnoreComponentWhenMoving(WheelMesh, true);
+		//WheelMesh->IgnoreComponentWhenMoving(BoardMesh, true);
 
 		//WheelMesh->SetSimulatePhysics(true);
 		//WheelMesh->GetBodyInstance()->bLockZTranslation = true;
@@ -64,7 +64,7 @@ APlayerPawn::APlayerPawn()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm0"));
 	SpringArm->TargetOffset = FVector(0.f, 0.f, 60.f);
 	SpringArm->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
-	SpringArm->SetupAttachment(PlayerMesh);
+	SpringArm->SetupAttachment(WheelMesh);
 	SpringArm->TargetArmLength = 300.0f;
 	SpringArm->bEnableCameraRotationLag = true;
 	SpringArm->CameraRotationLagSpeed = 2.f;
