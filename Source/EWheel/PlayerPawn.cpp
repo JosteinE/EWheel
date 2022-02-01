@@ -39,7 +39,7 @@ APlayerPawn::APlayerPawn()
 		GetMesh()->SetStaticMesh(WheelMeshAsset.Object);
 	WheelMesh->SetCollisionProfileName("Pawn");
 	WheelMesh->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
-	WheelMesh->SetSimulatePhysics(false);
+	WheelMesh->SetSimulatePhysics(true);
 	RootComponent = WheelMesh;
 
 	// Add the wheel mesh to the player mesh wheel socket
@@ -128,9 +128,9 @@ void APlayerPawn::MoveBoard(float DeltaTime)
 {
 	FVector forwardDirection = GetActorForwardVector();
 	forwardDirection.Z = 0;
-	SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime), true);
+	//SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime), true);
 	//GetMesh()->AddForce(forwardDirection * GetClaculatedSpeed(DeltaTime) * 1000.f);
-	//GetWheelMesh()->AddTorque(GetActorRightVector() * GetClaculatedSpeed(DeltaTime));
+	GetMesh()->AddTorque(GetActorRightVector() * 10000);
 }
 
 float APlayerPawn::GetClaculatedSpeed(float DeltaTime)
