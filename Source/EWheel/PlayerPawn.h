@@ -10,6 +10,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UStaticMeshComponent;
 class UPhysicsConstraintComponent;
+class USphereComponent;
 
 UCLASS()
 class EWHEEL_API APlayerPawn : public APawn
@@ -17,9 +18,13 @@ class EWHEEL_API APlayerPawn : public APawn
 	GENERATED_BODY()
 
 
+	///** ############################################## */
+	//UPROPERTY(Category = Root, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	//USceneComponent* PlayerRoot;
+
 	/** ############################################## */
 	UPROPERTY(Category = Root, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	USceneComponent* PlayerRoot;
+	USphereComponent* PlayerRoot;
 
 	/** Static Mesh component that will represent our Player */
 	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -118,7 +123,7 @@ public:
 
 
 	/** Returns the player mesh subobject **/
-	FORCEINLINE UStaticMeshComponent* GetMesh() const { return WheelMesh; }
+	FORCEINLINE UStaticMeshComponent* GetWheelMesh() const { return WheelMesh; }
 	/** Returns the player's wheel mesh subobject **/
 	FORCEINLINE UStaticMeshComponent* GetBoardMesh() const { return BoardMesh; }
 	/** Returns Camera subobject **/
