@@ -41,7 +41,10 @@ APlayerPawn::APlayerPawn()
 	WheelMesh->SetCollisionProfileName("Pawn");
 	WheelMesh->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
 	WheelMesh->SetSimulatePhysics(true);
-	RootComponent = WheelMesh;
+	WheelMesh->SetLinearDamping(1.f);
+	WheelMesh->SetAngularDamping(100.f);
+	//WheelMesh->BodyInstance.MassScale = 1.f;
+	//WheelMesh->BodyInstance.MaxAngularVelocity = 800.f;
 
 
 
@@ -53,6 +56,7 @@ APlayerPawn::APlayerPawn()
 		BoardMesh->SetStaticMesh(BoardMeshAsset.Object);
 		BoardMesh->AttachToComponent(WheelMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), "WheelSocket");
 		BoardMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 
 		//PhysicsConstraintComponent = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("PhysicsConstraintComponent"));
 		//PhysicsConstraintComponent->AttachTo(WheelMesh, WheelMesh->GetFName(), EAttachLocation::KeepWorldPosition);
@@ -123,6 +127,11 @@ void APlayerPawn::Tick(float DeltaTime)
 		SetActorRotation(GetActorRotation() + FRotator{ 0, movementInput.X, 0 } *turnSpeed * DeltaTime);
 		//Tilt the board in the direction of movement
 		BoardTilt(DeltaTime);
+
+		if (WheelMesh->GetRelativeRotation().Roll > 45)
+			WheelMesh->SetRelativeRotation(FRotator{ WheelMesh->GetRelativeRotation().Pitch, WheelMesh->GetRelativeRotation().Yaw, 45.f });
+		else if(WheelMesh->GetRelativeRotation().Roll < -45)
+			WheelMesh->SetRelativeRotation(FRotator{ WheelMesh->GetRelativeRotation().Pitch, WheelMesh->GetRelativeRotation().Yaw, -45.f });
 	}
 }
 
@@ -141,7 +150,7 @@ void APlayerPawn::MoveBoard(float DeltaTime)
 	forwardDirection.Z = 0;
 	SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime));
 	//GetMesh()->AddForce(forwardDirection * GetClaculatedSpeed(DeltaTime) * 1000.f);
-	//GetMesh()->AddTorque(GetActorRightVector() * movementInput.Y * 1000.f);
+	//GetMesh()->AddTorque(GetActorRightVector() * movementInput.Y * 5000000.f);
 }
 
 float APlayerPawn::GetClaculatedSpeed(float DeltaTime)
@@ -179,7 +188,7 @@ void APlayerPawn::BoardTilt(float DeltaTime)
 	// Clamp the rotation
 	currentBoardTilt.Roll = FMath::Clamp(currentBoardTilt.Roll, -maxBoardTiltRoll, maxBoardTiltRoll);
 
-	FRotator newRotation = GetBoardMesh()->GetRelativeRotation();
+	FRotator newRotation = GetMesh()->GetRelativeRotation();
 	newRotation.Pitch = -currentBoardTilt.Pitch;
 	newRotation.Roll = currentBoardTilt.Roll;
 
@@ -187,7 +196,7 @@ void APlayerPawn::BoardTilt(float DeltaTime)
 	//Couldnt get this to work without the board visually teleporting in game
 	//FVector centerOfWheel = GetActorLocation() + GetActorUpVector() * 15.f;
 	//GetMesh()->SetWorldLocation(centerOfWheel - GetActorLocation());
-	GetBoardMesh()->SetRelativeRotation(newRotation);
+	GetMesh()->SetRelativeRotation(newRotation);
 	//GetMesh()->SetWorldLocation(GetActorLocation() - centerOfWheel);
 }
 

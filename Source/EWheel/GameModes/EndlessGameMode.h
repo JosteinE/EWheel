@@ -41,7 +41,7 @@ private:
 	float distToNextSplinePoint = 300.f;
 	
 	// Max number of spline & mesh points along the curve
-	int maxNumSplinePoints = 20;
+	int maxNumSplinePoints = 5;
 	// 
 	int extendFromSplinePoint = 2;
 	FVector lastSplinePointLoc;
@@ -53,5 +53,5 @@ private:
 	AActor* PointObject;
 	UStaticMeshComponent* PointObjectMeshComponent;
 	UStaticMesh* PointObjectMesh;
-	int32 PointObjectSpawnChance = 25;
+	int32 PointObjectSpawnChance = 0;
 };
