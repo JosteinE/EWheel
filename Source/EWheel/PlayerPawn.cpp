@@ -57,7 +57,7 @@ APlayerPawn::APlayerPawn()
 		{
 			WheelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshComponent"));
 			WheelMesh->SetStaticMesh(WheelMeshAsset.Object);
-			WheelMesh->AttachToComponent(BoardMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false), "WheelSocket");
+			WheelMesh->SetupAttachment(BoardMesh);
 			WheelMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 			//PhysicsConstraintComponent = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("PhysicsConstraintComponent"));
@@ -155,7 +155,11 @@ void APlayerPawn::MoveBoard(float DeltaTime)
 	SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime));
 	//GetMesh()->AddForce(forwardDirection * GetClaculatedSpeed(DeltaTime) * 1000.f);
 	//GetMesh()->AddTorque(GetActorRightVector() * movementInput.Y * 10000.f);
-	GetWheelMesh()->AddLocalRotation(FRotator{ -GetClaculatedSpeed(DeltaTime), 0.f, 0.f });
+
+	// To avoid gimbal locking
+	GetWheelMesh()->AddLocalTransform(FTransform(FRotator{-GetClaculatedSpeed(DeltaTime), 0.f, 0.f }.Quaternion()));
+	//GetWheelMesh()->AddRelativeRotation(FRotator{ -GetClaculatedSpeed(DeltaTime), 0.f, 0.f });
+	//UE_LOG(LogTemp, Warning, TEXT("BoardRott: %f, %f, %f"), GetWheelMesh()->GetRelativeRotation().Pitch, GetWheelMesh()->GetRelativeRotation().Yaw, GetWheelMesh()->GetRelativeRotation().Roll);
 }
 
 float APlayerPawn::GetClaculatedSpeed(float DeltaTime)
