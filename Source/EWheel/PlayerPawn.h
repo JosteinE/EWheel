@@ -9,6 +9,7 @@
 class UCameraComponent;
 class USpringArmComponent;
 class UStaticMeshComponent;
+class UPhysicsConstraintComponent;
 
 UCLASS()
 class EWHEEL_API APlayerPawn : public APawn
@@ -24,9 +25,13 @@ class EWHEEL_API APlayerPawn : public APawn
 	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* WheelMesh;
 
-	/** Static Mesh component that will represent our Player */
+	/** Static Mesh component that will represent the wheel */
 	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* BoardMesh;
+
+	/** Component that binds the board and wheel mesh while allowing both to have simulate physics enabled */
+	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPhysicsConstraintComponent* PhysicsConstraintComponent;
 
 	/** Camera component that will be our viewpoint */
 	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

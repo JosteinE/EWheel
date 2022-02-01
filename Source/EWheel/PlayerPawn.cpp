@@ -9,6 +9,7 @@
 #include "DrawDebugHelpers.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMeshSocket.h"
+#include "PhysicsEngine/PhysicsConstraintComponent.h"
 
 // Sets default values
 APlayerPawn::APlayerPawn()
@@ -35,12 +36,14 @@ APlayerPawn::APlayerPawn()
 	// Player Mesh
 	WheelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshComponent"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>WheelMeshAsset(TEXT("StaticMesh'/Game/Meshes/EWheel/EWheel_CO_Wheel.EWheel_CO_Wheel'"));
-	if(WheelMeshAsset.Succeeded())
+	if (WheelMeshAsset.Succeeded())
 		GetMesh()->SetStaticMesh(WheelMeshAsset.Object);
 	WheelMesh->SetCollisionProfileName("Pawn");
 	WheelMesh->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
-	WheelMesh->SetSimulatePhysics(false);
+	WheelMesh->SetSimulatePhysics(true);
 	RootComponent = WheelMesh;
+
+
 
 	// Add the wheel mesh to the player mesh wheel socket
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>BoardMeshAsset(TEXT("StaticMesh'/Game/Meshes/EWheel/EWheel_CO_Board.EWheel_CO_Board'"));
@@ -49,15 +52,10 @@ APlayerPawn::APlayerPawn()
 		BoardMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BoardMeshComponent"));
 		BoardMesh->SetStaticMesh(BoardMeshAsset.Object);
 		BoardMesh->AttachToComponent(WheelMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), "WheelSocket");
-		//WheelMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//BoardMesh->IgnoreComponentWhenMoving(WheelMesh, true);
-		//WheelMesh->IgnoreComponentWhenMoving(BoardMesh, true);
+		BoardMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		//WheelMesh->SetSimulatePhysics(true);
-		//WheelMesh->GetBodyInstance()->bLockZTranslation = true;
-		//WheelMesh->GetBodyInstance()->bLockYTranslation = true;
-		//WheelMesh->GetBodyInstance()->bLockXTranslation = true;
-		//WheelMesh->GetBodyInstance()->SetDOFLock(EDOFMode::SixDOF);
+		//PhysicsConstraintComponent = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("PhysicsConstraintComponent"));
+		//PhysicsConstraintComponent->AttachTo(WheelMesh, WheelMesh->GetFName(), EAttachLocation::KeepWorldPosition);
 	}
 
 	// Create a spring arm component
@@ -89,6 +87,19 @@ void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Prevent seperation between the wheel and board using the PhysicsConstraintComponent
+	if (PhysicsConstraintComponent)
+	{
+		FConstraintInstance Constraint;
+		Constraint.ProfileInstance.bDisableCollision = true;
+		Constraint.ProfileInstance.bParentDominates = true;
+		Constraint.SetAngularSwing2Motion(EAngularConstraintMotion::ACM_Locked);
+		Constraint.SetAngularTwistMotion(EAngularConstraintMotion::ACM_Locked);
+		Constraint.ProfileInstance.LinearLimit.bSoftConstraint = false;
+		Constraint.ProfileInstance.TwistLimit.bSoftConstraint = false;
+		PhysicsConstraintComponent->ConstraintInstance = Constraint;
+		PhysicsConstraintComponent->SetConstrainedComponents(WheelMesh, NAME_None, BoardMesh, NAME_None);
+	}
 }
 
 // Called every frame
@@ -128,9 +139,9 @@ void APlayerPawn::MoveBoard(float DeltaTime)
 {
 	FVector forwardDirection = GetActorForwardVector();
 	forwardDirection.Z = 0;
-	SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime), true);
+	SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime));
 	//GetMesh()->AddForce(forwardDirection * GetClaculatedSpeed(DeltaTime) * 1000.f);
-	//GetWheelMesh()->AddTorque(GetActorRightVector() * GetClaculatedSpeed(DeltaTime));
+	//GetMesh()->AddTorque(GetActorRightVector() * movementInput.Y * 1000.f);
 }
 
 float APlayerPawn::GetClaculatedSpeed(float DeltaTime)
@@ -168,7 +179,7 @@ void APlayerPawn::BoardTilt(float DeltaTime)
 	// Clamp the rotation
 	currentBoardTilt.Roll = FMath::Clamp(currentBoardTilt.Roll, -maxBoardTiltRoll, maxBoardTiltRoll);
 
-	FRotator newRotation = GetMesh()->GetRelativeRotation();
+	FRotator newRotation = GetBoardMesh()->GetRelativeRotation();
 	newRotation.Pitch = -currentBoardTilt.Pitch;
 	newRotation.Roll = currentBoardTilt.Roll;
 
@@ -176,7 +187,7 @@ void APlayerPawn::BoardTilt(float DeltaTime)
 	//Couldnt get this to work without the board visually teleporting in game
 	//FVector centerOfWheel = GetActorLocation() + GetActorUpVector() * 15.f;
 	//GetMesh()->SetWorldLocation(centerOfWheel - GetActorLocation());
-	GetMesh()->SetRelativeRotation(newRotation);
+	GetBoardMesh()->SetRelativeRotation(newRotation);
 	//GetMesh()->SetWorldLocation(GetActorLocation() - centerOfWheel);
 }
 

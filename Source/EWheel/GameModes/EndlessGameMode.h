@@ -41,7 +41,7 @@ private:
 	float distToNextSplinePoint = 300.f;
 	
 	// Max number of spline & mesh points along the curve
-	int maxNumSplinePoints = 50;
+	int maxNumSplinePoints = 20;
 	// 
 	int extendFromSplinePoint = 2;
 	FVector lastSplinePointLoc;
