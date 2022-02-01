@@ -35,6 +35,7 @@ APlayerPawn::APlayerPawn()
 	PlayerRoot->SetCollisionProfileName("Pawn");
 	PlayerRoot->SetSphereRadius(15);
 	PlayerRoot->SetSimulatePhysics(true);
+	PlayerRoot->SetEnableGravity(true);
 	PlayerRoot->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
 	PlayerRoot->SetLinearDamping(1.f);
 	PlayerRoot->SetAngularDamping(100.f);
@@ -67,9 +68,9 @@ APlayerPawn::APlayerPawn()
 	// Create a spring arm component
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm0"));
 	SpringArm->TargetOffset = FVector(0.f, 0.f, 60.f);
-	SpringArm->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
+	SpringArm->SetRelativeRotation(FRotator(-12.f, 0.f, 0.f));
 	SpringArm->SetupAttachment(PlayerRoot);
-	SpringArm->TargetArmLength = 300.0f;
+	SpringArm->TargetArmLength = 100.0f;
 	SpringArm->bEnableCameraRotationLag = true;
 	SpringArm->CameraRotationLagSpeed = 2.f;
 	SpringArm->bEnableCameraLag = true;
@@ -81,7 +82,7 @@ APlayerPawn::APlayerPawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera0"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
-	Camera->FieldOfView = 90.f;
+	Camera->FieldOfView = 70.f;
 
 	// Auto possess this pawn
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
@@ -131,7 +132,6 @@ void APlayerPawn::Tick(float DeltaTime)
 		//Tilt the board in the direction of movement
 		BoardTilt(DeltaTime);
 
-
 		if (PlayerRoot->GetRelativeRotation().Roll > 45)
 			PlayerRoot->SetRelativeRotation(FRotator{ PlayerRoot->GetRelativeRotation().Pitch, PlayerRoot->GetRelativeRotation().Yaw, 45.f });
 		else if(PlayerRoot->GetRelativeRotation().Roll < -45)
@@ -155,7 +155,7 @@ void APlayerPawn::MoveBoard(float DeltaTime)
 	SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime));
 	//GetMesh()->AddForce(forwardDirection * GetClaculatedSpeed(DeltaTime) * 1000.f);
 	//GetMesh()->AddTorque(GetActorRightVector() * movementInput.Y * 10000.f);
-	GetWheelMesh()->AddLocalRotation(FRotator{ -GetClaculatedSpeed(DeltaTime), 0.f, 0.f});
+	GetWheelMesh()->AddLocalRotation(FRotator{ -GetClaculatedSpeed(DeltaTime), 0.f, 0.f });
 }
 
 float APlayerPawn::GetClaculatedSpeed(float DeltaTime)
@@ -250,7 +250,7 @@ bool APlayerPawn::ValidateGroundContact()
 
 void APlayerPawn::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Warning, TEXT("BOARD HIT! %s"), *OtherComp->GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("BOARD HIT! %s"), *OtherComp->GetName());
 
 	if (*OtherComp->GetName() == FString{ "PointObjectMeshComponent" })
 	{
