@@ -11,6 +11,8 @@
 /**
  * 
  */
+class AObstacleActor;
+class APickUpActor;
 class AMeshSplineActor;
 UCLASS()
 class EWHEEL_API AEndlessGameMode : public AGameModeBase
@@ -23,7 +25,9 @@ private:
 	void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	void ExtendPath();
+	FVector GetCentreOfRandomTileLastRow();
 	void SpawnPointObject(FVector &location);
+	void SpawnObstacleObject(FVector& location);
 
 public:
 	void EndGame();
@@ -46,12 +50,20 @@ private:
 	int extendFromSplinePoint = 3;
 	FVector lastSplinePointLoc;
 
+	//
+	TArray<APickUpActor*> PickupActors;
+	TArray<AObstacleActor*> ObstacleActors;
+	UStaticMesh* PointObjectMesh;
+	UStaticMesh* ObstacleMesh;
+
+	// Deletes the first pickup actor in the PickupActors array when this number is reached (should be less than maxNumSplinePoints)
+	int maxNumPickups = 9;
+	// Deletes the first obstacle actor in the ObstacleMesh array when this number is reached (should be less than maxNumSplinePoints)
+	int maxNumObstacles = 9;
 	// Test
 	MeshGenerator meshGen;
 	TArray<FString> meshPathLib;
 
-	AActor* PointObject = nullptr;
-	UStaticMeshComponent* PointObjectMeshComponent;
-	UStaticMesh* PointObjectMesh;
-	int32 PointObjectSpawnChance = 25;
+	int32 PointSpawnChance = 25;
+	int32 ObstacleSpawnChance = 75;
 };

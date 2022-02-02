@@ -8,14 +8,21 @@
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 
+#include "EWheel/Objects/ObstacleActor.h"
+#include "EWheel/Objects/PickUpActor.h"
+
 AEndlessGameMode::AEndlessGameMode()
 {
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>ObjectMeshAsset(TEXT("StaticMesh'/Game/Meshes/PointObject.PointObject'"));
-	if (ObjectMeshAsset.Succeeded())
-		PointObjectMesh = ObjectMeshAsset.Object;
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>PointObjectAsset(TEXT("StaticMesh'/Game/Meshes/PointObject.PointObject'"));
+	if (PointObjectAsset.Succeeded())
+		PointObjectMesh = PointObjectAsset.Object;
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>ObstacleObjectAsset(TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
+	if (ObstacleObjectAsset.Succeeded())
+		ObstacleMesh = ObstacleObjectAsset.Object;
 
 	this->HUDClass = LoadObject<UBlueprint>(NULL, TEXT("Blueprint'/Game/Blueprints/PlayerHud.PlayerHUD'"))->GeneratedClass;
 }
@@ -50,6 +57,8 @@ void AEndlessGameMode::BeginPlay()
 	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_NE_150x150.Ground_Ramp_NE_150x150'");
 	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_NW_150x150.Ground_Ramp_NW_150x150'");
 	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_Single_150x150.Ground_Ramp_Single_150x150'");
+
+
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)
@@ -61,24 +70,23 @@ void AEndlessGameMode::Tick(float DeltaTime)
 	if (pathIndex > mainPath->GetSpline()->GetNumberOfSplinePoints() - 1)
 		pathIndex = mainPath->GetSpline()->GetNumberOfSplinePoints() - 1;
 
+	// Extend the path if the player is within the minimum range to indexed spline point
 	if ((mainPath->GetSpline()->GetWorldLocationAtSplinePoint(pathIndex) - mainPlayer->GetActorLocation()).Size() < minDistToSplinePoint)
 	{
 		ExtendPath();
 
 		// Spawn a point object
-		if (FMath::RandRange(0, 99) < PointObjectSpawnChance)
+		if (FMath::RandRange(0, 99) < PointSpawnChance)
 		{
-			FVector previousSplinePointLoc = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2);
-
-			int32 pointObjecOffset = FMath::RandRange(-1, 1);
-
-			FVector pointObjectSpawnLocation = previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + FVector{ 0.f, 150.f * pointObjecOffset, 50.f };
-			SpawnPointObject(pointObjectSpawnLocation);
+			FVector tileCentre = GetCentreOfRandomTileLastRow();
+			SpawnPointObject(tileCentre);
+		}
+		else if (FMath::RandRange(0, 99) < ObstacleSpawnChance)
+		{
+			FVector tileCentre = GetCentreOfRandomTileLastRow();
+			SpawnObstacleObject(tileCentre);
 		}
 	}
-
-	if (PointObject)
-		PointObject->AddActorWorldRotation(FRotator{ 0.f, 100.f * DeltaTime, 0.f });
 }
 
 void AEndlessGameMode::ExtendPath()
@@ -106,20 +114,71 @@ void AEndlessGameMode::ExtendPath()
 	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 }
 
+FVector AEndlessGameMode::GetCentreOfRandomTileLastRow()
+{
+	FVector previousSplinePointLoc = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2);
+
+	int32 pointObjecOffset = FMath::RandRange(-1, 1);
+
+	return previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + FVector{ 0.f, 150.f * pointObjecOffset, 0.f };
+}
+
 void AEndlessGameMode::SpawnPointObject(FVector& location)
 {
-	FActorSpawnParameters PointObjectSpawnParams;
-	PointObjectSpawnParams.Owner = this;
-	PointObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	PointObject = GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector(), FRotator(), PointObjectSpawnParams);
-	PointObjectMeshComponent = NewObject<UStaticMeshComponent>(PointObject, UStaticMeshComponent::StaticClass(), TEXT("PointObjectMeshComponent"));
-	PointObject->SetRootComponent(PointObjectMeshComponent);
-	PointObjectMeshComponent->SetStaticMesh(PointObjectMesh);
-	PointObjectMeshComponent->SetMobility(EComponentMobility::Movable);
-	PointObjectMeshComponent->SetWorldScale3D(FVector{ 0.33f, 0.33f, 0.33f });
-	PointObject->SetActorLocation(location);
-	PointObjectMeshComponent->SetRelativeRotation(FRotator{ 90.f, 0.f, 0.f });
-	PointObjectMeshComponent->RegisterComponent();
+	FActorSpawnParameters ObjectSpawnParams;
+	ObjectSpawnParams.Owner = this;
+	ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	APickUpActor* PointObject = GetWorld()->SpawnActor<APickUpActor>(APickUpActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
+
+	// Delete the first object in the array if the array count reaches maxNumObstacles
+	if (PickupActors.Num() >= maxNumPickups)
+	{
+		// Destroy the actor if it hasn't already been by the player
+		if (IsValid(PickupActors[0]))
+		{
+			PickupActors[0]->GetMeshComponent()->UnregisterComponent();
+			PickupActors[0]->Destroy();
+		}
+		PickupActors.RemoveAt(0);
+	}
+
+	PickupActors.Emplace(PointObject);
+	
+	PointObject->SetStaticMesh(PointObjectMesh);
+	
+	PointObject->SetActorLocation(location + FVector{ 0.f, 0.f, 50.f });
+	PointObject->GetMeshComponent()->SetWorldScale3D(FVector{ 0.33f, 0.33f, 0.33f });
+	PointObject->GetMeshComponent()->SetRelativeRotation(FRotator{ 90.f, 0.f, 0.f });
+	//PointObject->GetMeshComponent()->RegisterComponent();
+}
+
+void AEndlessGameMode::SpawnObstacleObject(FVector& location)
+{
+	FActorSpawnParameters ObjectSpawnParams;
+	ObjectSpawnParams.Owner = this;
+	ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
+
+	// Delete the first object in the array if the array count reaches maxNumObstacles
+	if (ObstacleActors.Num() >= maxNumObstacles)
+	{
+		// Destroy the actor if it hasn't already been by the player
+		if (IsValid(ObstacleActors[0]))
+		{
+			ObstacleActors[0]->GetMeshComponent()->UnregisterComponent();
+			ObstacleActors[0]->Destroy();
+		}
+		ObstacleActors.RemoveAt(0);
+	}
+
+	ObstacleActors.Emplace(ObstacleObject);
+
+	ObstacleObject->SetStaticMesh(ObstacleMesh);
+
+	ObstacleObject->SetActorLocation(location + FVector{ 0.f, 0.f, 17.f });
+	ObstacleObject->GetMeshComponent()->SetWorldScale3D(FVector{ FMath::RandRange(0.5f, 1.f), FMath::RandRange(0.5f, 1.f), FMath::RandRange(0.5f, 1.f) });
+	//ObstacleObject->GetMeshComponent()->SetRelativeRotation(FRotator{ 90.f, 0.f, 0.f });
+	//PointObject->GetMeshComponent()->RegisterComponent();
 }
 
 void AEndlessGameMode::EndGame()

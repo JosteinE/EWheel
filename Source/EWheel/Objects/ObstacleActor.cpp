@@ -11,6 +11,10 @@ AObstacleActor::AObstacleActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
+	RootComponent = MeshComponent;
+
 	FString tempPath = "StaticMesh'/Engine/BasicShapes/Cube.Cube'";
 	SetStaticMesh(tempPath);
 }
@@ -24,10 +28,10 @@ void AObstacleActor::SetStaticMesh(FString& inPath)
 
 void AObstacleActor::SetStaticMesh(UStaticMesh* inMesh)
 {
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	MeshComponent->SetStaticMesh(inMesh);
 	MeshComponent->SetCollisionProfileName("PawnObstacle");
 	MeshComponent->SetNotifyRigidBodyCollision(true); // Simulation Generates Hit Events
+	MeshComponent->SetMobility(EComponentMobility::Movable);
 
 	MeshComponent->OnComponentHit.AddDynamic(this, &AObstacleActor::OnMeshHit);
 }

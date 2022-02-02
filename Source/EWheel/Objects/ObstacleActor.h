@@ -35,4 +35,8 @@ public:
 private:
 	UFUNCTION()
 	void OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+public:
+	/** Returns the object's mesh component **/
+	FORCEINLINE UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
 };

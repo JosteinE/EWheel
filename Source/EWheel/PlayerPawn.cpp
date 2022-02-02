@@ -259,9 +259,9 @@ void APlayerPawn::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 
 	if (*OtherComp->GetName() == FString{ "PointObjectMeshComponent" })
 	{
-		OtherActor->Destroy();
-		OtherActor = nullptr;
-		pointsCollected++;
+		//OtherActor->Destroy();
+		//OtherActor = nullptr;
+		//pointsCollected++;
 	}
 }
 
