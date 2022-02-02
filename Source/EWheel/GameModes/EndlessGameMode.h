@@ -61,9 +61,9 @@ private:
 	UStaticMesh* ObstacleMesh;
 
 	// Deletes the first pickup actor in the PickupActors array when this number is reached (should be less than maxNumSplinePoints * TilesPerRow)
-	int maxNumPickups = 9;
+	int maxNumPickups = maxNumSplinePoints * TilesPerRow;
 	// Deletes the first obstacle actor in the ObstacleMesh array when this number is reached (should be less than maxNumSplinePoints * TilesPerRow)
-	int maxNumObstacles = 9;
+	int maxNumObstacles = maxNumSplinePoints * TilesPerRow;
 	// Test
 	MeshGenerator meshGen;
 	TArray<FString> meshPathLib;

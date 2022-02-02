@@ -16,6 +16,9 @@ AEndlessGameMode::AEndlessGameMode()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Prevent the game mode from spawning in a garbage player.
+	this->bStartPlayersAsSpectators = true;
+
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>PointObjectAsset(TEXT("StaticMesh'/Game/Meshes/PointObject.PointObject'"));
 	if (PointObjectAsset.Succeeded())
 		PointObjectMesh = PointObjectAsset.Object;
@@ -139,7 +142,7 @@ void AEndlessGameMode::SpawnPointObject(FVector& location)
 	if (PickupActors.Num() >= maxNumPickups)
 	{
 		// Destroy the actor if it hasn't already been by the player
-		if (IsValid(PickupActors[0]))
+		if (PickupActors.Num() > 0 && IsValid(PickupActors[0]))
 		{
 			PickupActors[0]->GetMeshComponent()->UnregisterComponent();
 			PickupActors[0]->Destroy();

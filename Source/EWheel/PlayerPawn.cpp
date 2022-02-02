@@ -49,17 +49,19 @@ APlayerPawn::APlayerPawn()
 	{
 		BoardMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BoardMeshComponent"));
 		BoardMesh->SetStaticMesh(BoardMeshAsset.Object);
+		BoardMesh->SetSimulatePhysics(false);
 		BoardMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		BoardMesh->SetupAttachment(PlayerRoot);
 
 		static ConstructorHelpers::FObjectFinder<UStaticMesh>WheelMeshAsset(TEXT("StaticMesh'/Game/Meshes/EWheel/EWheel_CO_Wheel.EWheel_CO_Wheel'"));
-		if (WheelMeshAsset.Succeeded() && BoardMesh->DoesSocketExist("WheelSocket"))
+		if (WheelMeshAsset.Succeeded())
 		{
 			WheelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshComponent"));
 			WheelMesh->SetStaticMesh(WheelMeshAsset.Object);
-			WheelMesh->SetupAttachment(BoardMesh, "WheelSocket");
+			WheelMesh->SetSimulatePhysics(false);
 			WheelMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+			WheelMesh->SetupAttachment(BoardMesh);
+			//WheelMesh->AttachToComponent(BoardMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false), "WheelSocket");
 			//PhysicsConstraintComponent = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("PhysicsConstraintComponent"));
 			//PhysicsConstraintComponent->AttachTo(PlayerRoot, PlayerRoot->GetFName(), EAttachLocation::KeepWorldPosition);
 		}
@@ -81,7 +83,7 @@ APlayerPawn::APlayerPawn()
 	// Create camera component 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera0"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-	Camera->SetRelativeRotation(FRotator(0.f, -10.f, 0.f));
+	Camera->SetRelativeRotation(FRotator(-10.f, 0.f, 0.f));
 	Camera->bUsePawnControlRotation = false;
 	Camera->FieldOfView = 70.f;
 
@@ -96,19 +98,19 @@ void APlayerPawn::BeginPlay()
 	Super::BeginPlay();
 
 	// Prevent seperation between the wheel and board using the PhysicsConstraintComponent
-	if (PhysicsConstraintComponent)
-	{
-		FConstraintInstance Constraint;
-		Constraint.ProfileInstance.bDisableCollision = true;
-		Constraint.ProfileInstance.bParentDominates = true;
-		Constraint.SetAngularSwing1Motion(EAngularConstraintMotion::ACM_Locked);
-		Constraint.SetAngularSwing2Motion(EAngularConstraintMotion::ACM_Locked);
-		Constraint.SetAngularTwistMotion(EAngularConstraintMotion::ACM_Locked);
-		Constraint.ProfileInstance.LinearLimit.bSoftConstraint = false;
-		Constraint.ProfileInstance.TwistLimit.bSoftConstraint = false;
-		PhysicsConstraintComponent->ConstraintInstance = Constraint;
-		PhysicsConstraintComponent->SetConstrainedComponents(WheelMesh, NAME_None, BoardMesh, NAME_None);
-	}
+	//if (PhysicsConstraintComponent)
+	//{
+	//	FConstraintInstance Constraint;
+	//	Constraint.ProfileInstance.bDisableCollision = true;
+	//	Constraint.ProfileInstance.bParentDominates = true;
+	//	Constraint.SetAngularSwing1Motion(EAngularConstraintMotion::ACM_Locked);
+	//	Constraint.SetAngularSwing2Motion(EAngularConstraintMotion::ACM_Locked);
+	//	Constraint.SetAngularTwistMotion(EAngularConstraintMotion::ACM_Locked);
+	//	Constraint.ProfileInstance.LinearLimit.bSoftConstraint = false;
+	//	Constraint.ProfileInstance.TwistLimit.bSoftConstraint = false;
+	//	PhysicsConstraintComponent->ConstraintInstance = Constraint;
+	//	PhysicsConstraintComponent->SetConstrainedComponents(WheelMesh, NAME_None, BoardMesh, NAME_None);
+	//}
 }
 
 // Called every frame

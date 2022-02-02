@@ -23,8 +23,6 @@ void APickUpActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if(MeshComponent)
-		MeshComponent->OnComponentBeginOverlap.AddDynamic(this, &APickUpActor::OnOverlapBegin);
 }
 
 // Called every frame

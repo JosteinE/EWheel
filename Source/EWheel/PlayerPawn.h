@@ -17,22 +17,17 @@ class EWHEEL_API APlayerPawn : public APawn
 {
 	GENERATED_BODY()
 
-
-	///** ############################################## */
-	//UPROPERTY(Category = Root, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	//USceneComponent* PlayerRoot;
-
 	/** ############################################## */
 	UPROPERTY(Category = Root, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	USphereComponent* PlayerRoot;
 
-	/** Static Mesh component that will represent our Player */
-	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* WheelMesh;
-
 	/** Static Mesh component that will represent the wheel */
-	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* BoardMesh;
+
+	/** Static Mesh component that will represent our Player */
+	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* WheelMesh;
 
 	/** Component that binds the board and wheel mesh while allowing both to have simulate physics enabled */
 	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
