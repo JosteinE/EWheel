@@ -75,16 +75,21 @@ void AEndlessGameMode::Tick(float DeltaTime)
 	{
 		ExtendPath();
 
-		// Spawn a point object
-		if (FMath::RandRange(0, 99) < PointSpawnChance)
+		// Check object spawn for each tile
+		for (int i = 0; i < TilesPerRow; i++)
 		{
-			FVector tileCentre = GetCentreOfRandomTileLastRow();
-			SpawnPointObject(tileCentre);
-		}
-		else if (FMath::RandRange(0, 99) < ObstacleSpawnChance)
-		{
-			FVector tileCentre = GetCentreOfRandomTileLastRow();
-			SpawnObstacleObject(tileCentre);
+			// Spawn a point object
+			if (FMath::RandRange(0, 99) < PointSpawnChance)
+			{
+				FVector tileCentre = GetTileCentreLastRow(i);
+				SpawnPointObject(tileCentre);
+			}
+			// Spawn Obstacle Object
+			else if (FMath::RandRange(0, 99) < ObstacleSpawnChance)
+			{
+				FVector tileCentre = GetTileCentreLastRow(i);
+				SpawnObstacleObject(tileCentre);
+			}
 		}
 	}
 }
@@ -93,7 +98,7 @@ void AEndlessGameMode::ExtendPath()
 {
 	// Randomly select tiles
 	TArray<FString> meshPaths;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < TilesPerRow; i++)
 	{
 		meshPaths.Emplace(meshPathLib[2]); //meshPathLib[FMath::RandRange(0, meshPathLib.Num() - 1)]
 	}
@@ -114,13 +119,13 @@ void AEndlessGameMode::ExtendPath()
 	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 }
 
-FVector AEndlessGameMode::GetCentreOfRandomTileLastRow()
+FVector AEndlessGameMode::GetTileCentreLastRow(int index)
 {
 	FVector previousSplinePointLoc = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2);
 
-	int32 pointObjecOffset = FMath::RandRange(-1, 1);
+	unsigned int tileOffset = FMath::Floor(TilesPerRow / 2);
 
-	return previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + FVector{ 0.f, 150.f * pointObjecOffset, 0.f };
+	return previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + FVector{ 0.f, -150.f * tileOffset + (150.f * index), 0.f };
 }
 
 void AEndlessGameMode::SpawnPointObject(FVector& location)

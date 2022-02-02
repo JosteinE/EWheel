@@ -130,4 +130,7 @@ public:
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
 	/** Returns SpringArm subobject **/
 	FORCEINLINE USpringArmComponent* GetSpringArm() const { return SpringArm; }
+
+	/** Adds the value to the player score **/
+	FORCEINLINE void AddToScore(int value) { pointsCollected += value; }
 };

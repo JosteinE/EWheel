@@ -25,7 +25,8 @@ private:
 	void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	void ExtendPath();
-	FVector GetCentreOfRandomTileLastRow();
+	// 0 = left, 1 = middle, 2 = right
+	FVector GetTileCentreLastRow(int index);
 	void SpawnPointObject(FVector &location);
 	void SpawnObstacleObject(FVector& location);
 
@@ -36,6 +37,9 @@ private:
 	APawn* mainPlayer;
 	AMeshSplineActor* mainPath;
 	APlayerController* mainPlayerController;
+
+	// Number of tiles per row
+	int TilesPerRow = 3;
 
 	float splineSpawnVerticalOffset = -50.f;
 	// Add a new point if the player is within this range to the last spline point
@@ -56,14 +60,14 @@ private:
 	UStaticMesh* PointObjectMesh;
 	UStaticMesh* ObstacleMesh;
 
-	// Deletes the first pickup actor in the PickupActors array when this number is reached (should be less than maxNumSplinePoints)
+	// Deletes the first pickup actor in the PickupActors array when this number is reached (should be less than maxNumSplinePoints * TilesPerRow)
 	int maxNumPickups = 9;
-	// Deletes the first obstacle actor in the ObstacleMesh array when this number is reached (should be less than maxNumSplinePoints)
+	// Deletes the first obstacle actor in the ObstacleMesh array when this number is reached (should be less than maxNumSplinePoints * TilesPerRow)
 	int maxNumObstacles = 9;
 	// Test
 	MeshGenerator meshGen;
 	TArray<FString> meshPathLib;
 
-	int32 PointSpawnChance = 25;
+	int32 PointSpawnChance = 8;
 	int32 ObstacleSpawnChance = 75;
 };
