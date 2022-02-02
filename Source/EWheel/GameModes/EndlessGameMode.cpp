@@ -109,10 +109,12 @@ void AEndlessGameMode::ExtendPath()
 
 	// Calculate the next spline point position
 	FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+	//LastSPlinePointDirection.X += FMath::RandRange(-0.5f, 0.5f);
 	LastSPlinePointDirection.Y += FMath::RandRange(-0.5f, 0.5f);
-	//LastSPlinePointDirection.Z += FMath::RandRange(-100.f, 100.f);
-	LastSPlinePointDirection.Normalize();
-	const FVector newLocation = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints()) * FVector { 1, 1, 0 } + LastSPlinePointDirection * FVector{ distToNextSplinePoint, distToNextSplinePoint, 1 };
+	LastSPlinePointDirection.Z += FMath::RandRange(-50.f, 50.f);
+
+	const FVector newLocation = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1) * FVector{ 1.f, 1.f, 0.f } + LastSPlinePointDirection * FVector{ distToNextSplinePoint, distToNextSplinePoint, 1 };
+
 
 	// Remove the first point in the spline if adding 1 exceedes the max number of spline points.
 	mainPath->AddSplinePointAndMesh(newLocation, 0);
