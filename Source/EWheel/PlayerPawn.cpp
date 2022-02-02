@@ -57,7 +57,7 @@ APlayerPawn::APlayerPawn()
 		{
 			WheelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshComponent"));
 			WheelMesh->SetStaticMesh(WheelMeshAsset.Object);
-			WheelMesh->SetupAttachment(BoardMesh);
+			WheelMesh->SetupAttachment(BoardMesh, "WheelSocket");
 			WheelMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 			//PhysicsConstraintComponent = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("PhysicsConstraintComponent"));
@@ -81,6 +81,7 @@ APlayerPawn::APlayerPawn()
 	// Create camera component 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera0"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+	Camera->SetRelativeRotation(FRotator(0.f, -10.f, 0.f));
 	Camera->bUsePawnControlRotation = false;
 	Camera->FieldOfView = 70.f;
 

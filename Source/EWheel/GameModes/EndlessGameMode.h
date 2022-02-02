@@ -50,7 +50,7 @@ private:
 	MeshGenerator meshGen;
 	TArray<FString> meshPathLib;
 
-	AActor* PointObject;
+	AActor* PointObject = nullptr;
 	UStaticMeshComponent* PointObjectMeshComponent;
 	UStaticMesh* PointObjectMesh;
 	int32 PointObjectSpawnChance = 25;
