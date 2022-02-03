@@ -40,6 +40,9 @@ void AEndlessGameMode::BeginPlay()
 	mainPlayer = GetWorld()->SpawnActor<APawn>(pawnClass, FVector{ 0,0,0 }, FRotator{ 0,0,0 }, playerSpawnParams);
 	GetWorld()->GetFirstPlayerController()->Possess(mainPlayer);
 
+	//Bind Delegates
+	Cast<APlayerPawn>(mainPlayer)->EscPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerEscapePressed);
+
 	// Spawn the path
 	FActorSpawnParameters pathSpawnParams;
 	pathSpawnParams.Owner = this;
@@ -111,7 +114,7 @@ void AEndlessGameMode::ExtendPath()
 	FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 	//LastSPlinePointDirection.X += FMath::RandRange(-0.5f, 0.5f);
 	LastSPlinePointDirection.Y += FMath::RandRange(-0.5f, 0.5f);
-	LastSPlinePointDirection.Z += FMath::RandRange(-50.f, 50.f);
+	LastSPlinePointDirection.Z = 0; // FMath::RandRange(-50.f, 50.f);
 
 	const FVector newLocation = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1) * FVector{ 1.f, 1.f, 0.f } + LastSPlinePointDirection * FVector{ distToNextSplinePoint, distToNextSplinePoint, 1 };
 
@@ -193,4 +196,9 @@ void AEndlessGameMode::SpawnObstacleObject(FVector& location)
 
 void AEndlessGameMode::EndGame()
 {
+}
+
+void AEndlessGameMode::OnPlayerEscapePressed()
+{
+	UE_LOG(LogTemp, Warning, TEXT("GameMode heard EscPressed"));
 }

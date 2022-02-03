@@ -14,6 +14,7 @@
 class AObstacleActor;
 class APickUpActor;
 class AMeshSplineActor;
+
 UCLASS()
 class EWHEEL_API AEndlessGameMode : public AGameModeBase
 {
@@ -31,8 +32,11 @@ private:
 	void SpawnObstacleObject(FVector& location);
 
 public:
+	UFUNCTION(BlueprintCallable)
 	void EndGame();
 
+	UFUNCTION()
+	void OnPlayerEscapePressed();
 private:
 	APawn* mainPlayer;
 	AMeshSplineActor* mainPath;

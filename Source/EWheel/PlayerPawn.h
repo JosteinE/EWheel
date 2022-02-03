@@ -12,6 +12,9 @@ class UStaticMeshComponent;
 class UPhysicsConstraintComponent;
 class USphereComponent;
 
+// Delegates
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEscapePressed);
+
 UCLASS()
 class EWHEEL_API APlayerPawn : public APawn
 {
@@ -113,9 +116,12 @@ private:
 	void MoveForward(float input);
 	/** Handle pressing right */
 	void MoveRight(float input);
+	/** Handle pressing right */
+	void Escape();
 
 public:
-
+	UPROPERTY(BlueprintAssignable, Category = "Event")
+	FOnEscapePressed EscPressed;
 
 	/** Returns the player mesh subobject **/
 	FORCEINLINE UStaticMeshComponent* GetWheelMesh() const { return WheelMesh; }

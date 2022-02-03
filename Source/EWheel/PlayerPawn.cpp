@@ -149,6 +149,7 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerPawn::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerPawn::MoveRight);
+	PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayerPawn::Escape);
 }
 
 void APlayerPawn::MoveBoard(float DeltaTime)
@@ -275,5 +276,11 @@ void APlayerPawn::MoveForward(float input)
 void APlayerPawn::MoveRight(float input)
 {
 	movementInput.X = input;
+}
+
+void APlayerPawn::Escape()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Broadcasted EscPressed"));
+	EscPressed.Broadcast();
 }
 
