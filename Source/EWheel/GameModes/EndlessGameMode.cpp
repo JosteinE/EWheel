@@ -11,6 +11,8 @@
 #include "EWheel/Objects/ObstacleActor.h"
 #include "EWheel/Objects/PickUpActor.h"
 
+#include "Kismet/GameplayStatics.h"
+
 AEndlessGameMode::AEndlessGameMode()
 {
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -196,10 +198,12 @@ void AEndlessGameMode::SpawnObstacleObject(FVector& location)
 
 void AEndlessGameMode::EndGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Ending Game"));
+	UGameplayStatics::OpenLevel(GetWorld(), "World'/Game/Maps/DefaultMap.DefaultMap'");
 }
 
 void AEndlessGameMode::OnPlayerEscapePressed()
 {
 	UE_LOG(LogTemp, Warning, TEXT("GameMode heard EscPressed"));
+	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
 }
