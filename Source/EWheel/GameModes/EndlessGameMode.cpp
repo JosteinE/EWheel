@@ -196,6 +196,7 @@ void AEndlessGameMode::SpawnObstacleObject(FVector& location)
 
 void AEndlessGameMode::EndGame()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Ending Game"));
 }
 
 void AEndlessGameMode::OnPlayerEscapePressed()
