@@ -126,7 +126,7 @@ void APlayerPawn::Tick(float DeltaTime)
 	//	PlayerMesh->SetSimulatePhysics(false);
 	//bIsCollidingWithGround = false;
 
-	//if(!PlayerMesh->IsSimulatingPhysics())
+	if(!GetBoardMesh()->IsSimulatingPhysics())
 	{
 		//Move the actor based on input
 		MoveBoard(DeltaTime);
@@ -282,5 +282,16 @@ void APlayerPawn::Escape()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Broadcasted EscPressed"));
 	EscPressed.Broadcast();
+}
+
+void APlayerPawn::KillPlayer()
+{
+	GetBoardMesh()->SetCollisionProfileName("VehicleComponent");
+	GetBoardMesh()->SetSimulatePhysics(true);
+	GetBoardMesh()->AddImpulse(-GetActorForwardVector() * 250.f + FVector{ 0, 0, 0.5f});
+	GetWheelMesh()->SetCollisionProfileName("VehicleComponent");
+	GetWheelMesh()->SetSimulatePhysics(true);
+	GetWheelMesh()->AddImpulse(-GetActorForwardVector() * 50.f + FVector{ 0, 0, 0.5f });
+	SpringArm->TargetArmLength = 400.0f;
 }
 

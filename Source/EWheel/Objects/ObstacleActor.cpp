@@ -5,6 +5,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/StaticMesh.h"
 #include "Components/StaticMeshComponent.h"
+#include "EWheel/PlayerPawn.h"
 
 // Sets default values
 AObstacleActor::AObstacleActor()
@@ -42,9 +43,9 @@ void AObstacleActor::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 	float collisionAngle = FVector::DotProduct(OtherActor->GetActorForwardVector(), Hit.ImpactNormal);
 	FVector impulseDirection = OtherActor->GetActorForwardVector() - 2 * collisionAngle * Hit.ImpactNormal;
 
-	if(FMath::RadiansToDegrees(collisionAngle) < MinToleratedAngle)
+	if (FMath::RadiansToDegrees(collisionAngle) < MinToleratedAngle)
 		OtherComp->AddImpulse(impulseDirection * ImpulseStrength);
 	else
-		OtherComp->AddImpulse(OtherActor->GetActorForwardVector() * -100000.f);
+		Cast<APlayerPawn>(OtherActor)->KillPlayer();//OtherComp->AddImpulse(OtherActor->GetActorForwardVector() * -100000.f);
 }
 

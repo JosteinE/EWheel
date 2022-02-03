@@ -72,11 +72,11 @@ class EWHEEL_API APlayerPawn : public APawn
 	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	bool bWheelContact = true;
 
+public:
 	/** Current speed of the vehicle */
 	UPROPERTY(Category = Score, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int pointsCollected = 0;
 
-public:
 	// Sets default values for this pawn's properties
 	APlayerPawn();
 
@@ -116,12 +116,14 @@ private:
 	void MoveForward(float input);
 	/** Handle pressing right */
 	void MoveRight(float input);
-	/** Handle pressing right */
+	/** Handle pressing Escape */
 	void Escape();
-
 public:
+	// Delegate Signatures
 	UPROPERTY(BlueprintAssignable, Category = "Event")
 	FOnEscapePressed EscPressed;
+
+	void KillPlayer();
 
 	/** Returns the player mesh subobject **/
 	FORCEINLINE UStaticMeshComponent* GetWheelMesh() const { return WheelMesh; }
