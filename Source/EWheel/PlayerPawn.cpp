@@ -118,7 +118,6 @@ void APlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
 	//// Simulate physics if the board is not colliding
 	//if (!ValidateGroundContact() && !PlayerMesh->IsSimulatingPhysics())
 	//	PlayerMesh->SetSimulatePhysics(true);
@@ -150,6 +149,8 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerPawn::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerPawn::MoveRight);
 	PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayerPawn::Escape);
+	PlayerInputComponent->BindAction("QuickRestart", IE_Pressed, this, &APlayerPawn::QuickRestart);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerPawn::Jump);
 }
 
 void APlayerPawn::MoveBoard(float DeltaTime)
@@ -215,45 +216,54 @@ void APlayerPawn::BoardTilt(float DeltaTime)
 }
 
 bool APlayerPawn::ValidateGroundContact()
-{
+{	
 	FVector RaycastStartPos = GetActorLocation() - GetActorUpVector() * groundContactRayOffset;
 	FVector RaycastEndPos = GetActorLocation() - GetActorUpVector() * (groundContactRayOffset + groundContactRayLength);
-	FVector SideRayCastOffset = GetActorRightVector() * groundContactRaySideOffset;
 
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
+	FHitResult ray;
 
-	FHitResult leftRay, midRay, rightRay;
+	DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Green, false);
+	return GetWorld()->LineTraceSingleByChannel(ray, RaycastStartPos, RaycastEndPos, ECC_Visibility, CollisionParams);
+	//FVector RaycastStartPos = GetActorLocation() - GetActorUpVector() * groundContactRayOffset;
+	//FVector RaycastEndPos = GetActorLocation() - GetActorUpVector() * (groundContactRayOffset + groundContactRayLength);
+	//FVector SideRayCastOffset = GetActorRightVector() * groundContactRaySideOffset;
 
-	bool checkLHit = GetWorld()->LineTraceSingleByChannel(leftRay, RaycastStartPos - SideRayCastOffset, RaycastEndPos - SideRayCastOffset, ECC_Visibility, CollisionParams);
-	bool checkMHit = GetWorld()->LineTraceSingleByChannel(midRay, RaycastStartPos, RaycastEndPos, ECC_Visibility, CollisionParams);
-	bool checkRHit = GetWorld()->LineTraceSingleByChannel(rightRay, RaycastStartPos + SideRayCastOffset, RaycastEndPos + SideRayCastOffset, ECC_Visibility, CollisionParams);
+	//FCollisionQueryParams CollisionParams;
+	//CollisionParams.AddIgnoredActor(this);
 
-	// DrawDebugLines
-	if(checkLHit)
-		DrawDebugLine(GetWorld(), RaycastStartPos - SideRayCastOffset, RaycastEndPos - SideRayCastOffset, FColor::Green, false);
-	else
-		DrawDebugLine(GetWorld(), RaycastStartPos - SideRayCastOffset, RaycastEndPos - SideRayCastOffset, FColor::Red, false);
+	//FHitResult leftRay, midRay, rightRay;
 
-	if (checkMHit)
-		DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Green, false);
-	else
-		DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Red, false);
+	//bool checkLHit = GetWorld()->LineTraceSingleByChannel(leftRay, RaycastStartPos - SideRayCastOffset, RaycastEndPos - SideRayCastOffset, ECC_Visibility, CollisionParams);
+	//bool checkMHit = GetWorld()->LineTraceSingleByChannel(midRay, RaycastStartPos, RaycastEndPos, ECC_Visibility, CollisionParams);
+	//bool checkRHit = GetWorld()->LineTraceSingleByChannel(rightRay, RaycastStartPos + SideRayCastOffset, RaycastEndPos + SideRayCastOffset, ECC_Visibility, CollisionParams);
 
-	if (checkRHit)
-		DrawDebugLine(GetWorld(), RaycastStartPos + SideRayCastOffset, RaycastEndPos + SideRayCastOffset, FColor::Green, false);
-	else
-		DrawDebugLine(GetWorld(), RaycastStartPos + SideRayCastOffset, RaycastEndPos + SideRayCastOffset, FColor::Red, false);
+	//// DrawDebugLines
+	//if(checkLHit)
+	//	DrawDebugLine(GetWorld(), RaycastStartPos - SideRayCastOffset, RaycastEndPos - SideRayCastOffset, FColor::Green, false);
+	//else
+	//	DrawDebugLine(GetWorld(), RaycastStartPos - SideRayCastOffset, RaycastEndPos - SideRayCastOffset, FColor::Red, false);
 
-	//Validate contact with surface
-	if (checkMHit)
-		bWheelContact = true;
-	else if (checkLHit && checkRHit)
-		bWheelContact = true;
-	else
-		bWheelContact = false;
+	//if (checkMHit)
+	//	DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Green, false);
+	//else
+	//	DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Red, false);
 
-	return bWheelContact;
+	//if (checkRHit)
+	//	DrawDebugLine(GetWorld(), RaycastStartPos + SideRayCastOffset, RaycastEndPos + SideRayCastOffset, FColor::Green, false);
+	//else
+	//	DrawDebugLine(GetWorld(), RaycastStartPos + SideRayCastOffset, RaycastEndPos + SideRayCastOffset, FColor::Red, false);
+
+	////Validate contact with surface
+	//if (checkMHit)
+	//	bWheelContact = true;
+	//else if (checkLHit && checkRHit)
+	//	bWheelContact = true;
+	//else
+	//	bWheelContact = false;
+
+	//return bWheelContact;
 }
 
 void APlayerPawn::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -282,6 +292,17 @@ void APlayerPawn::Escape()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Broadcasted EscPressed"));
 	EscPressed.Broadcast();
+}
+
+void APlayerPawn::QuickRestart()
+{
+	RestartPressed.Broadcast();
+}
+
+void APlayerPawn::Jump()
+{
+	if(ValidateGroundContact())
+		PlayerRoot->AddImpulse(GetActorUpVector() * jumpForce);
 }
 
 void APlayerPawn::KillPlayer()

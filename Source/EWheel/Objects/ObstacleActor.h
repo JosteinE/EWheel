@@ -23,7 +23,7 @@ class EWHEEL_API AObstacleActor : public AActor
 
 	/** The minimum angle that will be tolerated upon collision. The player vehicle will be stopped if the angle is lower */
 	UPROPERTY(Category = Collision, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	float MinToleratedAngle = 45.f;
+	float MaxToleratedAngle = 45.f;
 
 public:	
 	// Sets default values for this actor's properties

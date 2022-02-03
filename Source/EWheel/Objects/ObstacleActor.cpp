@@ -43,9 +43,7 @@ void AObstacleActor::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 	float collisionAngle = FVector::DotProduct(OtherActor->GetActorForwardVector(), Hit.ImpactNormal);
 	FVector impulseDirection = OtherActor->GetActorForwardVector() - 2 * collisionAngle * Hit.ImpactNormal;
 
-	if (FMath::RadiansToDegrees(collisionAngle) < MinToleratedAngle)
-		OtherComp->AddImpulse(impulseDirection * ImpulseStrength);
-	else
+	if (FMath::RadiansToDegrees(collisionAngle) > MaxToleratedAngle)
 		Cast<APlayerPawn>(OtherActor)->KillPlayer();//OtherComp->AddImpulse(OtherActor->GetActorForwardVector() * -100000.f);
 }
 

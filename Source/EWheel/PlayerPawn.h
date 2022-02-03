@@ -14,6 +14,7 @@ class USphereComponent;
 
 // Delegates
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEscapePressed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnQuickRestartPressed);
 
 UCLASS()
 class EWHEEL_API APlayerPawn : public APawn
@@ -64,6 +65,10 @@ class EWHEEL_API APlayerPawn : public APawn
 	UPROPERTY(Category = VehicleSpecs, EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	float turnSpeed = 100.f;
 
+	/** Jump force of the vehicle */
+	UPROPERTY(Category = VehicleSpecs, EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	float jumpForce = 2000.f;
+
 	/** How fast the vehicle naturally slows down without input (0-1)  */
 	UPROPERTY(Category = VehicleSpecs, EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	float friction = 0.5f;
@@ -98,8 +103,8 @@ private:
 	float maxBoardTiltRoll = 35;
 	float boardTiltSpeed = 100.f;
 	float boardTiltResetSpeed = 10.f;
-	float groundContactRayOffset = 0.f;
-	float groundContactRayLength = 5.f;
+	float groundContactRayOffset = 15.f;
+	float groundContactRayLength = 1.f;
 	float groundContactRaySideOffset = 5.f;
 
 	void MoveBoard(float DeltaTime);
@@ -118,10 +123,18 @@ private:
 	void MoveRight(float input);
 	/** Handle pressing Escape */
 	void Escape();
+	/** Handle pressing R */
+	void QuickRestart();
+	/** Handle pressing Space */
+	void Jump();
 public:
 	// Delegate Signatures
 	UPROPERTY(BlueprintAssignable, Category = "Event")
 	FOnEscapePressed EscPressed;
+
+	// Delegate Signatures
+	UPROPERTY(BlueprintAssignable, Category = "Event")
+	FOnQuickRestartPressed RestartPressed;
 
 	void KillPlayer();
 

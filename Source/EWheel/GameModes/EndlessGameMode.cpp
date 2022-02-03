@@ -39,11 +39,12 @@ void AEndlessGameMode::BeginPlay()
 	FActorSpawnParameters playerSpawnParams;
 	playerSpawnParams.Owner = this;
 	playerSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	mainPlayer = GetWorld()->SpawnActor<APawn>(pawnClass, FVector{ 0,0,0 }, FRotator{ 0,0,0 }, playerSpawnParams);
+	mainPlayer = GetWorld()->SpawnActor<APawn>(pawnClass, FVector{ 0,0, playerSpawnHeight }, FRotator{ 0,0,0 }, playerSpawnParams);
 	GetWorld()->GetFirstPlayerController()->Possess(mainPlayer);
 
 	//Bind Delegates
 	Cast<APlayerPawn>(mainPlayer)->EscPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerEscapePressed);
+	Cast<APlayerPawn>(mainPlayer)->RestartPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerRestartPressed);
 
 	// Spawn the path
 	FActorSpawnParameters pathSpawnParams;
@@ -132,10 +133,10 @@ void AEndlessGameMode::ExtendPath()
 FVector AEndlessGameMode::GetTileCentreLastRow(int index)
 {
 	FVector previousSplinePointLoc = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2);
-
+	FVector previousSplinePointRV = mainPath->GetSpline()->GetRightVectorAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2, ESplineCoordinateSpace::World);
 	unsigned int tileOffset = FMath::Floor(TilesPerRow / 2);
 
-	return previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + FVector{ 0.f, -150.f * tileOffset + (150.f * index), 0.f };
+	return previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + previousSplinePointRV * (-150.f * tileOffset + (150.f * index));
 }
 
 void AEndlessGameMode::SpawnPointObject(FVector& location)
@@ -149,7 +150,7 @@ void AEndlessGameMode::SpawnPointObject(FVector& location)
 	if (PickupActors.Num() >= maxNumPickups)
 	{
 		// Destroy the actor if it hasn't already been by the player
-		if (PickupActors.Num() > 0 && IsValid(PickupActors[0]))
+		if (PickupActors.Num() > 0 && PickupActors[0] && IsValid(PickupActors[0]))
 		{
 			PickupActors[0]->GetMeshComponent()->UnregisterComponent();
 			PickupActors[0]->Destroy();
@@ -206,4 +207,9 @@ void AEndlessGameMode::OnPlayerEscapePressed()
 	UE_LOG(LogTemp, Warning, TEXT("GameMode heard EscPressed"));
 	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
+}
+
+void AEndlessGameMode::OnPlayerRestartPressed()
+{
+	EndGame();
 }

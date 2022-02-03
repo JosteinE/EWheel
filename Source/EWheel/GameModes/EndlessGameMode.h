@@ -37,6 +37,9 @@ public:
 
 	UFUNCTION()
 	void OnPlayerEscapePressed();
+
+	UFUNCTION()
+	void OnPlayerRestartPressed();
 private:
 	APawn* mainPlayer;
 	AMeshSplineActor* mainPath;
@@ -45,6 +48,7 @@ private:
 	// Number of tiles per row
 	int TilesPerRow = 3;
 
+	float playerSpawnHeight = 100.f;
 	float splineSpawnVerticalOffset = -50.f;
 	// Add a new point if the player is within this range to the last spline point
 	float minDistToSplinePoint = 225.f;
@@ -73,5 +77,5 @@ private:
 	TArray<FString> meshPathLib;
 
 	int32 PointSpawnChance = 8;
-	int32 ObstacleSpawnChance = 25;
+	int32 ObstacleSpawnChance = 75;
 };
