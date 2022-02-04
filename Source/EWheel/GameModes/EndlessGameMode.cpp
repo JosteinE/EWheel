@@ -35,11 +35,11 @@ AEndlessGameMode::AEndlessGameMode()
 void AEndlessGameMode::BeginPlay()
 {
 	// Spawn the player
-	TSubclassOf<APawn> pawnClass = LoadObject<UBlueprint>(NULL, TEXT("Blueprint'/Game/Blueprints/PlayerPawnBP.PlayerPawnBP'"))->GeneratedClass;
+	auto pawnClass = LoadObject<UBlueprint>(NULL, TEXT("Blueprint'/Game/Blueprints/PlayerPawnBP.PlayerPawnBP'"))->GeneratedClass;
 	FActorSpawnParameters playerSpawnParams;
 	playerSpawnParams.Owner = this;
 	playerSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	mainPlayer = GetWorld()->SpawnActor<APawn>(pawnClass, FVector{ 0,0, playerSpawnHeight }, FRotator{ 0,0,0 }, playerSpawnParams);
+	mainPlayer = GetWorld()->SpawnActor<APlayerPawn>(pawnClass, FVector{ 0,0, playerSpawnHeight }, FRotator{ 0,0,0 }, playerSpawnParams);
 	GetWorld()->GetFirstPlayerController()->Possess(mainPlayer);
 
 	//Bind Delegates
@@ -147,10 +147,10 @@ void AEndlessGameMode::SpawnPointObject(FVector& location)
 	APickUpActor* PointObject = GetWorld()->SpawnActor<APickUpActor>(APickUpActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
 
 	// Delete the first object in the array if the array count reaches maxNumObstacles
-	if (PickupActors.Num() >= maxNumPickups)
+	if (PickupActors.Num() > 0 && PickupActors.Num() >= maxNumPickups)
 	{
 		// Destroy the actor if it hasn't already been by the player
-		if (PickupActors.Num() > 0 && PickupActors[0] && IsValid(PickupActors[0]))
+		if (IsValid(PickupActors[0]))
 		{
 			PickupActors[0]->GetMeshComponent()->UnregisterComponent();
 			PickupActors[0]->Destroy();
