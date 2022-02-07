@@ -42,7 +42,7 @@ TArray<UStaticMesh*> SplineTilePicker::GetTiles(int numTiles)
 			}
 			else
 			{
-				newTile = GetAppropriateTile(CheckDependancyPrevious(TileLog.Num() - 1 - numTiles), false, 1); // CHANGE 1 TO TYPE!
+				newTile = GetAppropriateFirstTile(CheckDependancyPrevious(TileLog.Num() - 1 - numTiles), 1); // CHANGE 1 TO TYPE!
 			}
 
 		}
@@ -86,11 +86,77 @@ bool SplineTilePicker::CheckDependancyLeft(int logIndex)
 	return false;
 }
 
-TPair<int, int>* SplineTilePicker::GetAppropriateTile(bool bPrevious, bool bLeft, int tileType)
+TPair<int, int>* SplineTilePicker::GetAppropriateFirstTile(bool bPrevious, int dependantType)
 {
 	TPair<int, int>* newTile = new TPair<int, int>;
 
-	if(tileType = )
+	if (!bPrevious)
+	{
+		// Generate random tile that doesnt depend on a left or previous tile
+	}
+	else if(dependantType == MeshTypes::TYPE_PIT)
+	{
+		// Generate tile that links with the previous pit tile and doesnt depend on a left tile
+	}
+	return newTile;
+}
 
+TPair<int, int>* SplineTilePicker::GetAppropriateTile(bool bPrevious, bool bLeft, int dependantType)
+{
+	TPair<int, int>* newTile = new TPair<int, int>;
+
+	if (bPrevious || bLeft)
+	{
+		switch (dependantType)
+		{
+		case MeshTypes::TYPE_PIT:
+			if (bPrevious && bLeft)
+			{
+				// generate a tile that links with left and previous
+			}
+			else if (bPrevious)
+			{
+				// generate a tile that links with previous and NOT left
+			}
+			else
+			{
+				// generate a tile that links with left and NOT previous
+			}
+			break;
+		case MeshTypes::TYPE_RAMP:
+			// We know this belongs to left. Either end ramp or extend
+			break;
+		}
+	}
+	return newTile;
+}
+
+TPair<int, int>* SplineTilePicker::GetAppropriateLastTile(bool bPrevious, bool bLeft, int dependantType)
+{
+	TPair<int, int>* newTile = new TPair<int, int>;
+
+	if (bPrevious || bLeft)
+	{
+		switch (dependantType)
+		{
+		case MeshTypes::TYPE_PIT:
+			if (bPrevious && bLeft)
+			{
+				// generate a tile that links with left and previous, DO NOT DEPEND ON RIGHT
+			}
+			else if (bPrevious)
+			{
+				// generate a tile that links with previous and NOT left, DO NOT DEPEND ON RIGHT
+			}
+			else
+			{
+				// generate a tile that links with left and NOT previous, DO NOT DEPEND ON RIGHT
+			}
+			break;
+		case MeshTypes::TYPE_RAMP:
+			// We know this belongs to left. End Ramp
+			break;
+		}
+	}
 	return newTile;
 }
