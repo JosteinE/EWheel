@@ -148,3 +148,8 @@ UStaticMesh* MeshGenerator::GenerateStaticMeshFromTile(TArray<FString>& meshPath
 	}
 	return nullptr;
 }
+
+UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<UStaticMesh*> inMesh)
+{
+	return nullptr;
+}
