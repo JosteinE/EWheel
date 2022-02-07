@@ -90,6 +90,11 @@ UStaticMesh* MeshGenerator::GenerateStaticMeshFromTile(TArray<FString>& meshPath
 			StaticMesh->SetLightingGuid();
 
 			// Add source to new StaticMesh
+			
+			//int32 LodModelIndex = StaticMesh->GetSourceModel().AddDefaulted();
+			//FStaticMeshSourceModel& NewSourceModel = StaticMesh->GetSourceModel(LodModelIndex);
+			//NewSourceModel.StaticMeshOwner = this;
+
 			FStaticMeshSourceModel& SrcModel = StaticMesh->AddSourceModel();
 			SrcModel.BuildSettings.bRecomputeNormals = false;
 			SrcModel.BuildSettings.bRecomputeTangents = false;
@@ -134,7 +139,7 @@ UStaticMesh* MeshGenerator::GenerateStaticMeshFromTile(TArray<FString>& meshPath
 			//Set the Imported version before calling the build
 			StaticMesh->ImportVersion = EImportStaticMeshVersion::LastVersion;
 
-			//// Build mesh from source
+			// Build mesh from source
 			StaticMesh->Build(false);
 			StaticMesh->PostEditChange();
 
