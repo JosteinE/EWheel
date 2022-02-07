@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 
-enum MeshTiles
+enum MeshType
 {
 	DEFAULT,
 	PIT,
-	PIT4W,
+	PIT_4W,
 	PIT_END_SN,
 	PIT_EX,
 	PIT_L,
@@ -19,7 +19,7 @@ enum MeshTiles
 	RAMP_R
 };
 
-enum MeshTypes
+enum MeshCategories
 {
 	TYPE_DEFAULT,
 	TYPE_PIT,
