@@ -5,12 +5,21 @@
 #include "UObject/ConstructorHelpers.h"
 #include "PhysicsEngine/BodySetup.h"
 
+#include "EWheel/MeshGenerator.h"
+#include "EWheel/Spline/SplineTilePicker.h"
+
 AMeshSplineActor::AMeshSplineActor()
 {
-	//If there is trouble converting this actor from code to blueprint, comment this out!
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_Ex_SN_150x150.Ground_Pit_Ex_SN_150x150'"));
-	if (MeshAsset.Succeeded())
-		DefaultMesh = MeshAsset.Object;
+	MeshGen = new MeshGenerator;
+	TilePicker = new SplineTilePicker;
+}
+
+AMeshSplineActor::~AMeshSplineActor()
+{
+	delete MeshGen;
+	MeshGen = nullptr;
+	delete TilePicker;
+	TilePicker = nullptr;
 }
 
 void AMeshSplineActor::OnConstruction(const FTransform& Transform)
@@ -31,21 +40,8 @@ void AMeshSplineActor::OnConstruction(const FTransform& Transform)
 void AMeshSplineActor::ConstructMesh(int SplineIndex, int MeshType)
 {
 	// Ensure that our mesh exists, otherwise return
-	UStaticMesh* mesh;
-	if (MeshType == 0 && DefaultMesh)
-	{
-		mesh = DefaultMesh;
-	}
-	else if (MeshType != 0)
-	{
-		static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_N_150x150.Ground_Ramp_N_150x150'"));
-		if (MeshAsset.Succeeded())
-			mesh = MeshAsset.Object;
-		else
-			return;
-	}
-	else
-		return;
+	UStaticMesh* mesh = MeshGen->StitchStaticMesh(TilePicker->GetTiles(3));
+	if (!mesh) return;
 
 	//Use the previous point as the starting location
 	const FVector StartingPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
@@ -82,29 +78,6 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, int MeshType)
 
 	if (DefaultMaterial)
 		SplineMeshComponent[SplineIndex]->SetMaterial(0, DefaultMaterial);
-
-	if (tilesPerRow > 1)
-	{ // TEMP
-		for (int i = 1; i < tilesPerRow; i++)
-		{
-			SplineMeshComponent.Emplace(NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass()));
-			SplineMeshComponent[SplineIndex + i]->SetStaticMesh(mesh);
-			SplineMeshComponent[SplineIndex + i]->SetMobility(EComponentMobility::Movable);
-			SplineMeshComponent[SplineIndex + i]->CreationMethod = EComponentCreationMethod::UserConstructionScript;
-			SplineMeshComponent[SplineIndex + i]->RegisterComponentWithWorld(GetWorld());
-			SplineMeshComponent[SplineIndex + i]->AttachToComponent(GetSpline(), FAttachmentTransformRules::KeepRelativeTransform);
-			SplineMeshComponent[SplineIndex + i]->SetStartAndEnd(StartingPoint, StartTangent, EndPoint, EndTangent);
-			SplineMeshComponent[SplineIndex + i]->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //Note: consider changing this if physics is not being used
-			SplineMeshComponent[SplineIndex + i]->SetForwardAxis(ForwardAxis);
-
-			SplineMeshComponent[SplineIndex + i]->AddLocalOffset(GetSpline()->GetRightVectorAtSplinePoint(GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::Local) * (tileOffset * (1 - (2 * (i % 2)))));
-
-			SplineMeshComponent[SplineIndex]->GetBodySetup()->CollisionTraceFlag = ECollisionTraceFlag::CTF_UseComplexAsSimple;
-
-			if (DefaultMaterial)
-				SplineMeshComponent[SplineIndex]->SetMaterial(0, DefaultMaterial);
-		}
-	}
 }
 
 void AMeshSplineActor::AddSplinePointAndMesh(const FVector newPointLocation, int meshType)

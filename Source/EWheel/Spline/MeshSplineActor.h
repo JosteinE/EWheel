@@ -5,8 +5,11 @@
 #include "CoreMinimal.h"
 #include "EWheel/Spline/SplineActor.h"
 #include "Components/SplineMeshComponent.h"
+#include "EWheel/Spline/SplineTilePicker.h"
 #include "MeshSplineActor.generated.h"
 
+class MeshGenerator;
+class SplineTilePicker;
 /**
  * 
  */
@@ -17,9 +20,6 @@ class EWHEEL_API AMeshSplineActor : public ASplineActor
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SplineMesh", meta = (AllowPrivateAccess = "true"))
 	TArray<USplineMeshComponent*> SplineMeshComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SplineMesh", meta = (AllowPrivateAccess = "true"))
-	UStaticMesh* DefaultMesh;
 
 	// Using TEnumAsByte to expose the enum to blueprints. This lets us rotate our mesh to match the forward direction of the spline
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SplineMesh", meta = (AllowPrivateAccess = "true"))
@@ -32,7 +32,7 @@ class EWHEEL_API AMeshSplineActor : public ASplineActor
 	class UMaterialInterface* AlternativeMaterial = nullptr;
 
 	AMeshSplineActor();
-
+	~AMeshSplineActor();
 protected:
 	void OnConstruction(const FTransform& Transform) override;
 
@@ -53,4 +53,9 @@ private:
 	int numMeshToReConPostInit = 0;
 	int tilesPerRow = 1;
 	float tileOffset = 150.f;
+
+	// Stitches multiple StaticMesh tiles into one
+	MeshGenerator* MeshGen;
+	// Logs the last few rows and picks appropriate tiles for the next
+	SplineTilePicker* TilePicker;
 };

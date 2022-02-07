@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-enum MeshTypes
+enum MeshTiles
 {
 	DEFAULT,
 	PIT,
@@ -17,6 +17,13 @@ enum MeshTypes
 	RAMP_L,
 	RAMP_M,
 	RAMP_R
+};
+
+enum MeshTypes
+{
+	TYPE_DEFAULT,
+	TYPE_PIT,
+	TYPE_RAMP,
 };
 
 class UStaticMesh;

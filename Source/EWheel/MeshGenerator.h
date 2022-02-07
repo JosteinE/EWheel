@@ -3,8 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PointLibrary.h"
-//Missing .generated here...
 
 /**
  * 
@@ -20,8 +18,9 @@ public:
 
 	UProceduralMeshComponent* GenerateMeshFromTile(int MESH_ENUM);
 	UStaticMesh* GenerateStaticMeshFromTile(TArray<FString>& meshPaths);
+	UStaticMesh* StitchStaticMesh(TArray<UStaticMesh*> inMesh);
+
 
 private:
-	PointLibrary pLib;
 	float tileOffset = 150.f;
 };
