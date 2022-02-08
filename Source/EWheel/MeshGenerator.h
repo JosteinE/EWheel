@@ -16,7 +16,7 @@ public:
 	MeshGenerator();
 	~MeshGenerator();
 
-	UProceduralMeshComponent* GenerateMeshFromTile(int MESH_ENUM);
+	//UProceduralMeshComponent* GenerateMeshFromTile(int MESH_ENUM); OLD
 	UStaticMesh* GenerateStaticMeshFromTile(TArray<FString>& meshPaths);
 	UStaticMesh* StitchStaticMesh(TArray<UStaticMesh*> inMesh);
 

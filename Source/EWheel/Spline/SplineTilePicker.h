@@ -22,8 +22,8 @@ public:
 	SplineTilePicker();
 	~SplineTilePicker();
 	
-	TArray<UStaticMesh*> GetTiles(int numTiles);
-	void SetNumToLog(int num);
+	TArray<UStaticMesh*> GetNewTiles(int numTiles);
+	void SetNumRowsToLog(int num);
 private:
 	// Empties TileLog if it exceedes the set amount to store
 	void CheckAndEmptyLog(int numTilesPerRow);
@@ -33,23 +33,23 @@ private:
 	void GetPreviousDependancies(TArray<bool>& indexLog, int numToCheck);
 	
 	// Checks if the tile behind depends on the new tile
-	bool CheckDependancyPrevious(int indexLog);
+	bool CheckDependancyPrevious(int currentIndex, int numTilesPerRow);
 
 	// Checks if the left tile depends on the new tile
-	bool CheckDependancyLeft(int logIndex);
+	bool CheckDependancyLeft(int currentIndex);
 
 	// Checks if left tile was part of a ramp and if the next previous depends on a pit. If true, end the ramp
 	bool CheckForTileCrash(int currentIndex, int numTilesPerRow);
 
 
 	// Get the first tile in a row based on previous tile rows, dependantType = tile type from last row that depends on new tile 
-	TArray<FIntVector> GetAppropriateFirstTile(int numTilesPerRow);
+	void GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow);
 
 	// Get a tile based on previous tile rows, dependantType = tile type from last row that depends on new tile 
-	TArray<FIntVector> GetAppropriateTile(int numTilesPerRow);
+	void GetAppropriateTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow);
 
 	// Get the last tile in a row based on previous tile rows, dependantType = tile type from last row that depends on new tile 
-	TArray<FIntVector> GetAppropriateLastTile(int numTilesPerRow);
+	void GetAppropriateLastTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow);
 
 	// MeshType and Num 90 degree rotations
 	TArray<TileDetails*> TileLog;

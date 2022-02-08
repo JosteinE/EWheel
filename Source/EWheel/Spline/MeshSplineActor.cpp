@@ -12,6 +12,7 @@ AMeshSplineActor::AMeshSplineActor()
 {
 	MeshGen = new MeshGenerator;
 	TilePicker = new SplineTilePicker;
+	TilePicker->SetNumRowsToLog(3);
 }
 
 AMeshSplineActor::~AMeshSplineActor()
@@ -24,23 +25,17 @@ AMeshSplineActor::~AMeshSplineActor()
 
 void AMeshSplineActor::OnConstruction(const FTransform& Transform)
 {
-	int startConAt = 0;
-
-	// (Re)construct from 0 or from a desired starting point
-	if (numMeshToReConPostInit > 0 && numMeshToReConPostInit <= SplineMeshComponent.Num())
-		startConAt = SplineMeshComponent.Num() - numMeshToReConPostInit;
-
 	// Construct the spline mesh
-	for (int SplineCount = startConAt; SplineCount < GetSpline()->GetNumberOfSplinePoints() - 1; SplineCount++)
+	for (int SplineCount = 0; SplineCount < GetSpline()->GetNumberOfSplinePoints() - 1; SplineCount++)
 	{
 		ConstructMesh(SplineCount);
 	}
 }
 
-void AMeshSplineActor::ConstructMesh(int SplineIndex, int MeshType)
+void AMeshSplineActor::ConstructMesh(int SplineIndex)
 {
 	// Ensure that our mesh exists, otherwise return
-	UStaticMesh* mesh = MeshGen->StitchStaticMesh(TilePicker->GetTiles(3));
+	UStaticMesh* mesh = MeshGen->StitchStaticMesh(TilePicker->GetNewTiles(3));
 	if (!mesh) return;
 
 	//Use the previous point as the starting location
@@ -80,11 +75,30 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, int MeshType)
 		SplineMeshComponent[SplineIndex]->SetMaterial(0, DefaultMaterial);
 }
 
-void AMeshSplineActor::AddSplinePointAndMesh(const FVector newPointLocation, int meshType)
+void AMeshSplineActor::AddSplinePointAndMesh(const FVector newPointLocation)
 {
 	AddSplinePoint(newPointLocation, true);
-	RemoveAllSplineMesh(false);
-	OnConstruction(GetActorTransform());
+
+	if (SplineMeshComponent.Num() < numRowsToReConPostInit)
+	{
+		ConstructMesh(SplineMeshComponent.Num());
+		return;
+	}
+
+	int reconEnd = SplineMeshComponent.Num();
+	int reconStart = reconEnd - numRowsToReConPostInit;
+	
+	// Remove the mesh that is to be reconstructed
+	for (int i = reconEnd - 1; i > reconStart - 1; i--)
+	{
+		RemoveSplineMesh(i, false);
+	}
+
+	// Reconstruct mesh
+	for (int i = reconStart; i < reconEnd; i++)
+	{
+		ConstructMesh(i);
+	}
 }
 
 void AMeshSplineActor::RemoveFirstSplinePointAndMesh(bool bRemovePoint)
@@ -102,13 +116,12 @@ void AMeshSplineActor::RemoveFirstSplinePointAndMesh(bool bRemovePoint)
 
 void AMeshSplineActor::SetDefaultMesh(UStaticMesh* StaticMesh)
 {
-	DefaultMesh = StaticMesh;
+	//DefaultMesh = StaticMesh;
 }
 
 void AMeshSplineActor::RemoveAllSplineMesh(bool bRemovePoints)
 {
-	int numMeshToRemove = SplineMeshComponent.Num();
-	for (int i = 0; i < numMeshToRemove; i++)
+	for (int i = 0; i < SplineMeshComponent.Num(); i++)
 	{
 		RemoveSplineMesh(0, bRemovePoints);
 	}

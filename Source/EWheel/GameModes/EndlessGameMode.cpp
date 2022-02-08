@@ -123,7 +123,7 @@ void AEndlessGameMode::ExtendPath()
 
 
 	// Remove the first point in the spline if adding 1 exceedes the max number of spline points.
-	mainPath->AddSplinePointAndMesh(newLocation, 0);
+	mainPath->AddSplinePointAndMesh(newLocation);
 	if (mainPath->GetSpline()->GetNumberOfSplinePoints() > maxNumSplinePoints)
 		mainPath->RemoveFirstSplinePointAndMesh(true);
 

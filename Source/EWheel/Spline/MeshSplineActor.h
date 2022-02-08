@@ -36,11 +36,11 @@ class EWHEEL_API AMeshSplineActor : public ASplineActor
 protected:
 	void OnConstruction(const FTransform& Transform) override;
 
-	void ConstructMesh(int SplineIndex, int MeshType = 0);
+	void ConstructMesh(int SplineIndex);
 
 public:
 	// Adds a point to the spline
-	void AddSplinePointAndMesh(const FVector newPointLocation, int meshType = 0);
+	void AddSplinePointAndMesh(const FVector newPointLocation);
 	// Removes the first point along the spline
 	void RemoveFirstSplinePointAndMesh(bool bRemovePoint = true);
 
@@ -50,7 +50,7 @@ private:
 	void RemoveAllSplineMesh(bool bRemovePoints = true);
 	void RemoveSplineMesh(int index, bool bRemovePoint = true);
 
-	int numMeshToReConPostInit = 0;
+	int numRowsToReConPostInit = 3; // SHOULD BE > 0
 	int tilesPerRow = 1;
 	float tileOffset = 150.f;
 
