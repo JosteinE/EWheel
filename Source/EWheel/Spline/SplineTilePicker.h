@@ -25,6 +25,10 @@ public:
 	TArray<UStaticMesh*> GetTiles(int numTiles);
 	void SetNumToLog(int num);
 private:
+	// Empties TileLog if it exceedes the set amount to store
+	void CheckAndEmptyLog(int numTilesPerRow);
+
+
 	// Get a list of indecies of dependant tiles belonging to the previous row
 	void GetPreviousDependancies(TArray<bool>& indexLog, int numToCheck);
 	
@@ -35,22 +39,22 @@ private:
 	bool CheckDependancyLeft(int logIndex);
 
 	// Checks if left tile was part of a ramp and if the next previous depends on a pit. If true, end the ramp
-	bool CheckForTileCrash(int logIndex, int numTilesPerRow);
+	bool CheckForTileCrash(int currentIndex, int numTilesPerRow);
 
 
 	// Get the first tile in a row based on previous tile rows, dependantType = tile type from last row that depends on new tile 
-	TileDetails* GetAppropriateFirstTile(int numTilesPerRow);
+	TArray<FIntVector> GetAppropriateFirstTile(int numTilesPerRow);
 
 	// Get a tile based on previous tile rows, dependantType = tile type from last row that depends on new tile 
-	TileDetails* GetAppropriateTile(int numTilesPerRow);
+	TArray<FIntVector> GetAppropriateTile(int numTilesPerRow);
 
 	// Get the last tile in a row based on previous tile rows, dependantType = tile type from last row that depends on new tile 
-	TileDetails* GetAppropriateLastTile(int numTilesPerRow);
+	TArray<FIntVector> GetAppropriateLastTile(int numTilesPerRow);
 
 	// MeshType and Num 90 degree rotations
 	TArray<TileDetails*> TileLog;
 	// Number of rows to store in TileLog
-	int NumToLog = 5;
+	int NumRowsToLog = 5;
 
 	MeshLibrary* MeshLib;
 };
