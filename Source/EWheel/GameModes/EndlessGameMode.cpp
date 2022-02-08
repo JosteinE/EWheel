@@ -77,10 +77,10 @@ void AEndlessGameMode::Tick(float DeltaTime)
 	// If the player is further than the max distance from the last point, add a new point.
 	int pathIndex = extendFromSplinePoint;
 	if (pathIndex > mainPath->GetSpline()->GetNumberOfSplinePoints() - 1)
-		pathIndex = mainPath->GetSpline()->GetNumberOfSplinePoints() - 1;
+		pathIndex = 0;
 
 	// Extend the path if the player is within the minimum range to indexed spline point
-	if ((mainPath->GetSpline()->GetWorldLocationAtSplinePoint(pathIndex) - mainPlayer->GetActorLocation()).Size() < minDistToSplinePoint)
+	if (mainPath->GetSpline()->GetNumberOfSplinePoints() < maxNumSplinePoints || (mainPath->GetSpline()->GetWorldLocationAtSplinePoint(pathIndex) - mainPlayer->GetActorLocation()).Size() < minDistToSplinePoint)
 	{
 		ExtendPath();
 
@@ -105,14 +105,6 @@ void AEndlessGameMode::Tick(float DeltaTime)
 
 void AEndlessGameMode::ExtendPath()
 {
-	// Randomly select tiles
-	TArray<FString> meshPaths;
-	for (int i = 0; i < TilesPerRow; i++)
-	{
-		meshPaths.Emplace(meshPathLib[2]); //meshPathLib[FMath::RandRange(0, meshPathLib.Num() - 1)]
-	}
-	mainPath->SetDefaultMesh(meshGen.GenerateStaticMeshFromTile(meshPaths));
-
 	// Calculate the next spline point position
 	FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 	//LastSPlinePointDirection.X += FMath::RandRange(-0.5f, 0.5f);

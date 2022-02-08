@@ -95,7 +95,7 @@ void AMeshSplineActor::AddSplinePointAndMesh(const FVector newPointLocation)
 	}
 
 	// Reconstruct mesh
-	for (int i = reconStart; i < reconEnd; i++)
+	for (int i = reconStart; i <= reconEnd; i++)
 	{
 		ConstructMesh(i);
 	}

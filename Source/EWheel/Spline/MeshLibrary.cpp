@@ -25,9 +25,9 @@ MeshLibrary::MeshLibrary()
 
 	for (int i = 0; i < meshPaths.Num(); i++)
 	{
-		static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(*meshPaths[i]);
+		ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(*meshPaths[i]);
 		if (MeshAsset.Succeeded())
-			mLibrary.Emplace(MeshAsset.Object);
+			mLibrary.Emplace(Cast<UStaticMesh>(MeshAsset.Object));
 	}
 }
 
