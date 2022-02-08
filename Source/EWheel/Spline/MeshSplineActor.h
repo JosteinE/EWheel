@@ -21,6 +21,9 @@ class EWHEEL_API AMeshSplineActor : public ASplineActor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SplineMesh", meta = (AllowPrivateAccess = "true"))
 	TArray<USplineMeshComponent*> SplineMeshComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SplineMesh", meta = (AllowPrivateAccess = "true"))
+	UStaticMesh* DefaultMesh = nullptr;
+
 	// Using TEnumAsByte to expose the enum to blueprints. This lets us rotate our mesh to match the forward direction of the spline
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SplineMesh", meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<ESplineMeshAxis::Type> ForwardAxis;
@@ -51,7 +54,7 @@ private:
 	void RemoveSplineMesh(int index, bool bRemovePoint = true);
 
 	int numRowsToReConPostInit = 3; // SHOULD BE > 0
-	int tilesPerRow = 1;
+	int tilesPerRow = 3;
 	float tileOffset = 150.f;
 
 	// Stitches multiple StaticMesh tiles into one

@@ -23,6 +23,9 @@ public:
 	~SplineTilePicker();
 	
 	TArray<UStaticMesh*> GetNewTiles(int numTiles);
+	int GetTileRotation(int index);
+	TArray<int> GetRowRotation(int index, int numPerRow); // index should be first tile in row (left)
+	TArray<int> GetLastRowRotation(int index, int numPerRow); // index should be first tile in row (left)
 	void SetNumRowsToLog(int num);
 private:
 	// Empties TileLog if it exceedes the set amount to store

@@ -67,7 +67,13 @@ void AEndlessGameMode::BeginPlay()
 	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_NW_150x150.Ground_Ramp_NW_150x150'");
 	meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_Single_150x150.Ground_Ramp_Single_150x150'");
 
-
+	// TEMP
+	TArray<FString> meshPaths;
+	for (int i = 0; i < TilesPerRow; i++)
+	{
+		meshPaths.Emplace(meshPathLib[2]);
+	}
+	mainPath->SetDefaultMesh(meshGen.GenerateStaticMeshFromTile(meshPaths));
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)

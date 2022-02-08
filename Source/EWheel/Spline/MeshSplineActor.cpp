@@ -12,7 +12,7 @@ AMeshSplineActor::AMeshSplineActor()
 {
 	MeshGen = new MeshGenerator;
 	TilePicker = new SplineTilePicker;
-	TilePicker->SetNumRowsToLog(3);
+	TilePicker->SetNumRowsToLog(numRowsToReConPostInit);
 }
 
 AMeshSplineActor::~AMeshSplineActor()
@@ -35,7 +35,7 @@ void AMeshSplineActor::OnConstruction(const FTransform& Transform)
 void AMeshSplineActor::ConstructMesh(int SplineIndex)
 {
 	// Ensure that our mesh exists, otherwise return
-	UStaticMesh* mesh = MeshGen->StitchStaticMesh(TilePicker->GetNewTiles(3));
+	UStaticMesh* mesh = DefaultMesh; //MeshGen->StitchStaticMesh(TilePicker->GetNewTiles(tilesPerRow));
 	if (!mesh) return;
 
 	//Use the previous point as the starting location
@@ -47,8 +47,6 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex)
 	//Get the tangent belonging to our next point
 	const FVector EndTangent = GetSpline()->GetTangentAtSplinePoint(SplineIndex + 1, ESplineCoordinateSpace::Local);
 
-	//Set the index account for the number of rows/meshes.
-	SplineIndex *= tilesPerRow;
 	// Construct our new mesh component
 	SplineMeshComponent.Emplace(NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass()));
 	// Assign mesh to the new component
@@ -104,19 +102,11 @@ void AMeshSplineActor::AddSplinePointAndMesh(const FVector newPointLocation)
 void AMeshSplineActor::RemoveFirstSplinePointAndMesh(bool bRemovePoint)
 {
 	RemoveSplineMesh(0, bRemovePoint);
-
-	if (tilesPerRow > 1)
-	{
-		for (int i = 1; i < tilesPerRow; i++)
-		{
-			RemoveSplineMesh(0, false);
-		}
-	}
 }
 
 void AMeshSplineActor::SetDefaultMesh(UStaticMesh* StaticMesh)
 {
-	//DefaultMesh = StaticMesh;
+	DefaultMesh = StaticMesh;
 }
 
 void AMeshSplineActor::RemoveAllSplineMesh(bool bRemovePoints)

@@ -70,6 +70,26 @@ TArray<UStaticMesh*> SplineTilePicker::GetNewTiles(int numTiles)
 	return TileMesh;
 }
 
+int SplineTilePicker::GetTileRotation(int index)
+{
+	return TileLog[index]->m_Rotation;
+}
+
+TArray<int> SplineTilePicker::GetRowRotation(int index, int numPerRow)
+{
+	TArray<int> tileRotations;
+	for (int i = 0; i < numPerRow; i++)
+	{
+		tileRotations.Emplace(GetTileRotation(index));
+	}
+	return tileRotations;
+}
+
+TArray<int> SplineTilePicker::GetLastRowRotation(int index, int numPerRow)
+{
+	return GetRowRotation(TileLog.Num() - 1 - numPerRow, numPerRow);
+}
+
 void SplineTilePicker::SetNumRowsToLog(int num)
 {
 	NumRowsToLog = num;
