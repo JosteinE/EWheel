@@ -58,8 +58,7 @@ TArray<UStaticMesh*> SplineTilePicker::GetNewTiles(int numTiles)
 		newTile->m_MeshCategory = possibleTiles[randomTileIndex].X;
 		newTile->m_MeshType = possibleTiles[randomTileIndex].Y;
 		newTile->m_Rotation = possibleTiles[randomTileIndex].Z;
-		
-		UE_LOG(LogTemp, Warning, TEXT("TileDetails: %i, %i, %i"), newTile->m_MeshCategory, newTile->m_MeshType, newTile->m_Rotation);
+
 		// Log to pair
 		TileLog.Emplace(newTile);
 

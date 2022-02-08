@@ -90,6 +90,7 @@ void AEndlessGameMode::Tick(float DeltaTime)
 	{
 		ExtendPath();
 
+		int numObstaclesSpawned = 0;
 		// Check object spawn for each tile
 		for (int i = 0; i < TilesPerRow; i++)
 		{
@@ -100,10 +101,11 @@ void AEndlessGameMode::Tick(float DeltaTime)
 				SpawnPointObject(tileCentre);
 			}
 			// Spawn Obstacle Object
-			else if (FMath::RandRange(0, 99) < ObstacleSpawnChance)
+			else if (numObstaclesSpawned < TilesPerRow - 1 && FMath::RandRange(0, 99) < ObstacleSpawnChance)
 			{
 				FVector tileCentre = GetTileCentreLastRow(i);
 				SpawnObstacleObject(tileCentre);
+				numObstaclesSpawned++;
 			}
 		}
 	}
@@ -189,9 +191,10 @@ void AEndlessGameMode::SpawnObstacleObject(FVector& location)
 
 	ObstacleObject->SetStaticMesh(ObstacleMesh);
 
-	ObstacleObject->SetActorLocation(location + FVector{ 0.f, 0.f, 17.f });
-	ObstacleObject->GetMeshComponent()->SetWorldScale3D(FVector{ FMath::RandRange(0.5f, 1.f), FMath::RandRange(0.5f, 1.f), FMath::RandRange(0.5f, 1.f) });
-	//ObstacleObject->GetMeshComponent()->SetRelativeRotation(FRotator{ 90.f, 0.f, 0.f });
+	float height = FMath::RandRange(0.5f, 1.f);
+	ObstacleObject->SetActorLocation(location + FVector{ 0.f, 0.f, 10.f * height });
+	ObstacleObject->GetMeshComponent()->SetWorldScale3D(FVector{ FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.1f, 1.f) * height });
+	ObstacleObject->GetMeshComponent()->SetRelativeRotation(FRotator{ 0.f, FMath::RandRange(0.f, 90.f), 0.f });
 	//PointObject->GetMeshComponent()->RegisterComponent();
 }
 

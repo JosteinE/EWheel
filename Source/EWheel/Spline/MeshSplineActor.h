@@ -53,7 +53,7 @@ private:
 	void RemoveAllSplineMesh(bool bRemovePoints = true);
 	void RemoveSplineMesh(int index, bool bRemovePoint = true);
 
-	int numRowsToReConPostInit = 3; // SHOULD BE > 0
+	int numRowsToReConPostInit = 1; // SHOULD BE > 0
 	int tilesPerRow = 3;
 	float tileOffset = 150.f;
 
