@@ -21,9 +21,9 @@ enum MeshType
 
 enum MeshCategories
 {
-	TYPE_DEFAULT,
-	TYPE_PIT,
-	TYPE_RAMP,
+	CATEGORY_DEFAULT,
+	CATEGORY_PIT,
+	CATEGORY_RAMP,
 };
 
 class UStaticMesh;
