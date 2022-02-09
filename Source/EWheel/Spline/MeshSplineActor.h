@@ -39,7 +39,7 @@ class EWHEEL_API AMeshSplineActor : public ASplineActor
 protected:
 	void OnConstruction(const FTransform& Transform) override;
 
-	void ConstructMesh(int SplineIndex);
+	void ConstructMesh(int SplineIndex, UStaticMesh* inMesh = nullptr);
 
 public:
 	// Adds a point to the spline
@@ -52,6 +52,8 @@ public:
 private:
 	void RemoveAllSplineMesh(bool bRemovePoints = true);
 	void RemoveSplineMesh(int index, bool bRemovePoint = true);
+
+	TArray<UStaticMesh*> meshBank; // Stores the last few rows, number equal to numRowsToReConPostInit
 
 	int numRowsToReConPostInit = 3; // SHOULD BE > 0
 	int tilesPerRow = 3;

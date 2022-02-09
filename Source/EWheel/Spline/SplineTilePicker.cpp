@@ -79,7 +79,7 @@ TArray<int> SplineTilePicker::GetRowRotation(int index, int numPerRow)
 	TArray<int> tileRotations;
 	for (int i = 0; i < numPerRow; i++)
 	{
-		tileRotations.Emplace(GetTileRotation(index));
+		tileRotations.Emplace(GetTileRotation(index + i));
 	}
 	return tileRotations;
 }

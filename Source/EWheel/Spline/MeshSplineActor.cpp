@@ -32,11 +32,22 @@ void AMeshSplineActor::OnConstruction(const FTransform& Transform)
 	}
 }
 
-void AMeshSplineActor::ConstructMesh(int SplineIndex)
+void AMeshSplineActor::ConstructMesh(int SplineIndex, UStaticMesh* inMesh)
 {
 	// Ensure that our mesh exists, otherwise return
-	UStaticMesh* mesh = MeshGen->StitchStaticMesh(TilePicker->GetRowRotation(SplineIndex, tilesPerRow), TilePicker->GetNewTiles(tilesPerRow));
-	if (!mesh) return;
+	UStaticMesh* mesh;
+	if (inMesh)
+		mesh = inMesh;
+	else
+	{
+		mesh = MeshGen->StitchStaticMesh(TilePicker->GetLastRowRotation(tilesPerRow), TilePicker->GetNewTiles(tilesPerRow));
+		if (!mesh) return;
+
+		meshBank.Emplace(mesh);
+
+		if (meshBank.Num() > numRowsToReConPostInit)
+			meshBank.RemoveAt(0);
+	}
 
 	//Use the previous point as the starting location
 	const FVector StartingPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
@@ -95,7 +106,10 @@ void AMeshSplineActor::AddSplinePointAndMesh(const FVector newPointLocation)
 	// Reconstruct mesh
 	for (int i = reconStart; i <= reconEnd; i++)
 	{
-		ConstructMesh(i);
+		if (i < reconEnd)
+			ConstructMesh(i, meshBank[i - reconStart]);
+		else
+			ConstructMesh(i);
 	}
 }
 
