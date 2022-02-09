@@ -51,7 +51,7 @@ void AEndlessGameMode::BeginPlay()
 	pathSpawnParams.Owner = this;
 	mainPath = GetWorld()->SpawnActor<AMeshSplineActor>(AMeshSplineActor::StaticClass(), FVector{ -50.f, 0.f, splineSpawnVerticalOffset }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
 	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-
+	mainPath->SetNumTilesPerRow(TilesPerRow);
 	////TEST
 	//meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/DefaultGround_150x150_Sub.DefaultGround_150x150_Sub'");
 	//// Pits

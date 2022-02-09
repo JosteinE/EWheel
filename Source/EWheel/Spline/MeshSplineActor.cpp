@@ -25,11 +25,11 @@ AMeshSplineActor::~AMeshSplineActor()
 
 void AMeshSplineActor::OnConstruction(const FTransform& Transform)
 {
-	// Construct the spline mesh
-	for (int SplineCount = 0; SplineCount < GetSpline()->GetNumberOfSplinePoints() - 1; SplineCount++)
-	{
-		ConstructMesh(SplineCount);
-	}
+	//// Construct the spline mesh
+	//for (int SplineCount = 0; SplineCount < GetSpline()->GetNumberOfSplinePoints() - 1; SplineCount++)
+	//{
+	//	ConstructMesh(SplineCount);
+	//}
 }
 
 void AMeshSplineActor::ConstructMesh(int SplineIndex, UStaticMesh* inMesh)
@@ -121,6 +121,11 @@ void AMeshSplineActor::RemoveFirstSplinePointAndMesh(bool bRemovePoint)
 void AMeshSplineActor::SetDefaultMesh(UStaticMesh* StaticMesh)
 {
 	DefaultMesh = StaticMesh;
+}
+
+void AMeshSplineActor::SetNumTilesPerRow(int numTiles)
+{
+	tilesPerRow = numTiles;
 }
 
 void AMeshSplineActor::RemoveAllSplineMesh(bool bRemovePoints)

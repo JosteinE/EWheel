@@ -63,7 +63,8 @@ private:
 	// Number of rows to store in TileLog. Need at least 2 to check the previous row
 	int NumRowsToLog = 2;
 
-	int FlatBoyChance = 50;
+	// Chance to spawn a flat tile if no other tile depends on this
+	int FlatBoyChance = 75;
 
 	MeshLibrary* MeshLib;
 };

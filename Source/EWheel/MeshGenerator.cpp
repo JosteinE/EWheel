@@ -60,7 +60,7 @@ UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<int> inRot, TArray<UStaticMe
 	// Initial offset is half if inmesh num is even, normal if odd
 	float offset = tileOffset * (0.5f * (((inMesh.Num() % 2) + 2) - 1));
 	// Let origo be the centre of the mesh
-	offset = inMesh.Num() * 0.5f * 150 - offset;
+	offset = FMath::Floor(inMesh.Num() * 0.5f) * 150 - (offset * (1 - (inMesh.Num() % 2)));
 
 	for (int i = 0; i < inMesh.Num(); i++)
 	{

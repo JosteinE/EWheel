@@ -48,7 +48,7 @@ public:
 	void RemoveFirstSplinePointAndMesh(bool bRemovePoint = true);
 
 	void SetDefaultMesh(UStaticMesh* StaticMesh);
-
+	void SetNumTilesPerRow(int numTiles);
 private:
 	void RemoveAllSplineMesh(bool bRemovePoints = true);
 	void RemoveSplineMesh(int index, bool bRemovePoint = true);
@@ -56,7 +56,7 @@ private:
 	TArray<UStaticMesh*> meshBank; // Stores the last few rows, number equal to numRowsToReConPostInit
 
 	int numRowsToReConPostInit = 3; // SHOULD BE > 0
-	int tilesPerRow = 10;
+	int tilesPerRow = 3;
 	float tileOffset = 150.f;
 
 	// Stitches multiple StaticMesh tiles into one
