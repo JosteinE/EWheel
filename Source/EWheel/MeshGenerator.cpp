@@ -11,6 +11,8 @@
 
 #include "KismetProceduralMeshLibrary.h"
 
+#include "StaticMeshDescription.h"
+
 MeshGenerator::MeshGenerator()
 {
 }
@@ -48,10 +50,10 @@ UStaticMesh* MeshGenerator::GenerateStaticMeshFromTile(TArray<FString>& meshPath
 		meshAssets.Emplace(Cast<UStaticMesh>(MeshAsset));
 	}
 
-	return StitchStaticMesh(meshAssets);
+	return StitchStaticMesh(TArray<int>(), meshAssets);
 }
 
-UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<UStaticMesh*> inMesh)
+UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<int> inRot, TArray<UStaticMesh*> inMesh)
 {
 	UProceduralMeshComponent* ProcMeshComp = NewObject<UProceduralMeshComponent>();
 
@@ -67,8 +69,18 @@ UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<UStaticMesh*> inMesh)
 		// Copy the mesh data into the arrays
 		UKismetProceduralMeshLibrary::GetSectionFromStaticMesh(inMesh[i], 0, 0, Vertices, Triangles, Normals, UVs, Tangents);
 
+		// ROTATE TEST
+		if (inRot.Num() == inMesh.Num())
+		{
+			for (int ii = 0; ii < Vertices.Num(); ii++)
+			{
+				Vertices[ii] = FRotator{ 0.f, inRot[i] * 90.f, 0.f }.RotateVector(Vertices[ii]);
+			}
+		}
+
 		if (i != 0)
-		{ // Move the vertices of the secondary tiles to the side of the center tile.  
+		{
+			// Move the vertices of the secondary tiles to the side of the center tile.  
 			for (int ii = 0; ii < Vertices.Num(); ii++)
 			{	// Tileoffset is increased for every 2nd tile placed after the inital one
 				// Tileoffset is also alternates between positive and negative for every tile placed (right first, then left)

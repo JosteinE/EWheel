@@ -35,7 +35,7 @@ void AMeshSplineActor::OnConstruction(const FTransform& Transform)
 void AMeshSplineActor::ConstructMesh(int SplineIndex)
 {
 	// Ensure that our mesh exists, otherwise return
-	UStaticMesh* mesh = DefaultMesh; //MeshGen->StitchStaticMesh(TilePicker->GetNewTiles(tilesPerRow));
+	UStaticMesh* mesh = MeshGen->StitchStaticMesh(TilePicker->GetRowRotation(SplineIndex, tilesPerRow), TilePicker->GetNewTiles(tilesPerRow));
 	if (!mesh) return;
 
 	//Use the previous point as the starting location

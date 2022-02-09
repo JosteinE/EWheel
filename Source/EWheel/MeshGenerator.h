@@ -18,7 +18,7 @@ public:
 
 	//UProceduralMeshComponent* GenerateMeshFromTile(int MESH_ENUM); OLD
 	UStaticMesh* GenerateStaticMeshFromTile(TArray<FString>& meshPaths);
-	UStaticMesh* StitchStaticMesh(TArray<UStaticMesh*> inMesh);
+	UStaticMesh* StitchStaticMesh(TArray<int> inRot, TArray<UStaticMesh*> inMesh); // inRot -> int x 90 degrees
 
 
 private:

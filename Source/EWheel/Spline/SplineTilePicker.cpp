@@ -84,9 +84,9 @@ TArray<int> SplineTilePicker::GetRowRotation(int index, int numPerRow)
 	return tileRotations;
 }
 
-TArray<int> SplineTilePicker::GetLastRowRotation(int index, int numPerRow)
+TArray<int> SplineTilePicker::GetLastRowRotation(int numPerRow)
 {
-	return GetRowRotation(TileLog.Num() - 1 - numPerRow, numPerRow);
+	return GetRowRotation(TileLog.Num() - numPerRow, numPerRow);
 }
 
 void SplineTilePicker::SetNumRowsToLog(int num)

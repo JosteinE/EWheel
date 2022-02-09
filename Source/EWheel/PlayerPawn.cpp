@@ -151,6 +151,8 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayerPawn::Escape);
 	PlayerInputComponent->BindAction("QuickRestart", IE_Pressed, this, &APlayerPawn::QuickRestart);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerPawn::Jump);
+
+	//Tilt Controlls
 }
 
 void APlayerPawn::MoveBoard(float DeltaTime)
