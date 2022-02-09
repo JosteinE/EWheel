@@ -15,12 +15,7 @@ SplineTilePicker::~SplineTilePicker()
 	delete MeshLib;
 	MeshLib = nullptr;
 
-	for (int i = 0; i < TileLog.Num(); i++)
-	{
-		delete TileLog[i];
-		TileLog[i] = nullptr;
-	}
-	TileLog.Empty();
+	EmptyTileLog();
 }
 
 TArray<UStaticMesh*> SplineTilePicker::GetNewTiles(int numTiles)
@@ -94,12 +89,20 @@ void SplineTilePicker::SetNumRowsToLog(int num)
 	NumRowsToLog = num;
 }
 
+void SplineTilePicker::EmptyTileLog()
+{
+	for (int i = 0; i < TileLog.Num(); i++)
+	{
+		delete TileLog[i];
+		TileLog[i] = nullptr;
+	}
+	TileLog.Empty();
+}
+
 void SplineTilePicker::CheckAndEmptyLog(int numTilesPerRow)
 {
 	if (TileLog.Num() + numTilesPerRow > NumRowsToLog * numTilesPerRow)
-	{
 		TileLog.RemoveAt(0, numTilesPerRow, true);
-	}
 }
 
 void SplineTilePicker::GetPreviousDependancies(TArray<bool>& indexLog, int numToCheck)
@@ -116,28 +119,31 @@ bool SplineTilePicker::CheckDependancyPrevious(int currentIndex, int numTilesPer
 	int previousIndex = currentIndex - numTilesPerRow;
 	if (previousIndex < 0) return false;
 
-	if (TileLog[previousIndex]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
+	switch (TileLog[previousIndex]->m_MeshType)
 	{
-		switch (TileLog[previousIndex]->m_MeshType)
-		{
-		case PIT_4W:
+	// Pits
+	case PIT_4W:
+		return true;
+		break;
+	case PIT_END_SN:
+		if (TileLog[previousIndex]->m_Rotation == 2)
 			return true;
-			break;
-		case PIT_EX:
-			if (TileLog[previousIndex]->m_Rotation == 0)
-				return true;
-			break;
-		case PIT_L:
-			if (TileLog[previousIndex]->m_Rotation == 0 || TileLog[previousIndex]->m_Rotation == 3)
-				return true;
-			break;
-		case PIT_T:
-			if (TileLog[previousIndex]->m_Rotation != 0)
-				return true;
-			break;
-		default:
-			break;
-		}
+		break;
+	case PIT_EX:
+		if (TileLog[previousIndex]->m_Rotation == 0)
+			return true;
+		break;
+	case PIT_L:
+		if (TileLog[previousIndex]->m_Rotation == 0 || TileLog[previousIndex]->m_Rotation == 3)
+			return true;
+		break;
+	case PIT_T:
+		if (TileLog[previousIndex]->m_Rotation != 0)
+			return true;
+		break;
+
+	default:
+		break;
 	}
 	return false;
 }
@@ -145,63 +151,70 @@ bool SplineTilePicker::CheckDependancyPrevious(int currentIndex, int numTilesPer
 bool SplineTilePicker::CheckDependancyLeft(int currentIndex)
 {
 	int leftIndex = currentIndex - 1;
-	if (TileLog[leftIndex]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
+	if (leftIndex < 0) return false;
+
+	switch (TileLog[leftIndex]->m_MeshType)
 	{
-		switch (TileLog[leftIndex]->m_MeshType)
-		{
-		case PIT_4W:
+	// Pits
+	case PIT_4W:
+		return true;
+	case PIT_END_SN:
+		if (TileLog[leftIndex]->m_Rotation == 3)
 			return true;
-		case PIT_EX:
-			if (TileLog[leftIndex]->m_Rotation == 1)
-				return true;
-			break;
-		case PIT_L:
-			if (TileLog[leftIndex]->m_Rotation == 0 || TileLog[leftIndex]->m_Rotation == 1)
-				return true;
-			break;
-		case PIT_T:
-			if (TileLog[leftIndex]->m_Rotation != 1)
-				return true;
-			break;
-		default:
-			break;
-		}
-	}
-	else if (TileLog[leftIndex]->m_MeshCategory == MeshCategories::CATEGORY_RAMP)
-	{
-		if (TileLog[leftIndex]->m_MeshType == MeshType::RAMP_L || TileLog[leftIndex]->m_MeshType == MeshType::RAMP_M)
+		break;
+	case PIT_EX:
+		if (TileLog[leftIndex]->m_Rotation == 1)
 			return true;
+		break;
+	case PIT_L:
+		if (TileLog[leftIndex]->m_Rotation == 0 || TileLog[leftIndex]->m_Rotation == 1)
+			return true;
+		break;
+	case PIT_T:
+		if (TileLog[leftIndex]->m_Rotation != 1)
+			return true;
+		break;
+
+	//Ramps
+	case RAMP_L:
+		return true;
+	case RAMP_M:
+		return true;
+
+	default:
+		break;
 	}
 	return false;
 }
 
 bool SplineTilePicker::CheckForTileCrash(int currentIndex, int numTilesPerRow)
 {
-	if (currentIndex > 0 && (TileLog[currentIndex - 1]->m_MeshType == RAMP_L || TileLog[currentIndex - 1]->m_MeshType == RAMP_M))
-		return CheckDependancyPrevious(currentIndex, numTilesPerRow);
+	//bool bLeft = (currentIndex > 0 && (currentIndex - 1) % numTilesPerRow == 0) && TileLog[currentIndex - 1]->m_MeshType == RAMP_L || TileLog[currentIndex - 1]->m_MeshType == RAMP_M;
+	//bool bNextPrevious = CheckDependancyPrevious(currentIndex + 1, numTilesPerRow);
 
-	return false;
+	return CheckDependancyPrevious(currentIndex + 1, numTilesPerRow);
 }
 
 void SplineTilePicker::GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow)
 {
 	int currentIndex = TileLog.Num();
 
-	if (CheckForTileCrash(currentIndex, numTilesPerRow))
-	{
-		// NO ramps
-		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT, 0 });
-		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 2 });
-		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 3 });
-		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 0 });
-	}
-	else if (CheckDependancyPrevious(currentIndex, numTilesPerRow)) // Means previous tile was a pit
+	if (CheckDependancyPrevious(currentIndex, numTilesPerRow)) // Means previous tile was a pit
 	{
 		// Generate tile that links with the previous pit tile and NOT left tile
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 0 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_EX, 0 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 1 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_T, 3 });
+	}
+	else if (CheckForTileCrash(currentIndex, numTilesPerRow))
+	{
+		// NO CONNECTED RAMPS
+		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT, 0 });
+		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 2 });
+		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 3 });
+		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 0 });
+		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP, 0 });
 	}
 	else
 	{
@@ -218,12 +231,6 @@ void SplineTilePicker::GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles
 void SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow)
 {
 	int currentIndex = TileLog.Num();
-
-	if (CheckForTileCrash(currentIndex, numTilesPerRow))
-	{
-		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP_R, 0 });
-		return;
-	}
 
 	bool bLeft = CheckDependancyLeft(currentIndex);
 	bool bPrevious = CheckDependancyPrevious(currentIndex, numTilesPerRow);
@@ -256,8 +263,9 @@ void SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_T, 2 });
 			break;
 		case MeshCategories::CATEGORY_RAMP:
-			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP_M, 0 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP_R, 0 });
+			if (!CheckDependancyPrevious(currentIndex + 1, numTilesPerRow))
+				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP_M, 0 });
 			break;
 		}
 	}
@@ -269,7 +277,9 @@ void SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 3 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 0 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP, 0 });
-		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP_L, 0 });
+		
+		if(!CheckDependancyPrevious(currentIndex + 1, numTilesPerRow))
+			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP_L, 0 });
 	}
 }
 

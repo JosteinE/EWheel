@@ -57,6 +57,9 @@ UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<int> inRot, TArray<UStaticMe
 {
 	UProceduralMeshComponent* ProcMeshComp = NewObject<UProceduralMeshComponent>();
 
+	// Tileoffset is half if inmesh num is even, normal if odd
+	float offset = tileOffset * (0.5f * (((inMesh.Num() % 2) + 2) - 1));
+
 	for (int i = 0; i < inMesh.Num(); i++)
 	{
 		// Arrays to store the mesh data
@@ -69,23 +72,12 @@ UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<int> inRot, TArray<UStaticMe
 		// Copy the mesh data into the arrays
 		UKismetProceduralMeshLibrary::GetSectionFromStaticMesh(inMesh[i], 0, 0, Vertices, Triangles, Normals, UVs, Tangents);
 
-		// ROTATE TEST
-		if (inRot.Num() == inMesh.Num())
+		for (int ii = 0; ii < Vertices.Num(); ii++)
 		{
-			for (int ii = 0; ii < Vertices.Num(); ii++)
-			{
-				Vertices[ii] = FRotator{ 0.f, inRot[i] * 90.f, 0.f }.RotateVector(Vertices[ii]);
-			}
-		}
-
-		if (i != 0)
-		{
-			// Move the vertices of the secondary tiles to the side of the center tile.  
-			for (int ii = 0; ii < Vertices.Num(); ii++)
-			{	// Tileoffset is increased for every 2nd tile placed after the inital one
-				// Tileoffset is also alternates between positive and negative for every tile placed (right first, then left)
-				Vertices[ii] += FVector{ 0.f, tileOffset * FMath::Floor((i + 1) / 2), 0.f } *((2 * (i % 2)) - 1);
-			}
+			// Rotate vertices
+			Vertices[ii] = FRotator{ 0.f, inRot[i] * 90.f, 0.f }.RotateVector(Vertices[ii]);
+			// Move vertices
+			Vertices[ii] += FVector{ 0.f, -offset + (offset * i), 0.f };
 		}
 
 		// Create a section using the data copied from the original mesh
