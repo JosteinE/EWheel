@@ -47,19 +47,23 @@ private:
 	bool CheckForTileCrash(int currentIndex, int numTilesPerRow);
 
 
-	// Get the first tile in a row based on previous tile rows, dependantType = tile type from last row that depends on new tile 
-	void GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow);
+	// Get a tile that fits with the previous tile. bool = if the tile is dependant
+	bool GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow);
 
-	// Get a tile based on previous tile rows, dependantType = tile type from last row that depends on new tile 
-	void GetAppropriateTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow);
+	// Get a tile that fits with the previous and left tile. bool = if the tile is dependant
+	bool GetAppropriateTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow);
 
-	// Get the last tile in a row based on previous tile rows, dependantType = tile type from last row that depends on new tile 
-	void GetAppropriateLastTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow);
+	// Get a tile that fits with the previous and left tile, and that doesnt rely on a right tile. bool = if the tile is dependant
+	bool GetAppropriateLastTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow);
+
+	int GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTiles);
 
 	// Mesh category, type and Num 90 degree rotations
 	TArray<TileDetails*> TileLog;
-	// Number of rows to store in TileLog
-	int NumRowsToLog = 5;
+	// Number of rows to store in TileLog. Need at least 2 to check the previous row
+	int NumRowsToLog = 2;
+
+	int FlatBoyChance = 50;
 
 	MeshLibrary* MeshLib;
 };

@@ -12,7 +12,7 @@ AMeshSplineActor::AMeshSplineActor()
 {
 	MeshGen = new MeshGenerator;
 	TilePicker = new SplineTilePicker;
-	TilePicker->SetNumRowsToLog(numRowsToReConPostInit);
+	TilePicker->SetNumRowsToLog(2);
 }
 
 AMeshSplineActor::~AMeshSplineActor()

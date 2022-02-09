@@ -30,23 +30,32 @@ TArray<UStaticMesh*> SplineTilePicker::GetNewTiles(int numTiles)
 		// IntVector: Category, Tile and Rotation
 		TArray<FIntVector> possibleTiles;
 
+		bool bTileIsDependant = false;
 		// Generating from left to right, checking previous and left tile
-			
 		if (i == 0)
 		{
-			GetAppropriateFirstTile(possibleTiles, numTiles);
+			bTileIsDependant = GetAppropriateFirstTile(possibleTiles, numTiles);
 		}
 		else if (i < numTiles - 1)
 		{
-			GetAppropriateTile(possibleTiles, numTiles);
+			bTileIsDependant = GetAppropriateTile(possibleTiles, numTiles);
 		}
 		else
 		{
-			GetAppropriateLastTile(possibleTiles, numTiles);
+			bTileIsDependant = GetAppropriateLastTile(possibleTiles, numTiles);
 		}
 
 		// Pick a random, possible tile
-		int randomTileIndex = FMath::RandRange(0, possibleTiles.Num() - 1);
+		int randomTileIndex = 0;
+		if (!bTileIsDependant && FMath::RandRange(0, 99) < FlatBoyChance)
+		{
+			possibleTiles.Empty();
+			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_DEFAULT, MeshType::DEFAULT, 0 });
+		}
+		else
+		{
+			randomTileIndex = GetRandomIndexBasedOnWeight(possibleTiles);
+		}
 
 		// Import data from random possible tile to a new tile
 		TileDetails* newTile = new TileDetails;
@@ -195,7 +204,7 @@ bool SplineTilePicker::CheckForTileCrash(int currentIndex, int numTilesPerRow)
 	return CheckDependancyPrevious(currentIndex + 1, numTilesPerRow);
 }
 
-void SplineTilePicker::GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow)
+bool SplineTilePicker::GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow)
 {
 	int currentIndex = TileLog.Num();
 
@@ -206,6 +215,8 @@ void SplineTilePicker::GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_EX, 0 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 1 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_T, 3 });
+
+		return true;
 	}
 	else if (numTilesPerRow > 1 && CheckDependancyPrevious(currentIndex + 1, numTilesPerRow))
 	{
@@ -215,6 +226,8 @@ void SplineTilePicker::GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 3 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 0 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP, 0 });
+		
+		return true;
 	}
 	else
 	{
@@ -225,10 +238,12 @@ void SplineTilePicker::GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 0 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP, 0 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP_L, 0 });
+
+		return false;
 	}
 }
 
-void SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow)
+bool SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow)
 {
 	int currentIndex = TileLog.Num();
 
@@ -242,6 +257,8 @@ void SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 2 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_T, 0 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_T, 1 });
+
+		return true;
 	}
 	else if (bPrevious)
 	{
@@ -250,6 +267,8 @@ void SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_EX, 0 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 1 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_T, 3 });
+
+		return true;
 	}
 	else if (bLeft)
 	{
@@ -268,6 +287,8 @@ void SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP_M, 0 });
 			break;
 		}
+
+		return true;
 	}
 	else
 	{
@@ -280,10 +301,12 @@ void SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int
 		
 		if(!CheckDependancyPrevious(currentIndex + 1, numTilesPerRow))
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP_L, 0 });
+
+		return false;
 	}
 }
 
-void SplineTilePicker::GetAppropriateLastTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow)
+bool SplineTilePicker::GetAppropriateLastTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow)
 {
 	int currentIndex = TileLog.Num();
 
@@ -296,12 +319,16 @@ void SplineTilePicker::GetAppropriateLastTile(TArray<FIntVector>& possibleTiles,
 		// generate a tile that links with left and previous (We know these are two pits), DO NOT DEPEND ON RIGHT
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 2 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_T, 1 });
+
+		return true;
 	}
 	else if (bPrevious)
 	{
 		// generate a tile that links with previous and NOT left (We know this is a pit), DO NOT DEPEND ON RIGHT
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 0 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_EX, 0 });
+
+		return true;
 	}
 	else if (bLeft)
 	{
@@ -316,11 +343,81 @@ void SplineTilePicker::GetAppropriateLastTile(TArray<FIntVector>& possibleTiles,
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP_R, 0 });
 			break;
 		}
+
+		return true;
 	}
 	else
 	{
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT, 0 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 2 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP, 0 });
+
+		return false;
 	}
+}
+
+int SplineTilePicker::GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTiles)
+{
+	TArray<int> weightMap;
+
+	// Assign every option a weight. The higher the weight, the better the chance to get picked
+	for (int i = 0; i < possibleTiles.Num(); i++)
+	{
+		switch (possibleTiles[i].Y)
+		{
+		case MeshType::PIT:
+			weightMap.Emplace(4);
+			break;
+		case MeshType::PIT_4W:
+			weightMap.Emplace(1);
+			break;
+		case MeshType::PIT_END_SN:
+			weightMap.Emplace(10);
+			break;
+		case MeshType::PIT_EX:
+			weightMap.Emplace(3);
+			break;
+		case MeshType::PIT_L:
+			weightMap.Emplace(3);
+			break;
+		case MeshType::PIT_T:
+			weightMap.Emplace(2);
+			break;
+		case MeshType::RAMP:
+			weightMap.Emplace(3);
+			break;
+		case MeshType::RAMP_L:
+			weightMap.Emplace(5);
+			break;
+		case MeshType::RAMP_M:
+			weightMap.Emplace(2);
+			break;
+		case MeshType::RAMP_R:
+			weightMap.Emplace(5);
+			break;
+		default:
+			break;
+		}
+	}
+
+	int sumWeight = 0;
+
+	// Calculate the sum of the weights
+	for (int i = 0; i < weightMap.Num(); i++)
+	{
+		sumWeight += weightMap[i];
+	}
+
+	int sumRandom = FMath::RandRange(0, sumWeight);
+
+	// Iterate through the map, subtracting the current item's weight from the random number
+	// untill one is picked.
+	for (int i = 0; i < weightMap.Num(); i++)
+	{
+		if (sumRandom < weightMap[i])
+			return i;
+		sumRandom -= weightMap[i];
+	}
+
+	return 0;
 }

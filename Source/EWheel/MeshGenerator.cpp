@@ -80,6 +80,8 @@ UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<int> inRot, TArray<UStaticMe
 			{
 				// Rotate vertices
 				Vertices[ii] = FRotator{ 0.f, inRot[i] * 90.f, 0.f }.RotateVector(Vertices[ii]);
+				// Rotate normals
+				Normals[ii] = FRotator{ 0.f, inRot[i] * 90.f, 0.f }.RotateVector(Normals[ii]);
 				// Move vertices
 				Vertices[ii] += FVector{ 0.f, -offset + (tileOffset * i), 0.f };
 			}
@@ -89,7 +91,7 @@ UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<int> inRot, TArray<UStaticMe
 		ProcMeshComp->CreateMeshSection(i, Vertices, Triangles, Normals, UVs, TArray<FColor>(), Tangents, true);
 	}
 
-	ProcMeshComp->bUseComplexAsSimpleCollision = false;
+	ProcMeshComp->bUseComplexAsSimpleCollision = true;
 
 	//The code below is copied from the "FProceduralMeshComponentDetails::ClickedOnConvertToStaticMesh"
 	//function, and trimmed to exclude any unnecessary unreal backend editor configurations. 
@@ -120,18 +122,18 @@ UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<int> inRot, TArray<UStaticMe
 			StaticMesh->CreateMeshDescription(0, MoveTemp(MeshDescription));
 			StaticMesh->CommitMeshDescription(0);
 
-			//// SIMPLE COLLISION
-			if (!ProcMeshComp->bUseComplexAsSimpleCollision)
-			{
-				StaticMesh->CreateBodySetup();
-				UBodySetup* NewBodySetup = StaticMesh->GetBodySetup();
-				NewBodySetup->BodySetupGuid = FGuid::NewGuid();
-				NewBodySetup->AggGeom.ConvexElems = ProcMeshComp->ProcMeshBodySetup->AggGeom.ConvexElems;
-				NewBodySetup->bGenerateMirroredCollision = false;
-				NewBodySetup->bDoubleSidedGeometry = true;
-				NewBodySetup->CollisionTraceFlag = CTF_UseDefault;
-				NewBodySetup->CreatePhysicsMeshes();
-			}
+			////// SIMPLE COLLISION Probably wont need this. 
+			//if (!ProcMeshComp->bUseComplexAsSimpleCollision)
+			//{
+			//	StaticMesh->CreateBodySetup();
+			//	UBodySetup* NewBodySetup = StaticMesh->GetBodySetup();
+			//	NewBodySetup->BodySetupGuid = FGuid::NewGuid();
+			//	NewBodySetup->AggGeom.ConvexElems = ProcMeshComp->ProcMeshBodySetup->AggGeom.ConvexElems;
+			//	NewBodySetup->bGenerateMirroredCollision = false;
+			//	NewBodySetup->bDoubleSidedGeometry = true;
+			//	NewBodySetup->CollisionTraceFlag = CTF_UseDefault;
+			//	NewBodySetup->CreatePhysicsMeshes();
+			//}
 
 			//// MATERIALS
 			TSet<UMaterialInterface*> UniqueMaterials;
