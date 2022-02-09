@@ -207,7 +207,7 @@ void SplineTilePicker::GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 1 });
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_T, 3 });
 	}
-	else if (CheckForTileCrash(currentIndex, numTilesPerRow))
+	else if (numTilesPerRow > 1 && CheckDependancyPrevious(currentIndex + 1, numTilesPerRow))
 	{
 		// NO CONNECTED RAMPS
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT, 0 });

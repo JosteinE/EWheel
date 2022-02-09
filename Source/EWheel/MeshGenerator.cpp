@@ -57,8 +57,10 @@ UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<int> inRot, TArray<UStaticMe
 {
 	UProceduralMeshComponent* ProcMeshComp = NewObject<UProceduralMeshComponent>();
 
-	// Tileoffset is half if inmesh num is even, normal if odd
+	// Initial offset is half if inmesh num is even, normal if odd
 	float offset = tileOffset * (0.5f * (((inMesh.Num() % 2) + 2) - 1));
+	// Let origo be the centre of the mesh
+	offset = inMesh.Num() * 0.5f * 150 - offset;
 
 	for (int i = 0; i < inMesh.Num(); i++)
 	{
@@ -72,12 +74,15 @@ UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<int> inRot, TArray<UStaticMe
 		// Copy the mesh data into the arrays
 		UKismetProceduralMeshLibrary::GetSectionFromStaticMesh(inMesh[i], 0, 0, Vertices, Triangles, Normals, UVs, Tangents);
 
-		for (int ii = 0; ii < Vertices.Num(); ii++)
+		if (inMesh.Num() > 1)
 		{
-			// Rotate vertices
-			Vertices[ii] = FRotator{ 0.f, inRot[i] * 90.f, 0.f }.RotateVector(Vertices[ii]);
-			// Move vertices
-			Vertices[ii] += FVector{ 0.f, -offset + (offset * i), 0.f };
+			for (int ii = 0; ii < Vertices.Num(); ii++)
+			{
+				// Rotate vertices
+				Vertices[ii] = FRotator{ 0.f, inRot[i] * 90.f, 0.f }.RotateVector(Vertices[ii]);
+				// Move vertices
+				Vertices[ii] += FVector{ 0.f, -offset + (tileOffset * i), 0.f };
+			}
 		}
 
 		// Create a section using the data copied from the original mesh

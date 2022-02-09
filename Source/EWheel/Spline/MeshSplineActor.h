@@ -56,7 +56,7 @@ private:
 	TArray<UStaticMesh*> meshBank; // Stores the last few rows, number equal to numRowsToReConPostInit
 
 	int numRowsToReConPostInit = 3; // SHOULD BE > 0
-	int tilesPerRow = 3;
+	int tilesPerRow = 10;
 	float tileOffset = 150.f;
 
 	// Stitches multiple StaticMesh tiles into one

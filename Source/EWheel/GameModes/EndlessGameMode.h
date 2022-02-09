@@ -77,5 +77,5 @@ private:
 	TArray<FString> meshPathLib;
 
 	int32 PointSpawnChance = 8;
-	int32 ObstacleSpawnChance = 33;
+	int32 ObstacleSpawnChance = 0; //33
 };
