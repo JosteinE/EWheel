@@ -48,6 +48,7 @@ public:
 	void RemoveFirstSplinePointAndMesh(bool bRemovePoint = true);
 
 	void SetDefaultMesh(UStaticMesh* StaticMesh);
+	void SetDefaultMaterial(UMaterialInterface* Material);
 	void SetNumTilesPerRow(int numTiles);
 private:
 	void RemoveAllSplineMesh(bool bRemovePoints = true);

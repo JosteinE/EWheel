@@ -123,6 +123,11 @@ void AMeshSplineActor::SetDefaultMesh(UStaticMesh* StaticMesh)
 	DefaultMesh = StaticMesh;
 }
 
+void AMeshSplineActor::SetDefaultMaterial(UMaterialInterface* Material)
+{
+	DefaultMaterial = Material;
+}
+
 void AMeshSplineActor::SetNumTilesPerRow(int numTiles)
 {
 	tilesPerRow = numTiles;

@@ -29,6 +29,10 @@ AEndlessGameMode::AEndlessGameMode()
 	if (ObstacleObjectAsset.Succeeded())
 		ObstacleMesh = ObstacleObjectAsset.Object;
 
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface>DefaultMaterialAsset(TEXT("Material'/Game/Materials/GrassDirt_Material.GrassDirt_Material'"));
+	if (DefaultMaterialAsset.Succeeded())
+		DefaultMaterial = DefaultMaterialAsset.Object;
+
 	this->HUDClass = LoadObject<UBlueprint>(NULL, TEXT("Blueprint'/Game/Blueprints/PlayerHud.PlayerHUD'"))->GeneratedClass;
 }
 
@@ -52,6 +56,7 @@ void AEndlessGameMode::BeginPlay()
 	mainPath = GetWorld()->SpawnActor<AMeshSplineActor>(AMeshSplineActor::StaticClass(), FVector{ -50.f, 0.f, splineSpawnVerticalOffset }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
 	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 	mainPath->SetNumTilesPerRow(TilesPerRow);
+	mainPath->SetDefaultMaterial(DefaultMaterial);
 	////TEST
 	//meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/DefaultGround_150x150_Sub.DefaultGround_150x150_Sub'");
 	//// Pits

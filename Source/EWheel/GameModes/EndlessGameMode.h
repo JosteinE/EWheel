@@ -67,6 +67,7 @@ private:
 	TArray<AObstacleActor*> ObstacleActors;
 	UStaticMesh* PointObjectMesh;
 	UStaticMesh* ObstacleMesh;
+	UMaterialInterface* DefaultMaterial;
 
 	// Deletes the first pickup actor in the PickupActors array when this number is reached (should be less than maxNumSplinePoints * TilesPerRow)
 	int maxNumPickups = maxNumSplinePoints * TilesPerRow;
@@ -77,5 +78,5 @@ private:
 	TArray<FString> meshPathLib;
 
 	int32 PointSpawnChance = 8;
-	int32 ObstacleSpawnChance = 0; //33
+	int32 ObstacleSpawnChance = 33; //33
 };
