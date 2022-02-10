@@ -43,7 +43,7 @@ void AEndlessGameMode::BeginPlay()
 	FActorSpawnParameters playerSpawnParams;
 	playerSpawnParams.Owner = this;
 	playerSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	mainPlayer = GetWorld()->SpawnActor<APlayerPawn>(pawnClass, FVector{ 0,0, playerSpawnHeight }, FRotator{ 0,0,0 }, playerSpawnParams);
+	mainPlayer = GetWorld()->SpawnActor<APlayerPawn>(pawnClass, FVector{ 150.f,0, playerSpawnHeight }, FRotator{ 0,0,0 }, playerSpawnParams);
 	GetWorld()->GetFirstPlayerController()->Possess(mainPlayer);
 
 	//Bind Delegates
@@ -57,28 +57,20 @@ void AEndlessGameMode::BeginPlay()
 	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 	mainPath->SetNumTilesPerRow(TilesPerRow);
 	mainPath->SetDefaultMaterial(DefaultMaterial);
-	////TEST
-	//meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/DefaultGround_150x150_Sub.DefaultGround_150x150_Sub'");
-	//// Pits
-	//meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_150x150.Ground_Pit_150x150'");
-	//meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_Ex_SN_150x150.Ground_Pit_Ex_SN_150x150'");
-	//meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_4W_150x150.Ground_Pit_4W_150x150'");
-	//meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_EndP_SN_150x150.Ground_Pit_EndP_SN_150x150'");
-	//meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_L_SNW_150x150.Ground_Pit_L_SNW_150x150'");
-	//meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Pit_T_SN_150x150.Ground_Pit_T_SN_150x150'");
-	//// Ramps
-	//meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_N_150x150.Ground_Ramp_N_150x150'");
-	//meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_NE_150x150.Ground_Ramp_NE_150x150'");
-	//meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_NW_150x150.Ground_Ramp_NW_150x150'");
-	//meshPathLib.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_Single_150x150.Ground_Ramp_Single_150x150'");
+	
+	//TEST
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_BigRoot_150x150.Obstacle_BigRoot_150x150'");
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Log_150x150.Obstacle_Log_150x150'");
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_RampStone_150x150.Obstacle_RampStone_150x150'");
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Stone_150x150.Obstacle_Stone_150x150'");
+	meshPathLib.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Stump_150x150.Obstacle_Stump_150x150'");
 
-	//// TEMP
-	//TArray<FString> meshPaths;
-	//for (int i = 0; i < TilesPerRow; i++)
-	//{
-	//	meshPaths.Emplace(meshPathLib[2]);
-	//}
-	//mainPath->SetDefaultMesh(meshGen.GenerateStaticMeshFromTile(meshPaths));
+	// TEMP
+	TArray<FString> meshPaths;
+	for (int i = 0; i < TilesPerRow; i++)
+	{
+		meshPaths.Emplace(meshPathLib[i]);
+	}
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)
@@ -194,12 +186,14 @@ void AEndlessGameMode::SpawnObstacleObject(FVector& location)
 
 	ObstacleActors.Emplace(ObstacleObject);
 
-	ObstacleObject->SetStaticMesh(ObstacleMesh);
+	int randomIndex = FMath::RandRange(0, meshPathLib.Num() - 1);
+	ObstacleObject->SetStaticMesh(meshPathLib[randomIndex]);
 
 	float tempHeight = FMath::RandRange(0.5f, 1.f);
-	ObstacleObject->SetActorLocation(location + FVector{ 0.f, 0.f, 10.f * tempHeight });
-	ObstacleObject->GetMeshComponent()->SetWorldScale3D(FVector{ FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.1f, 1.f) * tempHeight });
-	ObstacleObject->GetMeshComponent()->SetRelativeRotation(FRotator{ 0.f, FMath::RandRange(0.f, 90.f), 0.f });
+	ObstacleObject->SetActorLocation(location); // +FVector{ 0.f, 0.f, 10.f * tempHeight });
+	ObstacleObject->GetMeshComponent()->SetWorldRotation(mainPath->GetSpline()->GetRotationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World) + FRotator{ 0.f, 180.f, 0.f });
+	//ObstacleObject->GetMeshComponent()->SetWorldScale3D(FVector{ FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.1f, 1.f) * tempHeight });
+	//ObstacleObject->GetMeshComponent()->SetRelativeRotation(FRotator{ 0.f, FMath::RandRange(0.f, 90.f), 0.f });
 	//PointObject->GetMeshComponent()->RegisterComponent();
 }
 

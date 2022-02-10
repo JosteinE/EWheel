@@ -17,14 +17,16 @@ AObstacleActor::AObstacleActor()
 	RootComponent = MeshComponent;
 
 	FString tempPath = "StaticMesh'/Engine/BasicShapes/Cube.Cube'";
-	SetStaticMesh(tempPath);
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(*tempPath);
+	if (MeshAsset.Succeeded())
+		SetStaticMesh(MeshAsset.Object);
 }
 
 void AObstacleActor::SetStaticMesh(FString& inPath)
 {
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(*inPath);
-	if (MeshAsset.Succeeded())
-		SetStaticMesh(MeshAsset.Object);
+	UObject* MeshAsset = StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *inPath);
+	if (MeshAsset)
+		SetStaticMesh(Cast<UStaticMesh>(MeshAsset));
 }
 
 void AObstacleActor::SetStaticMesh(UStaticMesh* inMesh)

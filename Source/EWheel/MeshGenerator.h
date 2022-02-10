@@ -20,7 +20,9 @@ public:
 	UStaticMesh* GenerateStaticMeshFromTile(TArray<FString>& meshPaths);
 	UStaticMesh* StitchStaticMesh(TArray<int> inRot, TArray<UStaticMesh*> inMesh); // inRot -> int x 90 degrees
 
-
+	
 private:
 	float tileOffset = 150.f;
+	bool bAddEdgeMesh = true;
+	TArray<UStaticMesh*> EdgeMeshLibrary;
 };

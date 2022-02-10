@@ -103,8 +103,8 @@ private:
 	float maxBoardTiltRoll = 35;
 	float boardTiltSpeed = 100.f;
 	float boardTiltResetSpeed = 10.f;
-	float groundContactRayOffset = 15.f;
-	float groundContactRayLength = 1.f;
+	float groundContactRayOffset = 14.f;
+	float groundContactRayLength = 2.f;
 	float groundContactRaySideOffset = 5.f;
 
 	void MoveBoard(float DeltaTime);
