@@ -74,7 +74,7 @@ class EWHEEL_API APlayerPawn : public APawn
 	float friction = 0.5f;
 
 	/** True if the wheel is in the right orientation and contact with the ground was successfully validated  */
-	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = VehicleSpecs, BlueprintReadOnly, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	bool bWheelContact = true;
 
 public:
@@ -109,7 +109,7 @@ private:
 
 	void MoveBoard(float DeltaTime);
 	void BoardTilt(float DeltaTime);
-	bool ValidateGroundContact(); // 3x Raycasts that determine if the board has sufficient contact with the ground to keep moving  
+	bool ValidateGroundContact(); // Raycasts that determine if the board has sufficient contact with the ground 
 	float GetClaculatedSpeed(float DeltaTime);
 
 

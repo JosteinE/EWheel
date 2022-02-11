@@ -47,6 +47,7 @@ private:
 
 	// Number of tiles per row
 	int TilesPerRow = 3;
+	int TileSize = 150;
 
 	float playerSpawnHeight = 100.f;
 	float splineSpawnVerticalOffset = -50.f;
@@ -78,5 +79,5 @@ private:
 	TArray<FString> meshPathLib;
 
 	int32 PointSpawnChance = 8;
-	int32 ObstacleSpawnChance = 33; //33
+	int32 ObstacleSpawnChance = 75; //33
 };

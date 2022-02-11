@@ -127,6 +127,7 @@ void APlayerPawn::Tick(float DeltaTime)
 
 	if(!GetBoardMesh()->IsSimulatingPhysics())
 	{
+		ValidateGroundContact();
 		//Move the actor based on input
 		MoveBoard(DeltaTime);
 		//Rotate the actor based on input
@@ -224,10 +225,12 @@ bool APlayerPawn::ValidateGroundContact()
 
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
+
 	FHitResult ray;
 
 	DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Green, false);
-	return GetWorld()->LineTraceSingleByChannel(ray, RaycastStartPos, RaycastEndPos, ECC_Visibility, CollisionParams);
+	bWheelContact = GetWorld()->LineTraceSingleByChannel(ray, RaycastStartPos, RaycastEndPos, ECC_Visibility, CollisionParams);
+	return bWheelContact;
 	//FVector RaycastStartPos = GetActorLocation() - GetActorUpVector() * groundContactRayOffset;
 	//FVector RaycastEndPos = GetActorLocation() - GetActorUpVector() * (groundContactRayOffset + groundContactRayLength);
 	//FVector SideRayCastOffset = GetActorRightVector() * groundContactRaySideOffset;
@@ -303,7 +306,7 @@ void APlayerPawn::QuickRestart()
 
 void APlayerPawn::Jump()
 {
-	if(ValidateGroundContact())
+	if(bWheelContact)
 		PlayerRoot->AddImpulse(GetActorUpVector() * jumpForce);
 }
 

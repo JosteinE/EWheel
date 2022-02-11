@@ -80,6 +80,8 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, UStaticMesh* inMesh)
 	SplineMeshComponent[SplineIndex]->GetBodySetup()->CollisionTraceFlag = ECollisionTraceFlag::CTF_UseComplexAsSimple;
 	SplineMeshComponent[SplineIndex]->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 
+	SplineMeshComponent[SplineIndex]->SetCastShadow(false);
+
 	if (DefaultMaterial)
 		SplineMeshComponent[SplineIndex]->SetMaterial(0, DefaultMaterial);
 }

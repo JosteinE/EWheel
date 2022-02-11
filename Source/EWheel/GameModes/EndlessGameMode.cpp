@@ -64,13 +64,6 @@ void AEndlessGameMode::BeginPlay()
 	meshPathLib.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_RampStone_150x150.Obstacle_RampStone_150x150'");
 	meshPathLib.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Stone_150x150.Obstacle_Stone_150x150'");
 	meshPathLib.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Stump_150x150.Obstacle_Stump_150x150'");
-
-	// TEMP
-	TArray<FString> meshPaths;
-	for (int i = 0; i < TilesPerRow; i++)
-	{
-		meshPaths.Emplace(meshPathLib[i]);
-	}
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)
@@ -131,9 +124,12 @@ FVector AEndlessGameMode::GetTileCentreLastRow(int index)
 {
 	FVector previousSplinePointLoc = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2);
 	FVector previousSplinePointRV = mainPath->GetSpline()->GetRightVectorAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2, ESplineCoordinateSpace::World);
-	unsigned int tileOffset = FMath::Floor(TilesPerRow / 2);
+	int tileOffset = FMath::Floor(TilesPerRow / 2);
 
-	return previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + previousSplinePointRV * (-150.f * tileOffset + (150.f * index));
+	// Initial offset is half if tileOffset is even, normal if odd
+	float offset = TileSize * (0.5f * ( 1 - (TilesPerRow % 2)));
+
+	return previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + previousSplinePointRV * (-TileSize * tileOffset + (TileSize * index) + offset);
 }
 
 void AEndlessGameMode::SpawnPointObject(FVector& location)

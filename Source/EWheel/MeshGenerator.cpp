@@ -79,9 +79,9 @@ UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<int> inRot, TArray<UStaticMe
 
 	if (bAddEdgeMesh)
 	{
-		inMesh.EmplaceAt(0, EdgeMeshLibrary[6 - 2]);
+		inMesh.EmplaceAt(0, EdgeMeshLibrary[4]);
 		inRot.EmplaceAt(0, 0);
-		inMesh.Emplace(EdgeMeshLibrary[7 - 2]);
+		inMesh.Emplace(EdgeMeshLibrary[5]);
 		inRot.Emplace(0);
 	}
 
