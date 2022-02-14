@@ -35,7 +35,7 @@ void ASplineActor::Tick(float DeltaTime)
 
 void ASplineActor::AddSplinePoint(const FVector newPointLocation, bool bUpdateSpline)
 {
-	SplineComponent->AddSplineLocalPoint(newPointLocation);
+	SplineComponent->AddSplineWorldPoint(newPointLocation);
 	if (bUpdateSpline)
 		SplineComponent->UpdateSpline();
 }

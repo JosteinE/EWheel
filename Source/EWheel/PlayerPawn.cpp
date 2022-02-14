@@ -70,7 +70,7 @@ APlayerPawn::APlayerPawn()
 	// Create a spring arm component
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm0"));
 	SpringArm->TargetOffset = FVector(0.f, 0.f, 60.f);
-	SpringArm->SetRelativeRotation(FRotator(-12.f, 0.f, 0.f));
+	SpringArm->SetRelativeRotation(FRotator(-17.f, 0.f, 0.f));
 	SpringArm->SetupAttachment(PlayerRoot);
 	SpringArm->TargetArmLength = 100.0f;
 	SpringArm->bEnableCameraRotationLag = true;

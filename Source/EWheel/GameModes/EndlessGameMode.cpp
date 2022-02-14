@@ -105,12 +105,16 @@ void AEndlessGameMode::ExtendPath()
 {
 	// Calculate the next spline point position
 	FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+	FVector LastSplinePointRightVector = mainPath->GetSpline()->GetRightVectorAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 	//LastSPlinePointDirection.X += FMath::RandRange(-0.5f, 0.5f);
-	LastSPlinePointDirection.Y += FMath::RandRange(-0.5f, 0.5f);
-	LastSPlinePointDirection.Z = 0; // FMath::RandRange(-50.f, 50.f);
 
-	const FVector newLocation = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1) * FVector{ 1.f, 1.f, 0.f } + LastSPlinePointDirection * FVector{ distToNextSplinePoint, distToNextSplinePoint, 1 };
+	// MaxAngle = 45.f;
+	//float rightAmountFormula = FMath::Pow(0.5f, maxNumSplinePoints - );
+	float rightAmount = FMath::RandRange(-TileSize / TilesPerRow * 0.5f, TileSize / TilesPerRow * 0.5f);// FMath::RandRange(-rightAmountFormula, rightAmountFormula); // *(maxNumSplinePoints * (0.1f / maxNumSplinePoints));// FMath::RandRange(-TileSize * 0.25f, TileSize * 0.25f);
+	LastSPlinePointDirection.Z += FMath::RandRange(-splineVerticalStep, splineVerticalStep);
 
+	FVector newLocation = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1) + LastSPlinePointDirection * FVector{ distToNextSplinePoint, distToNextSplinePoint, 1.f} + LastSplinePointRightVector * rightAmount;
+	newLocation.Z = FMath::Clamp(newLocation.Z, splineVerticalMin, splineVerticalMax);
 
 	// Remove the first point in the spline if adding 1 exceedes the max number of spline points.
 	mainPath->AddSplinePointAndMesh(newLocation);

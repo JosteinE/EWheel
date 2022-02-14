@@ -50,17 +50,20 @@ private:
 	int TileSize = 150;
 
 	float playerSpawnHeight = 100.f;
-	float splineSpawnVerticalOffset = -50.f;
+	float splineSpawnVerticalOffset = 0.f;
+	float splineVerticalMin = -50.f; // -50
+	float splineVerticalMax = 50.f; // 50
+	float splineVerticalStep = 20.f;
 	// Add a new point if the player is within this range to the last spline point
 	float minDistToSplinePoint = 225.f;
 	
-	// Distance to the next spline point;
-	float distToNextSplinePoint = 300.f;
-	
+	// Distance to the next spline point (Should be =TileSize)
+	float distToNextSplinePoint = 150.f;
+
 	// Max number of spline & mesh points along the curve
-	int maxNumSplinePoints = 9;
+	int maxNumSplinePoints = 20;
 	// 
-	int extendFromSplinePoint = 3;
+	int extendFromSplinePoint = 5;
 	FVector lastSplinePointLoc;
 
 	//
@@ -79,5 +82,5 @@ private:
 	TArray<FString> meshPathLib;
 
 	int32 PointSpawnChance = 8;
-	int32 ObstacleSpawnChance = 75; //33
+	int32 ObstacleSpawnChance = 33; //33
 };
