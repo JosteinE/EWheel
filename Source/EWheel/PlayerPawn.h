@@ -47,7 +47,7 @@ class EWHEEL_API APlayerPawn : public APawn
 
 	/** Forward movement speed of the vehicle */
 	UPROPERTY(Category = VehicleSpecs, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	float maxSpeed = 10.f;
+	float maxSpeed = 600.f;
 
 	/** Current speed of the vehicle */
 	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

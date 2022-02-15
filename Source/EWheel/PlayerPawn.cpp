@@ -160,11 +160,18 @@ void APlayerPawn::MoveBoard(float DeltaTime)
 {
 	FVector forwardDirection = GetActorForwardVector();
 	forwardDirection.Z = 0;
+
+	//TEST
+	//FVector LastLoc = GetActorLocation();
+
 	SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime));
 	//GetMesh()->AddForce(forwardDirection * GetClaculatedSpeed(DeltaTime) * 1000.f);
 	//GetMesh()->AddTorque(GetActorRightVector() * movementInput.Y * 10000.f);
 
-	// To avoid gimbal locking
+	//UE_LOG(LogTemp, Warning, TEXT("deltaTime: %f"), DeltaTime);
+	//UE_LOG(LogTemp, Warning, TEXT("currentSpeed: %f"), (GetActorLocation() - LastLoc).Size());
+
+	// Roll wheel. Using Quats here to avoid gimbal locking
 	GetWheelMesh()->AddLocalTransform(FTransform(FRotator{-GetClaculatedSpeed(DeltaTime), 0.f, 0.f }.Quaternion()));
 	//GetWheelMesh()->AddRelativeRotation(FRotator{ -GetClaculatedSpeed(DeltaTime), 0.f, 0.f });
 	//UE_LOG(LogTemp, Warning, TEXT("BoardRott: %f, %f, %f"), GetWheelMesh()->GetRelativeRotation().Pitch, GetWheelMesh()->GetRelativeRotation().Yaw, GetWheelMesh()->GetRelativeRotation().Roll);
@@ -182,7 +189,7 @@ float APlayerPawn::GetClaculatedSpeed(float DeltaTime)
 	currentSpeed = FMath::Clamp(currentSpeed, 0.f, maxSpeed);
 	//currentSpeed = FMath::Clamp(currentSpeed + currentAcceleration, 0.f, maxSpeed);
 
-	return currentSpeed;
+	return currentSpeed * DeltaTime;
 }
 
 void APlayerPawn::BoardTilt(float DeltaTime)

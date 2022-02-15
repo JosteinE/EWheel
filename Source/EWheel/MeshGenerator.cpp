@@ -16,31 +16,39 @@
 MeshGenerator::MeshGenerator()
 {
 	TArray<FString> meshPaths;
-	// Edge Meshes
-	//// Dive
-	//meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Dive_B_150x150_Smooth.PathEdge_Dive_B_150x150_Smooth'");
-	//meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Dive_F_150x150_Smooth.PathEdge_Dive_F_150x150_Smooth'");
-	//meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Dive_L_150x150_Smooth.PathEdge_Dive_L_150x150_Smooth'");
-	//meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Dive_R_150x150_Smooth.PathEdge_Dive_R_150x150_Smooth'");
-	//// Hill
-	//meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Hill_L_150x150_Smooth.PathEdge_Hill_L_150x150_Smooth'");
-	//meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Hill_R_150x150_Smooth.PathEdge_Hill_R_150x150_Smooth'");
-	//// Slope
-	//meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Slope_L_150x150_Smooth.PathEdge_Slope_L_150x150_Smooth'");
-	//meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Slope_R_150x150_Smooth.PathEdge_Slope_R_150x150_Smooth'");
 
-	//OLD
-	// Dive
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_B_150x150.PathEdge_Dive_B_150x150'");
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_F_150x150.PathEdge_Dive_F_150x150'");
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_L_150x150.PathEdge_Dive_L_150x150'");
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_R_150x150.PathEdge_Dive_R_150x150'");
-	// Hill
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Hill_L_150x150.PathEdge_Hill_L_150x150'");
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Hill_R_150x150.PathEdge_Hill_R_150x150'");
-	// Slope
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Slope_L_150x150.PathEdge_Slope_L_150x150'");
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Slope_R_150x150.PathEdge_Slope_R_150x150'");
+	bool bTeumpUseNew = false; // Will crash UE if changed
+
+	if (bTeumpUseNew)
+	{
+		// Edge Meshes
+		// Dive
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Dive_B_150x150_Smooth.PathEdge_Dive_B_150x150_Smooth'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Dive_F_150x150_Smooth.PathEdge_Dive_F_150x150_Smooth'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Dive_L_150x150_Smooth.PathEdge_Dive_L_150x150_Smooth'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Dive_R_150x150_Smooth.PathEdge_Dive_R_150x150_Smooth'");
+		// Hill
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Hill_L_150x150_Smooth.PathEdge_Hill_L_150x150_Smooth'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Hill_R_150x150_Smooth.PathEdge_Hill_R_150x150_Smooth'");
+		// Slope
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Slope_L_150x150_Smooth.PathEdge_Slope_L_150x150_Smooth'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Slope_R_150x150_Smooth.PathEdge_Slope_R_150x150_Smooth'");
+	}
+	else
+	{
+		//OLD
+		// Dive
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_B_150x150.PathEdge_Dive_B_150x150'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_F_150x150.PathEdge_Dive_F_150x150'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_L_150x150.PathEdge_Dive_L_150x150'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_R_150x150.PathEdge_Dive_R_150x150'");
+		// Hill
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Hill_L_150x150.PathEdge_Hill_L_150x150'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Hill_R_150x150.PathEdge_Hill_R_150x150'");
+		// Slope
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Slope_L_150x150.PathEdge_Slope_L_150x150'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Slope_R_150x150.PathEdge_Slope_R_150x150'");
+	}
 
 	for (int i = 0; i < meshPaths.Num(); i++)
 	{
