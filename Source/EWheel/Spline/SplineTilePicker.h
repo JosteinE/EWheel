@@ -46,6 +46,8 @@ private:
 	// Checks if left tile was part of a ramp and if the next previous depends on a pit. If true, end the ramp
 	bool CheckForTileCrash(int currentIndex, int numTilesPerRow);
 
+	// Get a tile that fits with the previous tile. bool = if the tile is dependant
+	bool CheckNeedSpecificEdge(int meshType);
 
 	// Get a tile that fits with the previous tile. bool = if the tile is dependant
 	bool GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow);
@@ -58,6 +60,8 @@ private:
 
 	int GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTiles);
 
+	void AddEdgeMesh(TArray<UStaticMesh*>& tileMesh, int numTilesPerRow);
+
 	// Mesh category, type and Num 90 degree rotations
 	TArray<TileDetails*> TileLog;
 	// Number of rows to store in TileLog. Need at least 2 to check the previous row
@@ -65,6 +69,6 @@ private:
 
 	// Chance to spawn a flat tile if no other tile depends on this
 	int FlatBoyChance = 75;
-
+	bool bAddEdges = true;
 	MeshLibrary* MeshLib;
 };

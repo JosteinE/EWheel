@@ -23,6 +23,4 @@ public:
 	
 private:
 	float tileOffset = 150.f;
-	bool bAddEdgeMesh = true;
-	TArray<UStaticMesh*> EdgeMeshLibrary;
 };
