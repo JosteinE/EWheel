@@ -16,7 +16,12 @@ enum MeshType
 	RAMP,
 	RAMP_L,
 	RAMP_M,
-	RAMP_R
+	RAMP_R,
+	HOLE,
+	HOLE_END_SN,
+	HOLE_EX,
+	HOLE_L,
+	HOLE_T
 };
 
 enum MeshCategories
@@ -24,6 +29,7 @@ enum MeshCategories
 	CATEGORY_DEFAULT,
 	CATEGORY_PIT,
 	CATEGORY_RAMP,
+	CATEGORY_HOLE
 };
 
 class UStaticMesh;

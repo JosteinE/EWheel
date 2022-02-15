@@ -33,21 +33,37 @@ MeshGenerator::MeshGenerator()
 		// Slope
 		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Slope_L_150x150_Smooth.PathEdge_Slope_L_150x150_Smooth'");
 		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Slope_R_150x150_Smooth.PathEdge_Slope_R_150x150_Smooth'");
+
+		//Hole
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/Hole/PathEdge_Hole_Corner_Single_150x150_Smooth.PathEdge_Hole_Corner_Single_150x150_Smooth'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/Hole/PathEdge_Hole_Single_150x150_Smooth.PathEdge_Hole_Single_150x150_Smooth'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/Hole/PathEdge_Hole_Ex_150x150_Smooth.PathEdge_Hole_Ex_150x150_Smooth'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/Hole/PathEdge_Hole_Bordered_L_150x150_Smooth.PathEdge_Hole_Bordered_L_150x150_Smooth'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/Hole/PathEdge_Hole_Bordered_R_150x150_Smooth.PathEdge_Hole_Bordered_R_150x150_Smooth'");
 	}
 	else
 	{
 		//OLD
 		// Dive
-		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_B_150x150.PathEdge_Dive_B_150x150'");
-		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_F_150x150.PathEdge_Dive_F_150x150'");
-		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_L_150x150.PathEdge_Dive_L_150x150'");
-		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_R_150x150.PathEdge_Dive_R_150x150'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_B_150x150.PathEdge_Dive_B_150x150'");	// 0
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_F_150x150.PathEdge_Dive_F_150x150'");	// 1
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_L_150x150.PathEdge_Dive_L_150x150'");	// 2
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Dive_R_150x150.PathEdge_Dive_R_150x150'");	// 3
 		// Hill
-		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Hill_L_150x150.PathEdge_Hill_L_150x150'");
-		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Hill_R_150x150.PathEdge_Hill_R_150x150'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Hill_L_150x150.PathEdge_Hill_L_150x150'");	// 4
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Hill_R_150x150.PathEdge_Hill_R_150x150'");	// 5
 		// Slope
-		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Slope_L_150x150.PathEdge_Slope_L_150x150'");
-		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Slope_R_150x150.PathEdge_Slope_R_150x150'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Slope_L_150x150.PathEdge_Slope_L_150x150'");	// 6
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/PathEdge_Slope_R_150x150.PathEdge_Slope_R_150x150'");	// 7
+
+		// Hole
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/Hole/PathEdge_Hole_Bordered_L_150x150.PathEdge_Hole_Bordered_L_150x150'");		// 8
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/Hole/PathEdge_Hole_Bordered_R_150x150.PathEdge_Hole_Bordered_R_150x150'");		// 9
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/Hole/PathEdge_Hole_Corner_L_150x150.PathEdge_Hole_Corner_L_150x150'");			// 10
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/Hole/PathEdge_Hole_Corner_R_150x150.PathEdge_Hole_Corner_R_150x150'");			// 11
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/Hole/PathEdge_Hole_Corner_Single_150x150.PathEdge_Hole_Corner_Single_150x150'");	// 12
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/Hole/PathEdge_Hole_Ex_150x150.PathEdge_Hole_Ex_150x150'");						// 13
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/Hole/PathEdge_Hole_Single_150x150.PathEdge_Hole_Single_150x150'");				// 14
 	}
 
 	for (int i = 0; i < meshPaths.Num(); i++)
@@ -98,23 +114,27 @@ UStaticMesh* MeshGenerator::StitchStaticMesh(TArray<int> inRot, TArray<UStaticMe
 {
 	UProceduralMeshComponent* ProcMeshComp = NewObject<UProceduralMeshComponent>();
 
-	if (bAddEdgeMesh)
+	// Pits Test
+	if (FMath::RandRange(0, 99) < 10)
 	{
-		inMesh.EmplaceAt(0, EdgeMeshLibrary[3]);
+		//int rnd = FMath::RandRange(0, 2);
+		//inMesh[rnd] = EdgeMeshLibrary[14];
+		//inRot[rnd] = 0;
+
+		inMesh[0] = EdgeMeshLibrary[10];
+		inRot[0] = 0;
+		inMesh[1] = EdgeMeshLibrary[13];
+		inRot[1] = 0;
+		inMesh[2] = EdgeMeshLibrary[11];
+		inRot[2] = 0;
+	}
+	else if (bAddEdgeMesh)
+	{
+		inMesh.EmplaceAt(0, EdgeMeshLibrary[2]);
 		inRot.EmplaceAt(0, 0);
-		inMesh.Emplace(EdgeMeshLibrary[2]);
+		inMesh.Emplace(EdgeMeshLibrary[3]);
 		inRot.Emplace(0);
 	}
-	// Pits Test
-	//if(FMath::RandRange(0, 99) < 10)
-	//{
-	//	for (int i = 1; i < inMesh.Num() - 1; i++)
-	//	{
-	//		inMesh[i] = EdgeMeshLibrary[0];
-	//		inRot[i] = 0;
-	//	}
-	//}
-
 	// */
 
 	// Initial offset is half if inmesh num is even, normal if odd

@@ -26,6 +26,12 @@ MeshLibrary::MeshLibrary()
 		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_NW_150x150_Smooth.Ground_Ramp_NW_150x150_Smooth'");
 		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_N_150x150_Smooth.Ground_Ramp_N_150x150_Smooth'");
 		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/Ground_Ramp_NE_150x150_Smooth.Ground_Ramp_NE_150x150_Smooth'");
+		// Hole
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/Hole/PathEdge_Hole_Single_150x150_Smooth.PathEdge_Hole_Single_150x150_Smooth'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/Hole/PathEdge_Hole_EndP_SN_150x150_Smooth.PathEdge_Hole_EndP_SN_150x150_Smooth'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/Hole/PathEdge_Hole_Ex_150x150_Smooth.PathEdge_Hole_Ex_150x150_Smooth'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/Hole/PathEdge_Hole_L_150x150_Smooth.PathEdge_Hole_L_150x150_Smooth'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/Hole/PathEdge_Hole_T_150x150_Smooth.PathEdge_Hole_T_150x150_Smooth'");
 	}
 	else
 	{
@@ -44,6 +50,12 @@ MeshLibrary::MeshLibrary()
 		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/Ground_Ramp_NW_150x150.Ground_Ramp_NW_150x150'");
 		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/Ground_Ramp_N_150x150.Ground_Ramp_N_150x150'");
 		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/Ground_Ramp_NE_150x150.Ground_Ramp_NE_150x150'");
+		// Hole
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/Hole/PathEdge_Hole_Single_150x150.PathEdge_Hole_Single_150x150'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/Hole/PathEdge_Hole_EndP_SN_150x150.PathEdge_Hole_EndP_SN_150x150'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/Hole/PathEdge_Hole_Ex_150x150.PathEdge_Hole_Ex_150x150'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/Hole/PathEdge_Hole_L_150x150.PathEdge_Hole_L_150x150'");
+		meshPaths.Emplace("StaticMesh'/Game/Meshes/OLDGroundTiles/PathEdge/Hole/PathEdge_Hole_T_150x150.PathEdge_Hole_T_150x150'");
 	}
 
 	for (int i = 0; i < meshPaths.Num(); i++)
