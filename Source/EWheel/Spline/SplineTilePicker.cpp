@@ -49,6 +49,16 @@ TArray<UStaticMesh*> SplineTilePicker::GetNewTiles(int numTiles)
 		else
 		{
 			randomTileIndex = GetRandomIndexBasedOnWeight(possibleTiles);
+
+			if (randomTileIndex < 0 || 
+				(possibleTiles[randomTileIndex].X == MeshCategories::CATEGORY_PIT && !bSpawnPits) || 
+				(possibleTiles[randomTileIndex].X == MeshCategories::CATEGORY_RAMP && !bSpawnRamps) || 
+				(possibleTiles[randomTileIndex].X == MeshCategories::CATEGORY_HOLE && !bSpawnHoles))
+			{
+				possibleTiles.Empty();
+				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_DEFAULT, MeshType::DEFAULT, 0 });
+				randomTileIndex = 0;
+			}
 		}
 
 		// Import data from random possible tile to a new tile
@@ -116,7 +126,7 @@ void SplineTilePicker::CheckAndEmptyLog(int numTilesPerRow)
 {
 	if (bAddEdges && TileLog.Num() + numTilesPerRow + 2 > NumRowsToLog * (numTilesPerRow + 2))
 		TileLog.RemoveAt(0, numTilesPerRow + 2, true);
-	else if (TileLog.Num() + numTilesPerRow > NumRowsToLog * numTilesPerRow)
+	else if (!bAddEdges && TileLog.Num() + numTilesPerRow > NumRowsToLog * numTilesPerRow)
 		TileLog.RemoveAt(0, numTilesPerRow, true);
 }
 
@@ -173,15 +183,15 @@ bool SplineTilePicker::CheckDependancyPrevious(int currentIndex, int numTilesPer
 			if (TileLog[previousIndex]->m_Rotation == 2)
 				return true;
 			break;
-		case HOLE_EX:
+		case MeshType::HOLE_EX:
 			if (TileLog[previousIndex]->m_Rotation == 0)
 				return true;
 			break;
-		case HOLE_L:
+		case MeshType::HOLE_L:
 			if (TileLog[previousIndex]->m_Rotation == 0 || TileLog[previousIndex]->m_Rotation == 3)
 				return true;
 			break;
-		case HOLE_T:
+		case MeshType::HOLE_T:
 			if (TileLog[previousIndex]->m_Rotation != 0)
 				return true;
 			break;
@@ -311,7 +321,7 @@ bool SplineTilePicker::CheckNeedSpecificEdge(TileDetails* inDetails, bool bLeft)
 			return true;
 		else if (!bLeft && inDetails->m_Rotation != 1)
 			return true;
-		return true;
+		break;
 	default:
 		break;
 	}
@@ -716,18 +726,22 @@ int SplineTilePicker::GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTi
 		sumWeight += weightMap[i];
 	}
 
-	int sumRandom = FMath::RandRange(0, sumWeight);
+	int sumRandom = FMath::RandRange(0, sumWeight - 1);
 
 	// Iterate through the map, subtracting the current item's weight from the random number
 	// untill one is picked.
 	for (int i = 0; i < weightMap.Num(); i++)
 	{
-		if (sumRandom < weightMap[i])
+		if(sumRandom < weightMap[i])
 			return i;
 		sumRandom -= weightMap[i];
 	}
 
-	return 0;
+	UE_LOG(LogTemp, Warning, TEXT("Failed to randomly select a tile"));
+	//UE_LOG(LogTemp, Warning, TEXT("BoardRott: %f, %f, %f"));
+
+
+	return -1;
 }
 
 void SplineTilePicker::AddEdgeMesh(TArray<UStaticMesh*>& tileMesh, int numTilesPerRow)

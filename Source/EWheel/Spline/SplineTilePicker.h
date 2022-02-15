@@ -69,6 +69,9 @@ private:
 
 	// Chance to spawn a flat tile if no other tile depends on this
 	int FlatBoyChance = 75;
-	bool bAddEdges = false;
+	bool bAddEdges = true;
+	bool bSpawnPits = false;
+	bool bSpawnRamps = false;
+	bool bSpawnHoles = true;
 	MeshLibrary* MeshLib;
 };
