@@ -36,18 +36,18 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, UStaticMesh* inMesh)
 {
 	// Ensure that our mesh exists, otherwise return
 	UStaticMesh* mesh;
-	if (inMesh)
-		mesh = inMesh;
-	else
-	{
+	//if (inMesh)
+	//	mesh = inMesh;
+	//else
+	//{
 		mesh = MeshGen->StitchStaticMesh(TilePicker->GetLastRowRotation(tilesPerRow), TilePicker->GetNewTiles(tilesPerRow));
 		if (!mesh) return;
 
-		meshBank.Emplace(mesh);
+	//	meshBank.Emplace(mesh);
 
-		if (meshBank.Num() > numRowsToReConPostInit)
-			meshBank.RemoveAt(0);
-	}
+	//	if (meshBank.Num() > numRowsToReConPostInit)
+	//		meshBank.RemoveAt(0);
+	//}
 
 	//Use the previous point as the starting location
 	const FVector StartingPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
@@ -87,32 +87,35 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, UStaticMesh* inMesh)
 }
 
 void AMeshSplineActor::AddSplinePointAndMesh(const FVector newPointLocation)
-{
-	AddSplinePoint(newPointLocation, true);
+{	
+	AddSplinePoint(newPointLocation, false);
+	ConstructMesh(SplineMeshComponent.Num());
 
-	if (SplineMeshComponent.Num() < numRowsToReConPostInit)
-	{
-		ConstructMesh(SplineMeshComponent.Num());
-		return;
-	}
+	//if (SplineMeshComponent.Num() < numRowsToReConPostInit)
+	//	return;
 
-	int reconEnd = SplineMeshComponent.Num();
-	int reconStart = reconEnd - numRowsToReConPostInit;
-	
-	// Remove the mesh that is to be reconstructed
-	for (int i = reconEnd - 1; i > reconStart - 1; i--)
-	{
-		RemoveSplineMesh(i, false);
-	}
+	//if (SplineMeshComponent.Num() < numRowsToReConPostInit)
+	//{
+	//	ConstructMesh(SplineMeshComponent.Num());
+	//	return;
+	//}
+	//int reconEnd = SplineMeshComponent.Num();
+	//int reconStart = reconEnd - numRowsToReConPostInit;
+	//
+	//// Remove the mesh that is to be reconstructed
+	//for (int i = reconEnd - 1; i > reconStart - 1; i--)
+	//{
+	//	RemoveSplineMesh(i, false);
+	//}
 
-	// Reconstruct mesh
-	for (int i = reconStart; i <= reconEnd; i++)
-	{
-		if (i < reconEnd)
-			ConstructMesh(i, meshBank[i - reconStart]);
-		else
-			ConstructMesh(i);
-	}
+	// Update Mesh // Reconstruct mesh
+	//for (int i = reconStart; i <= reconEnd; i++)
+	//{
+	//	if (i < reconEnd)
+	//		ConstructMesh(i, meshBank[i - reconStart]);
+	//	else
+	//		ConstructMesh(i);
+	//}
 }
 
 void AMeshSplineActor::RemoveFirstSplinePointAndMesh(bool bRemovePoint)

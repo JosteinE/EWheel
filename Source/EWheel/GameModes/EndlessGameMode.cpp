@@ -38,6 +38,20 @@ AEndlessGameMode::AEndlessGameMode()
 
 void AEndlessGameMode::BeginPlay()
 {
+	// Spawn the path
+	FActorSpawnParameters pathSpawnParams;
+	pathSpawnParams.Owner = this;
+	mainPath = GetWorld()->SpawnActor<AMeshSplineActor>(AMeshSplineActor::StaticClass(), FVector{ 0.f, 0.f, splineSpawnVerticalOffset }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
+	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+	mainPath->SetNumTilesPerRow(TilesPerRow);
+	mainPath->SetDefaultMaterial(DefaultMaterial);
+
+	// Create a starting area with no obstacles
+	for (int i = 0; i < 5; i++)
+	{
+		ExtendPath();
+	}
+
 	// Spawn the player
 	auto pawnClass = LoadObject<UBlueprint>(NULL, TEXT("Blueprint'/Game/Blueprints/PlayerPawnBP.PlayerPawnBP'"))->GeneratedClass;
 	FActorSpawnParameters playerSpawnParams;
@@ -50,14 +64,6 @@ void AEndlessGameMode::BeginPlay()
 	Cast<APlayerPawn>(mainPlayer)->EscPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerEscapePressed);
 	Cast<APlayerPawn>(mainPlayer)->RestartPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerRestartPressed);
 
-	// Spawn the path
-	FActorSpawnParameters pathSpawnParams;
-	pathSpawnParams.Owner = this;
-	mainPath = GetWorld()->SpawnActor<AMeshSplineActor>(AMeshSplineActor::StaticClass(), FVector{ -50.f, 0.f, splineSpawnVerticalOffset }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
-	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-	mainPath->SetNumTilesPerRow(TilesPerRow);
-	mainPath->SetDefaultMaterial(DefaultMaterial);
-	
 	//TEST
 	meshPathLib.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_BigRoot_150x150.Obstacle_BigRoot_150x150'");
 	meshPathLib.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Log_150x150.Obstacle_Log_150x150'");
@@ -91,13 +97,18 @@ void AEndlessGameMode::Tick(float DeltaTime)
 				SpawnPointObject(tileCentre);
 			}
 			// Spawn Obstacle Object
-			else if (numObstaclesSpawned < TilesPerRow - 1 && FMath::RandRange(0, 99) < ObstacleSpawnChance)
+			else if (!bSpawnedObstacleOnLast && numObstaclesSpawned < TilesPerRow - 1 && FMath::RandRange(0, 99) < ObstacleSpawnChance)
 			{
 				FVector tileCentre = GetTileCentreLastRow(i);
 				SpawnObstacleObject(tileCentre);
 				numObstaclesSpawned++;
 			}
 		}
+
+		if (numObstaclesSpawned > 0)
+			bSpawnedObstacleOnLast = true;
+		else if (bSpawnedObstacleOnLast)
+			bSpawnedObstacleOnLast = false;
 	}
 }
 
@@ -118,7 +129,7 @@ void AEndlessGameMode::ExtendPath()
 
 	// Remove the first point in the spline if adding 1 exceedes the max number of spline points.
 	mainPath->AddSplinePointAndMesh(newLocation);
-	if (mainPath->GetSpline()->GetNumberOfSplinePoints() > maxNumSplinePoints)
+	if (mainPath->GetSpline()->GetNumberOfSplinePoints() - 2 > maxNumSplinePoints) // -2 because the spline starts with 2 points and needs a leading point to not make gaps
 		mainPath->RemoveFirstSplinePointAndMesh(true);
 
 	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);

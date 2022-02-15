@@ -60,7 +60,7 @@ private:
 	// Distance to the next spline point (Should be =TileSize)
 	float distToNextSplinePoint = 150.f;
 
-	// Max number of spline & mesh points along the curve
+	// Max number of spline points along the curve (NB! the curve needs a leading point, so the total number is maxNumSplinePoints+1)
 	int maxNumSplinePoints = 20;
 	// 
 	int extendFromSplinePoint = 5;
@@ -82,5 +82,6 @@ private:
 	TArray<FString> meshPathLib;
 
 	int32 PointSpawnChance = 8;
-	int32 ObstacleSpawnChance = 33; //33
+	int32 ObstacleSpawnChance = 75; //33
+	bool bSpawnedObstacleOnLast = false;
 };
