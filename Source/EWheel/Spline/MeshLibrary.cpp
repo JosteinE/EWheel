@@ -10,7 +10,7 @@ MeshLibrary::MeshLibrary()
 	TArray<FString> meshPaths;
 	TArray<FString> edgeMeshPaths;
 
-	bool bTeumpUseNew = false; // Will crash UE if changed
+	bool bTeumpUseNew = true; // Will crash UE if changed
 	// Default ground
 	if (bTeumpUseNew)
 	{
@@ -37,8 +37,6 @@ MeshLibrary::MeshLibrary()
 	
 		// Edge Meshes
 		// Dive
-		edgeMeshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Dive_B_150x150_Smooth.PathEdge_Dive_B_150x150_Smooth'");
-		edgeMeshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Dive_F_150x150_Smooth.PathEdge_Dive_F_150x150_Smooth'");
 		edgeMeshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Dive_L_150x150_Smooth.PathEdge_Dive_L_150x150_Smooth'");
 		edgeMeshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/PathEdge/PathEdge_Dive_R_150x150_Smooth.PathEdge_Dive_R_150x150_Smooth'");
 		// Hill

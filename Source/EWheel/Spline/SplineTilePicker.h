@@ -27,6 +27,16 @@ public:
 	TArray<int> GetRowRotation(int index, int numPerRow); // index should be first tile in row (left)
 	TArray<int> GetLastRowRotation(int numPerRow); // index should be first tile in row (left)
 	void SetNumRowsToLog(int num);
+
+	// Number of rows to store in TileLog. Need at least 2 to check the previous row
+	int NumRowsToLog = 2;
+
+	// Chance to spawn a flat tile if no other tile depends on this
+	int FlatBoyChance = 75;
+	bool bAddEdges = true;
+	bool bSpawnPits = true;
+	bool bSpawnRamps = true;
+	bool bSpawnHoles = true;
 private:
 	// Deletes pointers and empties the array
 	void EmptyTileLog();
@@ -64,14 +74,5 @@ private:
 
 	// Mesh category, type and Num 90 degree rotations
 	TArray<TileDetails*> TileLog;
-	// Number of rows to store in TileLog. Need at least 2 to check the previous row
-	int NumRowsToLog = 2;
-
-	// Chance to spawn a flat tile if no other tile depends on this
-	int FlatBoyChance = 75;
-	bool bAddEdges = true;
-	bool bSpawnPits = false;
-	bool bSpawnRamps = false;
-	bool bSpawnHoles = true;
 	MeshLibrary* MeshLib;
 };
