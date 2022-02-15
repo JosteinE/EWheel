@@ -47,7 +47,7 @@ private:
 	bool CheckForTileCrash(int currentIndex, int numTilesPerRow);
 
 	// Get a tile that fits with the previous tile. bool = if the tile is dependant
-	bool CheckNeedSpecificEdge(int meshType);
+	bool CheckNeedSpecificEdge(TileDetails* inDetails, bool bLeft);
 
 	// Get a tile that fits with the previous tile. bool = if the tile is dependant
 	bool GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow);
@@ -69,6 +69,6 @@ private:
 
 	// Chance to spawn a flat tile if no other tile depends on this
 	int FlatBoyChance = 75;
-	bool bAddEdges = true;
+	bool bAddEdges = false;
 	MeshLibrary* MeshLib;
 };

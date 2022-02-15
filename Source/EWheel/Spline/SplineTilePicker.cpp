@@ -81,7 +81,7 @@ TArray<int> SplineTilePicker::GetRowRotation(int index, int numPerRow)
 {
 	TArray<int> tileRotations;
 	
-	if(index > 0)
+	if(index > 1)
 		index -= bAddEdges * 2;
 	numPerRow += bAddEdges * 2;
 
@@ -131,7 +131,7 @@ void SplineTilePicker::GetPreviousDependancies(TArray<bool>& indexLog, int numTo
 
 bool SplineTilePicker::CheckDependancyPrevious(int currentIndex, int numTilesPerRow)
 {
-	int previousIndex = currentIndex - numTilesPerRow;
+	int previousIndex = currentIndex - numTilesPerRow - bAddEdges;
 	if (previousIndex < 0) return false;
 
 	if (TileLog[previousIndex]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
@@ -278,8 +278,43 @@ bool SplineTilePicker::CheckForTileCrash(int currentIndex, int numTilesPerRow)
 	return CheckDependancyPrevious(currentIndex + 1, numTilesPerRow);
 }
 
-bool SplineTilePicker::CheckNeedSpecificEdge(int meshType)
+bool SplineTilePicker::CheckNeedSpecificEdge(TileDetails* inDetails, bool bLeft)
 {
+	if (inDetails->m_MeshCategory != MeshCategories::CATEGORY_HOLE) return false;
+
+	switch (inDetails->m_MeshType)
+	{
+	case MeshType::HOLE_4W:
+		return true;
+	case MeshType::HOLE_END_SN:
+		if ((bLeft && inDetails->m_Rotation == 1) || (!bLeft && inDetails->m_Rotation == 3))
+			return true;
+		break;
+	case MeshType::HOLE_EX:
+		if (inDetails->m_Rotation == 1)
+			return true;
+		break;
+	case MeshType::HOLE_L:
+		if (bLeft)
+		{
+			if (inDetails->m_Rotation == 2 || inDetails->m_Rotation == 3)
+				return true;
+		}
+		else
+		{
+			if (inDetails->m_Rotation == 0 || inDetails->m_Rotation == 1)
+				return true;
+		}
+		break;
+	case MeshType::HOLE_T:
+		if (bLeft && inDetails->m_Rotation != 3)
+			return true;
+		else if (!bLeft && inDetails->m_Rotation != 1)
+			return true;
+		return true;
+	default:
+		break;
+	}
 	return false;
 }
 
@@ -289,13 +324,13 @@ bool SplineTilePicker::GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles
 
 	if (CheckDependancyPrevious(currentIndex, numTilesPerRow)) // Means previous tile was a pit or hole
 	{
-		switch (TileLog[currentIndex - numTilesPerRow]->m_MeshCategory)
+		switch (TileLog[currentIndex - numTilesPerRow - bAddEdges]->m_MeshCategory)
 		{
 		case MeshCategories::CATEGORY_PIT:
 			// Generate tile that links with the previous pit tile and NOT left tile
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 0 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_EX, 0 });
-			if (TileLog[currentIndex + 1 - numTilesPerRow]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
+			if (TileLog[currentIndex + 1 - numTilesPerRow - bAddEdges]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
 			{
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 1 });
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_T, 3 });
@@ -307,7 +342,7 @@ bool SplineTilePicker::GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_EX, 0 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_L, 2 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_T, 1 });
-			if (TileLog[currentIndex + 1 - numTilesPerRow]->m_MeshCategory == MeshCategories::CATEGORY_HOLE)
+			if (TileLog[currentIndex + 1 - numTilesPerRow - bAddEdges]->m_MeshCategory == MeshCategories::CATEGORY_HOLE)
 			{
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_4W, 0 });
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_L, 1 });
@@ -331,7 +366,7 @@ bool SplineTilePicker::GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_END_SN, 2 });
 
 		// Left Extenders
-		switch (TileLog[currentIndex + 1 - numTilesPerRow]->m_MeshCategory)
+		switch (TileLog[currentIndex + 1 - numTilesPerRow - bAddEdges]->m_MeshCategory)
 		{
 		case MeshCategories::CATEGORY_PIT:
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 3 });
@@ -366,12 +401,12 @@ bool SplineTilePicker::GetAppropriateFirstTile(TArray<FIntVector>& possibleTiles
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_L, 0 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_T, 2 });
 		}
-		else if (TileLog[currentIndex + 1 - numTilesPerRow]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
+		else if (TileLog.Num() >= numTilesPerRow && TileLog[currentIndex + 1 - numTilesPerRow - bAddEdges]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
 		{
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 3 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 0 });
 		}
-		else if (TileLog[currentIndex + 1 - numTilesPerRow]->m_MeshCategory == MeshCategories::CATEGORY_HOLE)
+		else if (TileLog.Num() >= numTilesPerRow && TileLog[currentIndex + 1 - numTilesPerRow - bAddEdges]->m_MeshCategory == MeshCategories::CATEGORY_HOLE)
 		{
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_END_SN, 3 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_L, 0 });
@@ -398,7 +433,7 @@ bool SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 2 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_T, 1 });
 
-			if (TileLog[currentIndex + 1 - numTilesPerRow]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
+			if (TileLog[currentIndex + 1 - numTilesPerRow - bAddEdges]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
 			{
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_T, 0 });
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_4W, 0 });
@@ -408,7 +443,7 @@ bool SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int
 			// generate a HOLE that links with left and previous
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_L, 2 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_T, 1 });
-			if (TileLog[currentIndex + 1 - numTilesPerRow]->m_MeshCategory == MeshCategories::CATEGORY_HOLE)
+			if (TileLog[currentIndex + 1 - numTilesPerRow - bAddEdges]->m_MeshCategory == MeshCategories::CATEGORY_HOLE)
 			{
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_4W, 0 });
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_T, 0 });
@@ -419,13 +454,13 @@ bool SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int
 	}
 	else if (bPrevious)
 	{
-		switch (TileLog[currentIndex - numTilesPerRow]->m_MeshCategory)
+		switch (TileLog[currentIndex - numTilesPerRow - bAddEdges]->m_MeshCategory)
 		{
 		case MeshCategories::CATEGORY_PIT:
 			// generate a tile that links with previous and NOT left
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 0 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_EX, 0 });
-			if (TileLog[currentIndex + 1 - numTilesPerRow]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
+			if (TileLog[currentIndex + 1 - numTilesPerRow - bAddEdges]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
 			{
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 1 });
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_T, 3 });
@@ -435,7 +470,7 @@ bool SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int
 			// generate a tile that links with previous and NOT left
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_END_SN, 0 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_EX, 0 });
-			if (TileLog[currentIndex + 1 - numTilesPerRow]->m_MeshCategory == MeshCategories::CATEGORY_HOLE)
+			if (TileLog[currentIndex + 1 - numTilesPerRow - bAddEdges]->m_MeshCategory == MeshCategories::CATEGORY_HOLE)
 			{
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_L, 1 });
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_T, 3 });
@@ -453,7 +488,7 @@ bool SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int
 		case MeshCategories::CATEGORY_PIT:
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 1 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 3 });
-			if (TileLog[currentIndex + 1 - numTilesPerRow]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
+			if (TileLog.Num() >= numTilesPerRow && TileLog[currentIndex + 1 - numTilesPerRow - bAddEdges]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
 			{
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_EX, 1 });
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_T, 2 });
@@ -467,7 +502,7 @@ bool SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int
 		case MeshCategories::CATEGORY_HOLE:
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_END_SN, 1 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_L, 3 });
-			if (TileLog[currentIndex + 1 - numTilesPerRow]->m_MeshCategory == MeshCategories::CATEGORY_HOLE)
+			if (TileLog.Num() >= numTilesPerRow && TileLog[currentIndex + 1 - numTilesPerRow - bAddEdges]->m_MeshCategory == MeshCategories::CATEGORY_HOLE)
 			{
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_EX, 1 });
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_T, 2 });
@@ -494,12 +529,12 @@ bool SplineTilePicker::GetAppropriateTile(TArray<FIntVector>& possibleTiles, int
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_END_SN, 3 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_L, 0 });
 		}
-		else if (TileLog[currentIndex + 1 - numTilesPerRow]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
+		else if (TileLog.Num() >= numTilesPerRow && TileLog[currentIndex + 1 - numTilesPerRow - bAddEdges]->m_MeshCategory == MeshCategories::CATEGORY_PIT)
 		{
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 3 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_L, 0 });
 		}
-		else if (TileLog[currentIndex + 1 - numTilesPerRow]->m_MeshCategory == MeshCategories::CATEGORY_HOLE)
+		else if (TileLog.Num() >= numTilesPerRow && TileLog[currentIndex + 1 - numTilesPerRow - bAddEdges]->m_MeshCategory == MeshCategories::CATEGORY_HOLE)
 		{
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_END_SN, 3 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_L, 0 });
@@ -538,7 +573,7 @@ bool SplineTilePicker::GetAppropriateLastTile(TArray<FIntVector>& possibleTiles,
 	}
 	else if (bPrevious)
 	{
-		switch (TileLog[currentIndex - 1]->m_MeshCategory)
+		switch (TileLog[currentIndex - numTilesPerRow - bAddEdges]->m_MeshCategory)
 		{
 		case MeshCategories::CATEGORY_PIT:
 			// generate a tile that links with previous and NOT left (We know this is a pit), DO NOT DEPEND ON RIGHT
@@ -547,7 +582,6 @@ bool SplineTilePicker::GetAppropriateLastTile(TArray<FIntVector>& possibleTiles,
 			break;
 		case MeshCategories::CATEGORY_HOLE:
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_END_SN, 0 });
-			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_END_SN, 3 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_EX, 0 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_L, 1 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_T, 3 });
@@ -573,6 +607,7 @@ bool SplineTilePicker::GetAppropriateLastTile(TArray<FIntVector>& possibleTiles,
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_L, 3 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_EX, 1 });
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE_T, 2 });
+			break;
 		}
 
 		return true;
@@ -704,7 +739,7 @@ void SplineTilePicker::AddEdgeMesh(TArray<UStaticMesh*>& tileMesh, int numTilesP
 	edgeDetailsL->m_Rotation = 0;
 	edgeDetailsR->m_Rotation = 0;
 
-	if (CheckNeedSpecificEdge(0))
+	if (CheckNeedSpecificEdge(TileLog[TileLog.Num() - numTilesPerRow], true))
 	{
 		edgeDetailsL->m_MeshType = EdgeMeshType::EDGE_HOLE_L;
 		TileLog.EmplaceAt(TileLog.Num() - numTilesPerRow, edgeDetailsL);
@@ -720,7 +755,7 @@ void SplineTilePicker::AddEdgeMesh(TArray<UStaticMesh*>& tileMesh, int numTilesP
 		edgeMeshL = MeshLib->GetEdgeMesh(edgeDetailsL->m_MeshType);
 		tileMesh.EmplaceAt(0, edgeMeshL);
 	}
-	if (CheckNeedSpecificEdge(TileLog.Num() - 1))
+	if (CheckNeedSpecificEdge(TileLog[TileLog.Num() - 1], false))
 	{
 		edgeDetailsR->m_MeshType = EdgeMeshType::EDGE_HOLE_R;
 		TileLog.Emplace(edgeDetailsR);
