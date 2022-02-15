@@ -363,40 +363,75 @@ int SplineTilePicker::GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTi
 	// Assign every option a weight. The higher the weight, the better the chance to get picked
 	for (int i = 0; i < possibleTiles.Num(); i++)
 	{
-		switch (possibleTiles[i].Y)
+		if (possibleTiles[i].X == MeshCategories::CATEGORY_PIT)
 		{
-		case MeshType::PIT:
-			weightMap.Emplace(4);
-			break;
-		case MeshType::PIT_4W:
-			weightMap.Emplace(1);
-			break;
-		case MeshType::PIT_END_SN:
-			weightMap.Emplace(10);
-			break;
-		case MeshType::PIT_EX:
-			weightMap.Emplace(3);
-			break;
-		case MeshType::PIT_L:
-			weightMap.Emplace(3);
-			break;
-		case MeshType::PIT_T:
-			weightMap.Emplace(2);
-			break;
-		case MeshType::RAMP:
-			weightMap.Emplace(3);
-			break;
-		case MeshType::RAMP_L:
-			weightMap.Emplace(5);
-			break;
-		case MeshType::RAMP_M:
-			weightMap.Emplace(2);
-			break;
-		case MeshType::RAMP_R:
-			weightMap.Emplace(5);
-			break;
-		default:
-			break;
+			switch (possibleTiles[i].Y)
+			{
+			case MeshType::PIT:
+				weightMap.Emplace(4);
+				break;
+			case MeshType::PIT_4W:
+				weightMap.Emplace(1);
+				break;
+			case MeshType::PIT_END_SN:
+				weightMap.Emplace(10);
+				break;
+			case MeshType::PIT_EX:
+				weightMap.Emplace(3);
+				break;
+			case MeshType::PIT_L:
+				weightMap.Emplace(3);
+				break;
+			case MeshType::PIT_T:
+				weightMap.Emplace(2);
+				break;
+			default:
+				break;
+			}
+		}
+		else if (possibleTiles[i].X == MeshCategories::CATEGORY_RAMP)
+		{
+			switch (possibleTiles[i].Y)
+			{
+			case MeshType::RAMP:
+				weightMap.Emplace(3);
+				break;
+			case MeshType::RAMP_L:
+				weightMap.Emplace(5);
+				break;
+			case MeshType::RAMP_M:
+				weightMap.Emplace(2);
+				break;
+			case MeshType::RAMP_R:
+				weightMap.Emplace(5);
+				break;
+			default:
+				break;
+			}
+		}
+		// NEW & UNTESTED
+		else if (possibleTiles[i].X == MeshCategories::CATEGORY_HOLE)
+		{
+			switch (possibleTiles[i].Y)
+			{
+			case MeshType::HOLE:
+				weightMap.Emplace(5);
+				break;
+			case MeshType::HOLE_END_SN:
+				weightMap.Emplace(5);
+				break;
+			case MeshType::HOLE_EX:
+				weightMap.Emplace(5);
+				break;
+			case MeshType::HOLE_L:
+				weightMap.Emplace(5);
+				break;
+			case MeshType::HOLE_T:
+				weightMap.Emplace(5);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 
