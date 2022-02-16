@@ -32,11 +32,11 @@ public:
 	int NumRowsToLog = 2;
 
 	// Chance to spawn a flat tile if no other tile depends on this
-	int FlatBoyChance = 75;
+	int FlatBoyChance = 0;
 	bool bAddEdges = true;
-	bool bSpawnPits = true;
+	bool bSpawnPits = false;
 	bool bSpawnRamps = true;
-	bool bSpawnHoles = true;
+	bool bSpawnHoles = false;
 private:
 	// Deletes pointers and empties the array
 	void EmptyTileLog();

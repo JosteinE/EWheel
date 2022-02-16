@@ -46,7 +46,7 @@ private:
 	APlayerController* mainPlayerController;
 
 	// Number of tiles per row
-	int TilesPerRow = 3;
+	int TilesPerRow = 1;
 	int TileSize = 150;
 
 	float playerSpawnHeight = 100.f;

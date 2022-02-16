@@ -32,17 +32,17 @@ void AMeshSplineActor::OnConstruction(const FTransform& Transform)
 	//}
 }
 
-void AMeshSplineActor::ConstructMesh(int SplineIndex, UStaticMesh* inMesh)
+void AMeshSplineActor::ConstructMesh(int SplineIndex, UStaticMesh* inMesh, int rot)
 {
 	// Ensure that our mesh exists, otherwise return
 	UStaticMesh* mesh;
-	//if (inMesh)
-	//	mesh = inMesh;
-	//else
-	//{
+	if (inMesh)
+		mesh = inMesh;
+	else
+	{
 		mesh = MeshGen->StitchStaticMesh(TilePicker->GetLastRowRotation(tilesPerRow), TilePicker->GetNewTiles(tilesPerRow));
 		if (!mesh) return;
-
+	}
 	//	meshBank.Emplace(mesh);
 
 	//	if (meshBank.Num() > numRowsToReConPostInit)
@@ -50,13 +50,13 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, UStaticMesh* inMesh)
 	//}
 
 	//Use the previous point as the starting location
-	const FVector StartingPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
+	FVector StartingPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
 	//Get the tangent belonging to our previous point
-	const FVector StartTangent = GetSpline()->GetTangentAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
+	FVector StartTangent = GetSpline()->GetTangentAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
 	//Get the next point along our curve
-	const FVector EndPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex + 1, ESplineCoordinateSpace::Local);
+	FVector EndPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex + 1, ESplineCoordinateSpace::Local);
 	//Get the tangent belonging to our next point
-	const FVector EndTangent = GetSpline()->GetTangentAtSplinePoint(SplineIndex + 1, ESplineCoordinateSpace::Local);
+	FVector EndTangent = GetSpline()->GetTangentAtSplinePoint(SplineIndex + 1, ESplineCoordinateSpace::Local);
 
 	// Construct our new mesh component
 	SplineMeshComponent.Emplace(NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass()));
@@ -70,12 +70,24 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, UStaticMesh* inMesh)
 	SplineMeshComponent[SplineIndex]->RegisterComponentWithWorld(GetWorld());
 	//Add spline node relative to the curve
 	SplineMeshComponent[SplineIndex]->AttachToComponent(GetSpline(), FAttachmentTransformRules::KeepRelativeTransform);
+	
 	//Set the start and end point for the mesh
-	SplineMeshComponent[SplineIndex]->SetStartAndEnd(StartingPoint, StartTangent, EndPoint, EndTangent);
+	if (rot == 1 || rot == 3)
+	{	// Rotate the mesh sideways (-90 degrees)
+		SplineMeshComponent[SplineIndex]->SetForwardAxis(ESplineMeshAxis::Y);
+		SplineMeshComponent[SplineIndex]->SetStartRoll(-1.5708, false);
+		SplineMeshComponent[SplineIndex]->SetEndRoll(-1.5708, false);
+	}
+	// Inverse the mesh needs to be rotated 90 or 180 degrees
+	if (rot == 1 || rot == 2)
+		SplineMeshComponent[SplineIndex]->SetStartAndEnd(EndPoint, -EndTangent, StartingPoint, -StartTangent);
+	else
+		SplineMeshComponent[SplineIndex]->SetStartAndEnd(StartingPoint, StartTangent, EndPoint, EndTangent);
+
 	//Enable collision for the spline mesh
 	SplineMeshComponent[SplineIndex]->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //Note: consider changing this if physics is not being used
 	//Rotate mesh in the direction of the spline's forward Axis
-	SplineMeshComponent[SplineIndex]->SetForwardAxis(ForwardAxis);
+	//SplineMeshComponent[SplineIndex]->SetForwardAxis(ForwardAxis);
 
 	SplineMeshComponent[SplineIndex]->GetBodySetup()->CollisionTraceFlag = ECollisionTraceFlag::CTF_UseComplexAsSimple;
 	SplineMeshComponent[SplineIndex]->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
@@ -116,6 +128,12 @@ void AMeshSplineActor::AddSplinePointAndMesh(const FVector newPointLocation)
 	//	else
 	//		ConstructMesh(i);
 	//}
+}
+
+void AMeshSplineActor::AddSplinePointAndMesh(const FVector newPointLocation, UStaticMesh* staticMesh, int rot)
+{
+	AddSplinePoint(newPointLocation, false);
+	ConstructMesh(SplineMeshComponent.Num(), staticMesh, rot);
 }
 
 void AMeshSplineActor::RemoveFirstSplinePointAndMesh(bool bRemovePoint)

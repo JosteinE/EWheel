@@ -50,10 +50,7 @@ TArray<UStaticMesh*> SplineTilePicker::GetNewTiles(int numTiles)
 		{
 			randomTileIndex = GetRandomIndexBasedOnWeight(possibleTiles);
 
-			if (randomTileIndex < 0 || 
-				(possibleTiles[randomTileIndex].X == MeshCategories::CATEGORY_PIT && !bSpawnPits) || 
-				(possibleTiles[randomTileIndex].X == MeshCategories::CATEGORY_RAMP && !bSpawnRamps) || 
-				(possibleTiles[randomTileIndex].X == MeshCategories::CATEGORY_HOLE && !bSpawnHoles))
+			if (randomTileIndex < 0)
 			{
 				possibleTiles.Empty();
 				possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_DEFAULT, MeshType::DEFAULT, 0 });
@@ -643,7 +640,7 @@ int SplineTilePicker::GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTi
 	// Assign every option a weight. The higher the weight, the better the chance to get picked
 	for (int i = 0; i < possibleTiles.Num(); i++)
 	{
-		if (possibleTiles[i].X == MeshCategories::CATEGORY_PIT)
+		if (bSpawnPits && possibleTiles[i].X == MeshCategories::CATEGORY_PIT)
 		{
 			switch (possibleTiles[i].Y)
 			{
@@ -669,7 +666,7 @@ int SplineTilePicker::GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTi
 				break;
 			}
 		}
-		else if (possibleTiles[i].X == MeshCategories::CATEGORY_RAMP)
+		else if (bSpawnRamps && possibleTiles[i].X == MeshCategories::CATEGORY_RAMP)
 		{
 			switch (possibleTiles[i].Y)
 			{
@@ -690,7 +687,7 @@ int SplineTilePicker::GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTi
 			}
 		}
 		// NEW & UNTESTED
-		else if (possibleTiles[i].X == MeshCategories::CATEGORY_HOLE)
+		else if (bSpawnHoles && possibleTiles[i].X == MeshCategories::CATEGORY_HOLE)
 		{
 			switch (possibleTiles[i].Y)
 			{
@@ -716,6 +713,8 @@ int SplineTilePicker::GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTi
 				break;
 			}
 		}
+		else
+			weightMap.Emplace(0);
 	}
 
 	int sumWeight = 0;

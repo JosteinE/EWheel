@@ -8,6 +8,7 @@
 
 class AMeshSplineActor;
 class SplineTilePicker;
+class UStaticMesh;
 /**
  * 
  */
@@ -34,33 +35,31 @@ class EWHEEL_API AMeshSplineMaster : public AActor
 	// Detatches a spline from the master, but keeps it in memory to later be reattatched
 	void DetatchSpline(int index);
 
-	// Adds and attatches new splines to the master in the following order: Left then right
-	void AddSpline(int num);
-	AMeshSplineActor* AddSpline();
+	// Adds and attatches new splines to the master in the following order: Left to right
+	void AddSplines(int num);
+
+	// Adds and attatches a new spline to the master on the right side
+	// NB! If bEmplaceToArray = false, make sure to assign the returned ptr!
+	AMeshSplineActor* AddSpline(bool bEmplaceToArray = true); 
 
 	/// Detaches and removes splines from the master in the following order: Right then left
-	void RemoveSpline(int num);
+	void RemoveSplines(int num);
+	void RemoveSpline();
 
 	// Adds a new point to every spline
 	void AddPoint(FVector location);
 
 	// Removes the first point on every spline
-	void RemoveFirstSplinePointsAndMeshes();
+	void RemoveFirstSplinePointAndMesh(int splineIndex);
 
 private:
-	// Assigns mesh to the latest, unassigned spline section of a specific spline
-	void AssignMesh(int splineIndex);
-
-	// Gets new tiles to be attatched to the individual splines
-	void GetNewTiles();
-
-
 	TArray<AMeshSplineActor*> mSplines;
-	SplineTilePicker* TilePicker;
+	SplineTilePicker* mTilePicker;
 
 	bool bAddEdges = true;
 	int mMasterSplineIndex = 0;
 	float mSplineOffset = 150.f;
+	int mMaxNumSplinePoints = 20;
 
 public:
 	// Sets the spline for every other spline to follow
