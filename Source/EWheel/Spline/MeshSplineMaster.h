@@ -23,6 +23,7 @@ class EWHEEL_API AMeshSplineMaster : public AActor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SplineMesh", meta = (AllowPrivateAccess = "true"))
 	class UMaterialInterface* AlternativeMaterial = nullptr;
 
+public:
 	AMeshSplineMaster();
 	~AMeshSplineMaster();
 
@@ -40,20 +41,25 @@ class EWHEEL_API AMeshSplineMaster : public AActor
 
 	// Adds and attatches a new spline to the master on the right side
 	// NB! If bEmplaceToArray = false, make sure to assign the returned ptr!
-	AMeshSplineActor* AddSpline(bool bEmplaceToArray = true); 
+	AMeshSplineActor* AddSpline(int index, bool bEmplaceToArray = true); 
 
 	/// Detaches and removes splines from the master in the following order: Right then left
 	void RemoveSplines(int num);
 	void RemoveSpline();
 
 	// Generates new point and adds it to every spline
-	FVector GenerateNewPoint();
+	FVector GenerateNewPointLocation();
 	// Adds a new point to every spline
 	void AddPoint(FVector location);
 
 	// Removes the first point on every spline
 	void RemoveFirstSplinePointAndMesh(int splineIndex);
 
+	int GetNumSplinePoints();
+	bool GetIsAtMaxSplinePoints();
+
+	//TEMP
+	FVector GetLocationAtSplinePoint(int pointIndex);
 private:
 	TArray<AMeshSplineActor*> mSplines;
 	SplineTilePicker* mTilePicker;
@@ -71,9 +77,8 @@ private:
 	float mSplineVerticalStep = 20.f;
 
 public:
-	// Sets the spline for every other spline to follow
 	FORCEINLINE void SetTileSize(int tileSize) { mTileSize = tileSize; };
-
+	FORCEINLINE void SetMaxNumSplinePoints(int maxNum) { mMaxNumSplinePoints = maxNum; };
 	// Sets the spline for every other spline to follow
 	FORCEINLINE void SetMasterSpline(int splineIndex) { mMasterSplineIndex = splineIndex; };
 

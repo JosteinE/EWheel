@@ -13,7 +13,7 @@
  */
 class AObstacleActor;
 class APickUpActor;
-class AMeshSplineActor;
+class AMeshSplineMaster;
 
 UCLASS()
 class EWHEEL_API AEndlessGameMode : public AGameModeBase
@@ -42,11 +42,11 @@ public:
 	void OnPlayerRestartPressed();
 private:
 	APawn* mainPlayer;
-	AMeshSplineActor* mainPath;
+	AMeshSplineMaster* mPathMaster;
 	APlayerController* mainPlayerController;
 
 	// Number of tiles per row
-	int TilesPerRow = 1;
+	int mNumSplines = 3;
 	int TileSize = 150;
 
 	float playerSpawnHeight = 100.f;
@@ -74,9 +74,9 @@ private:
 	UMaterialInterface* DefaultMaterial;
 
 	// Deletes the first pickup actor in the PickupActors array when this number is reached (should be less than maxNumSplinePoints * TilesPerRow)
-	int maxNumPickups = maxNumSplinePoints * TilesPerRow;
+	int maxNumPickups = maxNumSplinePoints * mNumSplines;
 	// Deletes the first obstacle actor in the ObstacleMesh array when this number is reached (should be less than maxNumSplinePoints * TilesPerRow)
-	int maxNumObstacles = maxNumSplinePoints * TilesPerRow;
+	int maxNumObstacles = maxNumSplinePoints * mNumSplines;
 	// Test
 	MeshGenerator meshGen;
 	TArray<FString> meshPathLib;

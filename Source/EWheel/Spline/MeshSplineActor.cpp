@@ -49,53 +49,54 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, UStaticMesh* inMesh, int r
 	//		meshBank.RemoveAt(0);
 	//}
 
-	//Use the previous point as the starting location
-	FVector StartingPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
-	//Get the tangent belonging to our previous point
-	FVector StartTangent = GetSpline()->GetTangentAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
-	//Get the next point along our curve
-	FVector EndPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex + 1, ESplineCoordinateSpace::Local);
-	//Get the tangent belonging to our next point
-	FVector EndTangent = GetSpline()->GetTangentAtSplinePoint(SplineIndex + 1, ESplineCoordinateSpace::Local);
+		//Use the previous point as the starting location
+		FVector StartingPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
+		//Get the tangent belonging to our previous point
+		FVector StartTangent = GetSpline()->GetTangentAtSplinePoint(SplineIndex, ESplineCoordinateSpace::Local);
+		//Get the next point along our curve
+		FVector EndPoint = GetSpline()->GetLocationAtSplinePoint(SplineIndex + 1, ESplineCoordinateSpace::Local);
+		//Get the tangent belonging to our next point
+		FVector EndTangent = GetSpline()->GetTangentAtSplinePoint(SplineIndex + 1, ESplineCoordinateSpace::Local);
 
-	// Construct our new mesh component
-	SplineMeshComponent.Emplace(NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass()));
-	// Assign mesh to the new component
-	SplineMeshComponent[SplineIndex]->SetStaticMesh(mesh);
-	//Allow the mesh to be moved and dynamically render shadows as it is continously constructed.
-	SplineMeshComponent[SplineIndex]->SetMobility(EComponentMobility::Movable);
-	//Ensure that construction is done using this method
-	SplineMeshComponent[SplineIndex]->CreationMethod = EComponentCreationMethod::UserConstructionScript;
-	//Register the mesh to the world to have it spawn during runtime
-	SplineMeshComponent[SplineIndex]->RegisterComponentWithWorld(GetWorld());
-	//Add spline node relative to the curve
-	SplineMeshComponent[SplineIndex]->AttachToComponent(GetSpline(), FAttachmentTransformRules::KeepRelativeTransform);
-	
-	//Set the start and end point for the mesh
-	if (rot == 1 || rot == 3)
-	{	// Rotate the mesh sideways (-90 degrees)
-		SplineMeshComponent[SplineIndex]->SetForwardAxis(ESplineMeshAxis::Y);
-		SplineMeshComponent[SplineIndex]->SetStartRoll(-1.5708, false);
-		SplineMeshComponent[SplineIndex]->SetEndRoll(-1.5708, false);
-	}
-	// Inverse the mesh needs to be rotated 90 or 180 degrees
-	if (rot == 1 || rot == 2)
-		SplineMeshComponent[SplineIndex]->SetStartAndEnd(EndPoint, -EndTangent, StartingPoint, -StartTangent);
-	else
-		SplineMeshComponent[SplineIndex]->SetStartAndEnd(StartingPoint, StartTangent, EndPoint, EndTangent);
+		// Construct our new mesh component
+		SplineMeshComponent.Emplace(NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass()));
+		// Assign mesh to the new component
+		SplineMeshComponent[SplineIndex]->SetStaticMesh(mesh);
+		//Allow the mesh to be moved and dynamically render shadows as it is continously constructed.
+		SplineMeshComponent[SplineIndex]->SetMobility(EComponentMobility::Movable);
+		//Ensure that construction is done using this method
+		SplineMeshComponent[SplineIndex]->CreationMethod = EComponentCreationMethod::UserConstructionScript;
+		//Register the mesh to the world to have it spawn during runtime
+		SplineMeshComponent[SplineIndex]->RegisterComponentWithWorld(GetWorld());
+		//Add spline node relative to the curve
+		SplineMeshComponent[SplineIndex]->AttachToComponent(GetSpline(), FAttachmentTransformRules::KeepRelativeTransform);
 
-	//Enable collision for the spline mesh
-	SplineMeshComponent[SplineIndex]->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //Note: consider changing this if physics is not being used
-	//Rotate mesh in the direction of the spline's forward Axis
-	//SplineMeshComponent[SplineIndex]->SetForwardAxis(ForwardAxis);
+		//Set the start and end point for the mesh
 
-	SplineMeshComponent[SplineIndex]->GetBodySetup()->CollisionTraceFlag = ECollisionTraceFlag::CTF_UseComplexAsSimple;
-	SplineMeshComponent[SplineIndex]->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+		if (rot == 1 || rot == 3)
+		{	// Rotate the mesh sideways (-90 degrees)
+			SplineMeshComponent[SplineIndex]->SetForwardAxis(ESplineMeshAxis::Y);
+			SplineMeshComponent[SplineIndex]->SetStartRoll(-1.5708, false);
+			SplineMeshComponent[SplineIndex]->SetEndRoll(-1.5708, false);
+		}
+		// Inverse the mesh needs to be rotated 90 or 180 degrees
+		if (rot == 1 || rot == 2)
+			SplineMeshComponent[SplineIndex]->SetStartAndEnd(EndPoint, -EndTangent, StartingPoint, -StartTangent);
+		else
+			SplineMeshComponent[SplineIndex]->SetStartAndEnd(StartingPoint, StartTangent, EndPoint, EndTangent);
 
-	SplineMeshComponent[SplineIndex]->SetCastShadow(false);
+		//Enable collision for the spline mesh
+		SplineMeshComponent[SplineIndex]->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //Note: consider changing this if physics is not being used
+		//Rotate mesh in the direction of the spline's forward Axis
+		//SplineMeshComponent[SplineIndex]->SetForwardAxis(ForwardAxis);
 
-	if (DefaultMaterial)
-		SplineMeshComponent[SplineIndex]->SetMaterial(0, DefaultMaterial);
+		SplineMeshComponent[SplineIndex]->GetBodySetup()->CollisionTraceFlag = ECollisionTraceFlag::CTF_UseComplexAsSimple;
+		SplineMeshComponent[SplineIndex]->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+
+		SplineMeshComponent[SplineIndex]->SetCastShadow(false);
+
+		if (DefaultMaterial)
+			SplineMeshComponent[SplineIndex]->SetMaterial(0, DefaultMaterial);
 }
 
 void AMeshSplineActor::AddSplinePointAndMesh(const FVector newPointLocation)

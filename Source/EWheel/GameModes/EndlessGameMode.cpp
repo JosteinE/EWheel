@@ -3,7 +3,8 @@
 
 #include "EWheel/GameModes/EndlessGameMode.h"
 #include "EWheel/PlayerPawn.h"
-#include "EWheel/Spline/MeshSplineActor.h"
+//#include "EWheel/Spline/MeshSplineActor.h"
+#include "EWheel/Spline/MeshSplineMaster.h"
 
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
@@ -41,10 +42,13 @@ void AEndlessGameMode::BeginPlay()
 	// Spawn the path
 	FActorSpawnParameters pathSpawnParams;
 	pathSpawnParams.Owner = this;
-	mainPath = GetWorld()->SpawnActor<AMeshSplineActor>(AMeshSplineActor::StaticClass(), FVector{ 0.f, 0.f, splineSpawnVerticalOffset }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
-	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-	mainPath->SetNumTilesPerRow(TilesPerRow);
-	mainPath->SetDefaultMaterial(DefaultMaterial);
+	mPathMaster = GetWorld()->SpawnActor<AMeshSplineMaster>(AMeshSplineMaster::StaticClass(), FVector{ 0.f, 0.f, 0.f }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
+	mPathMaster->SetDefaultMaterial(DefaultMaterial);
+	mPathMaster->SetMaxNumSplinePoints(maxNumSplinePoints);
+	mPathMaster->ConstructSplines(2);
+	//lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+	//mainPath->SetNumTilesPerRow(TilesPerRow);
+	//mainPath->SetDefaultMaterial(DefaultMaterial);
 
 	// Create a starting area with no obstacles
 	for (int i = 0; i < 5; i++)
@@ -78,134 +82,137 @@ void AEndlessGameMode::Tick(float DeltaTime)
 
 	// If the player is further than the max distance from the last point, add a new point.
 	int pathIndex = extendFromSplinePoint;
-	if (pathIndex > mainPath->GetSpline()->GetNumberOfSplinePoints() - 1)
+	if (pathIndex > mPathMaster->GetNumSplinePoints() - 1)
 		pathIndex = 0;
 
 	// Extend the path if the player is within the minimum range to indexed spline point
-	if (mainPath->GetSpline()->GetNumberOfSplinePoints() < maxNumSplinePoints || (mainPath->GetSpline()->GetWorldLocationAtSplinePoint(pathIndex) - mainPlayer->GetActorLocation()).Size() < minDistToSplinePoint)
+	if (mPathMaster->GetIsAtMaxSplinePoints() || (mPathMaster->GetLocationAtSplinePoint(pathIndex) - mainPlayer->GetActorLocation()).Size() < minDistToSplinePoint)
 	{
 		ExtendPath();
 
-		int numObstaclesSpawned = 0;
-		// Check object spawn for each tile
-		for (int i = 0; i < TilesPerRow; i++)
-		{
-			// Spawn a point object
-			if (FMath::RandRange(0, 99) < PointSpawnChance)
-			{
-				FVector tileCentre = GetTileCentreLastRow(i);
-				SpawnPointObject(tileCentre);
-			}
-			// Spawn Obstacle Object
-			else if (!bSpawnedObstacleOnLast && numObstaclesSpawned < TilesPerRow - 1 && FMath::RandRange(0, 99) < ObstacleSpawnChance)
-			{
-				FVector tileCentre = GetTileCentreLastRow(i);
-				SpawnObstacleObject(tileCentre);
-				numObstaclesSpawned++;
-			}
-		}
+		//int numObstaclesSpawned = 0;
+		//// Check object spawn for each tile
+		//for (int i = 0; i < TilesPerRow; i++)
+		//{
+		//	// Spawn a point object
+		//	if (FMath::RandRange(0, 99) < PointSpawnChance)
+		//	{
+		//		FVector tileCentre = GetTileCentreLastRow(i);
+		//		SpawnPointObject(tileCentre);
+		//	}
+		//	// Spawn Obstacle Object
+		//	else if (!bSpawnedObstacleOnLast && numObstaclesSpawned < TilesPerRow - 1 && FMath::RandRange(0, 99) < ObstacleSpawnChance)
+		//	{
+		//		FVector tileCentre = GetTileCentreLastRow(i);
+		//		SpawnObstacleObject(tileCentre);
+		//		numObstaclesSpawned++;
+		//	}
+		//}
 
-		if (numObstaclesSpawned > 0)
-			bSpawnedObstacleOnLast = true;
-		else if (bSpawnedObstacleOnLast)
-			bSpawnedObstacleOnLast = false;
+		//if (numObstaclesSpawned > 0)
+		//	bSpawnedObstacleOnLast = true;
+		//else if (bSpawnedObstacleOnLast)
+		//	bSpawnedObstacleOnLast = false;
 	}
 }
 
 void AEndlessGameMode::ExtendPath()
 {
-	// Calculate the next spline point position
-	FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-	FVector LastSplinePointRightVector = mainPath->GetSpline()->GetRightVectorAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-	//LastSPlinePointDirection.X += FMath::RandRange(-0.5f, 0.5f);
+	mPathMaster->AddPoint(mPathMaster->GenerateNewPointLocation());
 
-	// MaxAngle = 45.f;
-	//float rightAmountFormula = FMath::Pow(0.5f, maxNumSplinePoints - );
-	float rightAmount = FMath::RandRange(-TileSize / TilesPerRow * 0.5f, TileSize / TilesPerRow * 0.5f);// FMath::RandRange(-rightAmountFormula, rightAmountFormula); // *(maxNumSplinePoints * (0.1f / maxNumSplinePoints));// FMath::RandRange(-TileSize * 0.25f, TileSize * 0.25f);
-	LastSPlinePointDirection.Z += FMath::RandRange(-splineVerticalStep, splineVerticalStep);
+	//// Calculate the next spline point position
+	//FVector LastSPlinePointDirection = mainPath->GetSpline()->GetDirectionAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+	//FVector LastSplinePointRightVector = mainPath->GetSpline()->GetRightVectorAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+	////LastSPlinePointDirection.X += FMath::RandRange(-0.5f, 0.5f);
 
-	FVector newLocation = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1) + LastSPlinePointDirection * FVector{ distToNextSplinePoint, distToNextSplinePoint, 1.f} + LastSplinePointRightVector * rightAmount;
-	newLocation.Z = FMath::Clamp(newLocation.Z, splineVerticalMin, splineVerticalMax);
+	//// MaxAngle = 45.f;
+	////float rightAmountFormula = FMath::Pow(0.5f, maxNumSplinePoints - );
+	//float rightAmount = FMath::RandRange(-TileSize / TilesPerRow * 0.5f, TileSize / TilesPerRow * 0.5f);// FMath::RandRange(-rightAmountFormula, rightAmountFormula); // *(maxNumSplinePoints * (0.1f / maxNumSplinePoints));// FMath::RandRange(-TileSize * 0.25f, TileSize * 0.25f);
+	//LastSPlinePointDirection.Z += FMath::RandRange(-splineVerticalStep, splineVerticalStep);
 
-	// Remove the first point in the spline if adding 1 exceedes the max number of spline points.
-	mainPath->AddSplinePointAndMesh(newLocation);
-	if (mainPath->GetSpline()->GetNumberOfSplinePoints() - 2 > maxNumSplinePoints) // -2 because the spline starts with 2 points and needs a leading point to not make gaps
-		mainPath->RemoveFirstSplinePointAndMesh(true);
+	//FVector newLocation = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1) + LastSPlinePointDirection * FVector{ distToNextSplinePoint, distToNextSplinePoint, 1.f} + LastSplinePointRightVector * rightAmount;
+	//newLocation.Z = FMath::Clamp(newLocation.Z, splineVerticalMin, splineVerticalMax);
 
-	lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+	//// Remove the first point in the spline if adding 1 exceedes the max number of spline points.
+	//mainPath->AddSplinePointAndMesh(newLocation);
+	//if (mainPath->GetSpline()->GetNumberOfSplinePoints() - 2 > maxNumSplinePoints) // -2 because the spline starts with 2 points and needs a leading point to not make gaps
+	//	mainPath->RemoveFirstSplinePointAndMesh(true);
+
+	//lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 }
 
 FVector AEndlessGameMode::GetTileCentreLastRow(int index)
 {
-	FVector previousSplinePointLoc = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2);
-	FVector previousSplinePointRV = mainPath->GetSpline()->GetRightVectorAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2, ESplineCoordinateSpace::World);
-	int tileOffset = FMath::Floor(TilesPerRow / 2);
+	//FVector previousSplinePointLoc = mainPath->GetSpline()->GetWorldLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2);
+	//FVector previousSplinePointRV = mainPath->GetSpline()->GetRightVectorAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 2, ESplineCoordinateSpace::World);
+	//int tileOffset = FMath::Floor(TilesPerRow / 2);
 
-	// Initial offset is half if tileOffset is even, normal if odd
-	float offset = TileSize * (0.5f * ( 1 - (TilesPerRow % 2)));
+	//// Initial offset is half if tileOffset is even, normal if odd
+	//float offset = TileSize * (0.5f * ( 1 - (TilesPerRow % 2)));
 
-	return previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + previousSplinePointRV * (-TileSize * tileOffset + (TileSize * index) + offset);
+	//return previousSplinePointLoc + (lastSplinePointLoc - previousSplinePointLoc) * 0.5f + previousSplinePointRV * (-TileSize * tileOffset + (TileSize * index) + offset);
+	return FVector{};
 }
 
 void AEndlessGameMode::SpawnPointObject(FVector& location)
 {
-	FActorSpawnParameters ObjectSpawnParams;
-	ObjectSpawnParams.Owner = this;
-	ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	APickUpActor* PointObject = GetWorld()->SpawnActor<APickUpActor>(APickUpActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
+	//FActorSpawnParameters ObjectSpawnParams;
+	//ObjectSpawnParams.Owner = this;
+	//ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	//APickUpActor* PointObject = GetWorld()->SpawnActor<APickUpActor>(APickUpActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
 
-	// Delete the first object in the array if the array count reaches maxNumObstacles
-	if (PickupActors.Num() > 0 && PickupActors.Num() >= maxNumPickups)
-	{
-		// Destroy the actor if it hasn't already been by the player
-		if (IsValid(PickupActors[0]))
-		{
-			PickupActors[0]->GetMeshComponent()->UnregisterComponent();
-			PickupActors[0]->Destroy();
-		}
-		PickupActors.RemoveAt(0);
-	}
+	//// Delete the first object in the array if the array count reaches maxNumObstacles
+	//if (PickupActors.Num() > 0 && PickupActors.Num() >= maxNumPickups)
+	//{
+	//	// Destroy the actor if it hasn't already been by the player
+	//	if (IsValid(PickupActors[0]))
+	//	{
+	//		PickupActors[0]->GetMeshComponent()->UnregisterComponent();
+	//		PickupActors[0]->Destroy();
+	//	}
+	//	PickupActors.RemoveAt(0);
+	//}
 
-	PickupActors.Emplace(PointObject);
-	
-	PointObject->SetStaticMesh(PointObjectMesh);
-	
-	PointObject->SetActorLocation(location + FVector{ 0.f, 0.f, 50.f });
-	PointObject->GetMeshComponent()->SetWorldScale3D(FVector{ 0.33f, 0.33f, 0.33f });
-	PointObject->GetMeshComponent()->SetRelativeRotation(FRotator{ 90.f, 0.f, 0.f });
-	//PointObject->GetMeshComponent()->RegisterComponent();
+	//PickupActors.Emplace(PointObject);
+	//
+	//PointObject->SetStaticMesh(PointObjectMesh);
+	//
+	//PointObject->SetActorLocation(location + FVector{ 0.f, 0.f, 50.f });
+	//PointObject->GetMeshComponent()->SetWorldScale3D(FVector{ 0.33f, 0.33f, 0.33f });
+	//PointObject->GetMeshComponent()->SetRelativeRotation(FRotator{ 90.f, 0.f, 0.f });
+	////PointObject->GetMeshComponent()->RegisterComponent();
 }
 
 void AEndlessGameMode::SpawnObstacleObject(FVector& location)
 {
-	FActorSpawnParameters ObjectSpawnParams;
-	ObjectSpawnParams.Owner = this;
-	ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
+	//FActorSpawnParameters ObjectSpawnParams;
+	//ObjectSpawnParams.Owner = this;
+	//ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	//AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
 
-	// Delete the first object in the array if the array count reaches maxNumObstacles
-	if (ObstacleActors.Num() >= maxNumObstacles)
-	{
-		// Destroy the actor if it hasn't already been by the player
-		if (IsValid(ObstacleActors[0]))
-		{
-			ObstacleActors[0]->GetMeshComponent()->UnregisterComponent();
-			ObstacleActors[0]->Destroy();
-		}
-		ObstacleActors.RemoveAt(0);
-	}
+	//// Delete the first object in the array if the array count reaches maxNumObstacles
+	//if (ObstacleActors.Num() >= maxNumObstacles)
+	//{
+	//	// Destroy the actor if it hasn't already been by the player
+	//	if (IsValid(ObstacleActors[0]))
+	//	{
+	//		ObstacleActors[0]->GetMeshComponent()->UnregisterComponent();
+	//		ObstacleActors[0]->Destroy();
+	//	}
+	//	ObstacleActors.RemoveAt(0);
+	//}
 
-	ObstacleActors.Emplace(ObstacleObject);
+	//ObstacleActors.Emplace(ObstacleObject);
 
-	int randomIndex = FMath::RandRange(0, meshPathLib.Num() - 1);
-	ObstacleObject->SetStaticMesh(meshPathLib[randomIndex]);
+	//int randomIndex = FMath::RandRange(0, meshPathLib.Num() - 1);
+	//ObstacleObject->SetStaticMesh(meshPathLib[randomIndex]);
 
-	float tempHeight = FMath::RandRange(0.5f, 1.f);
-	ObstacleObject->SetActorLocation(location); // +FVector{ 0.f, 0.f, 10.f * tempHeight });
-	ObstacleObject->GetMeshComponent()->SetWorldRotation(mainPath->GetSpline()->GetRotationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World) + FRotator{ 0.f, 180.f, 0.f });
-	//ObstacleObject->GetMeshComponent()->SetWorldScale3D(FVector{ FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.1f, 1.f) * tempHeight });
-	//ObstacleObject->GetMeshComponent()->SetRelativeRotation(FRotator{ 0.f, FMath::RandRange(0.f, 90.f), 0.f });
-	//PointObject->GetMeshComponent()->RegisterComponent();
+	//float tempHeight = FMath::RandRange(0.5f, 1.f);
+	//ObstacleObject->SetActorLocation(location); // +FVector{ 0.f, 0.f, 10.f * tempHeight });
+	//ObstacleObject->GetMeshComponent()->SetWorldRotation(mainPath->GetSpline()->GetRotationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World) + FRotator{ 0.f, 180.f, 0.f });
+	////ObstacleObject->GetMeshComponent()->SetWorldScale3D(FVector{ FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.1f, 1.f) * tempHeight });
+	////ObstacleObject->GetMeshComponent()->SetRelativeRotation(FRotator{ 0.f, FMath::RandRange(0.f, 90.f), 0.f });
+	////PointObject->GetMeshComponent()->RegisterComponent();
 }
 
 void AEndlessGameMode::EndGame()

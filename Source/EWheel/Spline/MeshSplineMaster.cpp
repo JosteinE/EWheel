@@ -37,7 +37,7 @@ void AMeshSplineMaster::AddSplines(int num)
 	mSplines.Init(nullptr, num);
 	for (int i = 0; i < num; i++)
 	{
-		mSplines[i] = AddSpline(false);
+		mSplines[i] = AddSpline(i, false);
 	}
 }
 
@@ -69,7 +69,7 @@ void AMeshSplineMaster::AddSplines(int num)
 //offset = FMath::Floor(inMesh.Num() * 0.5f) * 150 - (offset * (1 - (inMesh.Num() % 2))); 
 
 // -300 
-AMeshSplineActor* AMeshSplineMaster::AddSpline(bool bEmplaceToArray)
+AMeshSplineActor* AMeshSplineMaster::AddSpline(int index, bool bEmplaceToArray)
 {
 	FActorSpawnParameters pathSpawnParams;
 	pathSpawnParams.Owner = this;
@@ -80,7 +80,7 @@ AMeshSplineActor* AMeshSplineMaster::AddSpline(bool bEmplaceToArray)
 	// Let origo be the centre of the mesh
 	offset = FMath::Floor(numSplines * 0.5f) * 150 - (offset * (1 - (numSplines % 2)));
 	
-	FVector spawnVector{ 0.f, -offset + (mTileSize * numSplines), 0.f };
+	FVector spawnVector{ 0.f, -offset + (mTileSize * index), 0.f };
 
 	AMeshSplineActor* newSpline = GetWorld()->SpawnActor<AMeshSplineActor>(AMeshSplineActor::StaticClass(), spawnVector, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
 	newSpline->SetDefaultMaterial(DefaultMaterial);
@@ -109,15 +109,15 @@ void AMeshSplineMaster::RemoveSpline()
 	mSplines.RemoveAt(mSplines.Num() - 1);
 }
 
-FVector AMeshSplineMaster::GenerateNewPoint()
+FVector AMeshSplineMaster::GenerateNewPointLocation()
 {
 	FVector LastSplinePointDirection = mSplines[mMasterSplineIndex]->GetSpline()->GetDirectionAtSplinePoint(mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 	FVector LastSplinePointRightVector = mSplines[mMasterSplineIndex]->GetSpline()->GetRightVectorAtSplinePoint(mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 
-	float rightAmount = FMath::RandRange(-mTileSize / mTileSize * 0.5f, mTileSize / mTileSize * 0.5f);
+	float rightAmount = FMath::RandRange(-mTileSize / mSplines.Num() * 0.5f, mTileSize / mSplines.Num() * 0.5f);
 	LastSplinePointDirection.Z += FMath::RandRange(-mSplineVerticalStep, mSplineVerticalStep);
 
-	FVector newLocation = mSplines[mMasterSplineIndex]->GetSpline()->GetWorldLocationAtSplinePoint(mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 1) + LastSplinePointDirection * FVector{ distToNextSplinePoint, distToNextSplinePoint, 1.f } + LastSplinePointRightVector * rightAmount;
+	FVector newLocation = mSplines[mMasterSplineIndex]->GetSpline()->GetWorldLocationAtSplinePoint(mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 1) + LastSplinePointDirection * FVector{ mTileSize, mTileSize, 1.f } + LastSplinePointRightVector * rightAmount;
 	newLocation.Z = FMath::Clamp(newLocation.Z, mSplineVerticalMin, mSplineVerticalMax);
 
 	return newLocation;
@@ -128,12 +128,13 @@ void AMeshSplineMaster::AddPoint(FVector location)
 	TArray<UStaticMesh*> newTiles = mTilePicker->GetNewTiles(mSplines.Num());
 	TArray<int> newTilesRot = mTilePicker->GetLastRowRotation(mSplines.Num());
 	
+	FVector offset = mTileSize * mSplines[mMasterSplineIndex]->GetSpline()->GetRightVectorAtSplinePoint(mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+
 	if (mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 1 > mMaxNumSplinePoints)
 	{
 		for (int i = 0; i < mSplines.Num(); i++)
 		{
-			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i]);
-			//mSplines[i]->AssignMesh(newTiles[i])
+			mSplines[i]->AddSplinePointAndMesh(location - (offset * mMasterSplineIndex) + (offset * i), newTiles[i], newTilesRot[i]);
 			RemoveFirstSplinePointAndMesh(i);
 		}
 	}
@@ -141,7 +142,7 @@ void AMeshSplineMaster::AddPoint(FVector location)
 	{
 		for (int i = 0; i < mSplines.Num(); i++)
 		{
-			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i]);
+			mSplines[i]->AddSplinePointAndMesh(location - (offset * mMasterSplineIndex) + (offset * i), newTiles[i], newTilesRot[i]);
 		}
 	}
 }
@@ -149,4 +150,19 @@ void AMeshSplineMaster::AddPoint(FVector location)
 void AMeshSplineMaster::RemoveFirstSplinePointAndMesh(int splineIndex)
 {
 	mSplines[splineIndex]->RemoveFirstSplinePointAndMesh(true);
+}
+
+int AMeshSplineMaster::GetNumSplinePoints()
+{
+	return mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints();
+}
+
+bool AMeshSplineMaster::GetIsAtMaxSplinePoints()
+{
+	return GetNumSplinePoints() < mMaxNumSplinePoints;
+}
+
+FVector AMeshSplineMaster::GetLocationAtSplinePoint(int pointIndex)
+{
+	return mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(pointIndex, ESplineCoordinateSpace::World);
 }
