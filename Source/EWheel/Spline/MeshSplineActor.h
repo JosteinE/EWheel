@@ -34,8 +34,10 @@ class EWHEEL_API AMeshSplineActor : public ASplineActor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SplineMesh", meta = (AllowPrivateAccess = "true"))
 	class UMaterialInterface* AlternativeMaterial = nullptr;
 
+public:
 	AMeshSplineActor();
 	~AMeshSplineActor();
+
 protected:
 	void OnConstruction(const FTransform& Transform) override;
 
