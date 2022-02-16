@@ -33,7 +33,7 @@ public:
 
 	// Chance to spawn a flat tile if no other tile depends on this
 	int FlatBoyChance = 0;
-	bool bAddEdges = true;
+	bool bAddEdges = false;
 	bool bSpawnPits = false;
 	bool bSpawnRamps = true;
 	bool bSpawnHoles = false;

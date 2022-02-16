@@ -40,7 +40,7 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, UStaticMesh* inMesh, int r
 		mesh = inMesh;
 	else
 	{
-		mesh = MeshGen->StitchStaticMesh(TilePicker->GetLastRowRotation(tilesPerRow), TilePicker->GetNewTiles(tilesPerRow));
+		mesh = TilePicker->GetNewTiles(tilesPerRow)[1];// MeshGen->StitchStaticMesh(TilePicker->GetLastRowRotation(tilesPerRow), TilePicker->GetNewTiles(tilesPerRow));
 		if (!mesh) return;
 	}
 	//	meshBank.Emplace(mesh);
@@ -101,7 +101,7 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, UStaticMesh* inMesh, int r
 void AMeshSplineActor::AddSplinePointAndMesh(const FVector newPointLocation)
 {	
 	AddSplinePoint(newPointLocation, false);
-	ConstructMesh(SplineMeshComponent.Num());
+	ConstructMesh(SplineMeshComponent.Num(), nullptr, FMath::RandRange(0, 3));
 
 	//if (SplineMeshComponent.Num() < numRowsToReConPostInit)
 	//	return;

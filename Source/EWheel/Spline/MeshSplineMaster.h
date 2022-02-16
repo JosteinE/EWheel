@@ -46,6 +46,8 @@ class EWHEEL_API AMeshSplineMaster : public AActor
 	void RemoveSplines(int num);
 	void RemoveSpline();
 
+	// Generates new point and adds it to every spline
+	FVector GenerateNewPoint();
 	// Adds a new point to every spline
 	void AddPoint(FVector location);
 
@@ -56,14 +58,21 @@ private:
 	TArray<AMeshSplineActor*> mSplines;
 	SplineTilePicker* mTilePicker;
 
-	bool bAddEdges = true;
 	int mMasterSplineIndex = 0;
-	float mSplineOffset = 150.f;
+
+	bool bAddEdges = true;
+	// Index of the controlling spline
+	float mTileSize = 150.f;
 	int mMaxNumSplinePoints = 20;
+
+	float mSplineSpawnVerticalOffset = 0.f;
+	float mSplineVerticalMin = -50.f;
+	float mSplineVerticalMax = 50.f;
+	float mSplineVerticalStep = 20.f;
 
 public:
 	// Sets the spline for every other spline to follow
-	FORCEINLINE void SetSplineOffset(int splineOffset) { mSplineOffset = mSplineOffset; };
+	FORCEINLINE void SetTileSize(int tileSize) { mTileSize = tileSize; };
 
 	// Sets the spline for every other spline to follow
 	FORCEINLINE void SetMasterSpline(int splineIndex) { mMasterSplineIndex = splineIndex; };
