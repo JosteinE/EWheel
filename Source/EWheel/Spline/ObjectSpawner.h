@@ -24,9 +24,9 @@ public:
 	void CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* TileLog, TArray<FVector>* tileLocations, TArray<FRotator>* tileRotations);
 	
 	// Spawn objects
-	AObjectActorBase* SpawnObstacleActor(FVector* location, FRotator* rotation);
-	AObjectActorBase* SpawnPickUpActor(FVector* location, FRotator* rotation);
-	AObjectActorBase* SpawnPowerUpActor(FVector* location, FRotator* rotation);
+	AObjectActorBase* SpawnObstacleActor(FVector& location, FRotator& rotation);
+	AObjectActorBase* SpawnPickUpActor(FVector& location, FRotator& rotation);
+	AObjectActorBase* SpawnPowerUpActor(FVector& location, FRotator& rotation);
 
 	// Removes the objects that belonged to a row that has been removed
 	void CheckAndRemoveObjectsFromLastRow();
@@ -41,7 +41,7 @@ private:
 	int mMaxRows = 0;
 
 	// Object Spawner chances (in percentages)
-	int mObstacleSpawnChance = 33;
+	int mObstacleSpawnChance = 100;
 	int mPointSpawnChance = 8;
 	int mPowerUpSpawnChance = 1;
 

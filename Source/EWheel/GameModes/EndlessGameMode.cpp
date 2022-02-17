@@ -89,30 +89,6 @@ void AEndlessGameMode::Tick(float DeltaTime)
 	if (mPathMaster->GetIsAtMaxSplinePoints() || (mPathMaster->GetLocationAtSplinePoint(pathIndex) - mainPlayer->GetActorLocation()).Size() < minDistToSplinePoint)
 	{
 		ExtendPath();
-
-		//int numObstaclesSpawned = 0;
-		//// Check object spawn for each tile
-		//for (int i = 0; i < TilesPerRow; i++)
-		//{
-		//	// Spawn a point object
-		//	if (FMath::RandRange(0, 99) < PointSpawnChance)
-		//	{
-		//		FVector tileCentre = GetTileCentreLastRow(i);
-		//		SpawnPointObject(tileCentre);
-		//	}
-		//	// Spawn Obstacle Object
-		//	else if (!bSpawnedObstacleOnLast && numObstaclesSpawned < TilesPerRow - 1 && FMath::RandRange(0, 99) < ObstacleSpawnChance)
-		//	{
-		//		FVector tileCentre = GetTileCentreLastRow(i);
-		//		SpawnObstacleObject(tileCentre);
-		//		numObstaclesSpawned++;
-		//	}
-		//}
-
-		//if (numObstaclesSpawned > 0)
-		//	bSpawnedObstacleOnLast = true;
-		//else if (bSpawnedObstacleOnLast)
-		//	bSpawnedObstacleOnLast = false;
 	}
 }
 

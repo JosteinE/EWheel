@@ -62,6 +62,8 @@ public:
 	int GetNumSplinePoints();
 	bool GetIsAtMaxSplinePoints();
 
+	float GetDefaultSplineOffset(int splineIndex);
+
 	//TEMP
 	FVector GetLocationAtSplinePoint(int pointIndex);
 private:

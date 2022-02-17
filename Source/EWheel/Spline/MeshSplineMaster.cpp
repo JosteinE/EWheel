@@ -139,12 +139,11 @@ void AMeshSplineMaster::AddPoint(FVector location)
 
 	// Spawn new spline points in the same location for all splines, but add individual offsets for each spline tile
 	// Remove oldest point if the splines will exceed the max point count. 
-	float offset = FMath::Floor(mSplines.Num() * 0.5f) * -mTileSize;
 	if (mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 1 > mMaxNumSplinePoints)
 	{
 		for (int i = 0; i < mSplines.Num(); i++)
 		{
-			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i], offset + mTileSize * i);
+			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i], GetDefaultSplineOffset(i));
 			RemoveFirstSplinePointAndMesh(i);
 		}
 	}
@@ -152,22 +151,24 @@ void AMeshSplineMaster::AddPoint(FVector location)
 	{
 		for (int i = 0; i < mSplines.Num(); i++)
 		{
-			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i], offset + mTileSize * i);
+			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i], GetDefaultSplineOffset(i));
 		}
 	}
 
 	// Spawn obstacles if at least two rows have spawned
-	if (mSplines.Num() >= mTilePicker->GetTileLog()->Num())
+	if (mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 3 >= mTilePicker->GetTileLog()->Num())
 	{
 		TArray<FVector> tileLocations;
 		TArray<FRotator> tileRotations;
 		int splineIndex = mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 2;
+		FVector startPoint = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(splineIndex, ESplineCoordinateSpace::World);
+		FVector endPoint = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(splineIndex + 1, ESplineCoordinateSpace::World);
+		FVector rightVector = mSplines[mMasterSplineIndex]->GetSpline()->GetRightVectorAtSplinePoint(splineIndex, ESplineCoordinateSpace::World);
+		FRotator rotation = mSplines[mMasterSplineIndex]->GetSpline()->GetRotationAtSplinePoint(splineIndex, ESplineCoordinateSpace::World);
 		for (int i = 0; i < mSplines.Num(); i++)
 		{
-			FVector startPoint = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(splineIndex, ESplineCoordinateSpace::World);
-			FVector endPoint = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(splineIndex + 1, ESplineCoordinateSpace::World);
-			tileLocations.Emplace(startPoint + 0.5f * (endPoint - startPoint));
-			tileRotations.Emplace(mSplines[mMasterSplineIndex]->GetSpline()->GetRotationAtSplinePoint(splineIndex, ESplineCoordinateSpace::World));
+			tileLocations.Emplace(startPoint + 0.5f * (endPoint - startPoint) + rightVector * GetDefaultSplineOffset(i));
+			tileRotations.Emplace(rotation);
 		}
 
 		mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(mTilePicker->GetTileLog(), &tileLocations, &tileRotations);
@@ -211,6 +212,11 @@ int AMeshSplineMaster::GetNumSplinePoints()
 bool AMeshSplineMaster::GetIsAtMaxSplinePoints()
 {
 	return GetNumSplinePoints() < mMaxNumSplinePoints;
+}
+
+float AMeshSplineMaster::GetDefaultSplineOffset(int splineIndex)
+{
+	return -mSplines.Num() * mTileSize * 0.5f + (mTileSize * 0.5f) + mTileSize * splineIndex;
 }
 
 FVector AMeshSplineMaster::GetLocationAtSplinePoint(int pointIndex)
