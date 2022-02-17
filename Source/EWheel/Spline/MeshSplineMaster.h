@@ -28,6 +28,8 @@ public:
 	AMeshSplineMaster();
 	~AMeshSplineMaster();
 
+	void SetMaxNumSplinePoints(int maxNum);
+
 	// Initializes the splines
 	void ConstructSplines(int numSplines);
 
@@ -88,7 +90,6 @@ private:
 
 public:
 	FORCEINLINE void SetTileSize(int tileSize) { mTileSize = tileSize; };
-	FORCEINLINE void SetMaxNumSplinePoints(int maxNum) { mMaxNumSplinePoints = maxNum; };
 	// Sets the spline for every other spline to follow
 	FORCEINLINE void SetMasterSpline(int splineIndex) { mMasterSplineIndex = splineIndex; };
 

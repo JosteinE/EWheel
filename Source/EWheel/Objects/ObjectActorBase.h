@@ -22,6 +22,8 @@ public:
 
 	void SetStaticMesh(FString& inPath);
 
+	// Tile index on a row (from left to right)
+	int mTileIndex = 0;
 protected:
 	virtual void SetStaticMesh(UStaticMesh* inMesh);
 

@@ -19,6 +19,11 @@ AMeshSplineMaster::~AMeshSplineMaster()
 	mTilePicker = nullptr;
 }
 
+void AMeshSplineMaster::SetMaxNumSplinePoints(int maxNum)
+{
+	mMaxNumSplinePoints = maxNum;
+}
+
 void AMeshSplineMaster::ConstructSplines(int numSplines)
 {
 	if (numSplines < 1) return;
@@ -150,7 +155,7 @@ void AMeshSplineMaster::AddPoint(FVector location)
 		}
 	}
 
-	// Spawn Objects
+	// Spawn obstacles if at least two rows have spawned
 	if(mSplines.Num() >= mTilePicker->GetTileLog()->Num())
 		mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(mTilePicker->GetTileLog());
 }
