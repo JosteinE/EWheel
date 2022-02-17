@@ -6,6 +6,7 @@
 #include "EWheel/Spline/TileDetails.h"
 #include "EWheel/Objects/PickUpActor.h"
 #include "EWheel/Objects/ObstacleActor.h"
+#include "Engine/StaticMesh.h"
 
 
 // Sets default values for this component's properties
@@ -15,13 +16,49 @@ UObjectSpawner::UObjectSpawner()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
+	TArray<FString> meshPaths;
+
+	// PickUps
+	meshPaths.Emplace("StaticMesh'/Game/Meshes/PointObject.PointObject'");
+
+	// Obstacles
+	meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_BigRoot_150x150.Obstacle_BigRoot_150x150'");
+	meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Log_150x150.Obstacle_Log_150x150'");
+	meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_RampStone_150x150.Obstacle_RampStone_150x150'");
+	meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Stone_150x150.Obstacle_Stone_150x150'");
+	meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Stump_150x150.Obstacle_Stump_150x150'");
+
+	for (int i = 0; i < meshPaths.Num(); i++)
+	{
+		ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(*meshPaths[i]);
+		if (MeshAsset.Succeeded())
+			mLibrary.Emplace(Cast<UStaticMesh>(MeshAsset.Object));
+	}
 }
 
-void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* TileLog)
+UObjectSpawner::~UObjectSpawner()
 {
-	mRowTracker++;
+	for (TPair<int, TArray<AObjectActorBase*>> rowObjects : mObjects)
+	{
+		for (int i = 0; i < rowObjects.Value.Num(); i++)
+		{
+			rowObjects.Value[i]->Destroy();
+			rowObjects.Value[i] = nullptr;
+			rowObjects.Value.RemoveAt(i, 0, false);
+		}
+		rowObjects.Value.Empty();
+		mObjects.Remove(rowObjects.Key);
+	}
+}
 
+void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* TileLog, TArray<FVector>* tileLocations, TArray<FRotator>* tileRotations)
+{
+	// Update the row tracker to index the new objects
+	mRowTracker++;
+	if (mRowTracker > mMaxRows)
+		mRowTracker = 0;
+
+	// Make an array to store potential tile indices for objects
 	int tilesPerRow = TileLog->Num() * 0.5f;
 	TArray<int> possibleTilesIndices;
 	for (int i = 0; i < tilesPerRow; i++)
@@ -34,9 +71,9 @@ void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* Til
 	{
 		if (FMath::RandRange(0, 99) < mPointSpawnChance)
 		{
-			SpawnPickUpActor();
-			// Spawn pointobject
-			// SetObjectTileIndex = possibleTilesIndices[i]
+			AObjectActorBase* newPickup = SpawnPickUpActor(&(*tileLocations)[possibleTilesIndices[i]], &(*tileRotations)[possibleTilesIndices[i]]);
+			newPickup->mTileIndex = possibleTilesIndices[i];
+
 			possibleTilesIndices.RemoveAt(i);
 		}
 	}
@@ -86,8 +123,8 @@ void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* Til
 		{
 			if (FMath::RandRange(0, 99) < mPointSpawnChance)
 			{
-				// Spawn pointobject
-				// SetObjectTileIndex = possibleTilesIndices[i]
+				AObjectActorBase* newObstacle = SpawnObstacleActor(&(*tileLocations)[possibleTilesIndices[i]], &(*tileRotations)[possibleTilesIndices[i]]);
+				newObstacle->mTileIndex = possibleTilesIndices[i];
 			}
 
 			// Break if there's only one valid tile left without an obstacle
@@ -97,45 +134,64 @@ void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* Til
 	}
 }
 
-void UObjectSpawner::SpawnObstacleActor(FVector& location)
+AObjectActorBase* UObjectSpawner::SpawnObstacleActor(FVector* location, FRotator* rotation)
 {
+	FActorSpawnParameters ObjectSpawnParams;
+	ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
+	
+	if (!mObjects.Contains(mRowTracker))
+		mObjects.Add(mRowTracker);
+	mObjects[mRowTracker].Emplace(ObstacleObject);
+	
+	ObstacleObject->SetStaticMesh(mLibrary[FMath::RandRange(1, 5)]);
+	
+	float tempHeight = FMath::RandRange(0.5f, 1.f);
+	ObstacleObject->SetActorLocation(*location);
+	ObstacleObject->GetMeshComponent()->SetWorldRotation(*rotation + FRotator{ 0.f, 180.f, 0.f });
+//ObstacleObject->GetMeshComponent()->SetWorldScale3D(FVector{ FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.1f, 1.f) * tempHeight });
+//ObstacleObject->GetMeshComponent()->SetRelativeRotation(FRotator{ 0.f, FMath::RandRange(0.f, 90.f), 0.f });
+//PointObject->GetMeshComponent()->RegisterComponent();
+
+	return ObstacleObject;
 }
 
-void UObjectSpawner::SpawnPickUpActor(FVector& location)
+AObjectActorBase* UObjectSpawner::SpawnPickUpActor(FVector* location, FRotator* rotation)
 {
 	FActorSpawnParameters ObjectSpawnParams;
 	ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	APickUpActor* PickUpActor = GetWorld()->SpawnActor<APickUpActor>(APickUpActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
 	
-	mObjects.Emplace(PickUpActor);
+	if(!mObjects.Contains(mRowTracker))
+		mObjects.Add(mRowTracker);
+	mObjects[mRowTracker].Emplace(PickUpActor);
 	
-	PickUpActor->SetStaticMesh(PointObjectMesh);
+	PickUpActor->SetStaticMesh(mLibrary[0]);
 	
-	PickUpActor->SetActorLocation(location + FVector{ 0.f, 0.f, 50.f });
+	PickUpActor->SetActorLocation(*location + FVector{ 0.f, 0.f, 50.f });
 	PickUpActor->GetMeshComponent()->SetWorldScale3D(FVector{ 0.33f, 0.33f, 0.33f });
 	PickUpActor->GetMeshComponent()->SetRelativeRotation(FRotator{ 90.f, 0.f, 0.f });
 //PointObject->GetMeshComponent()->RegisterComponent();
+
+	return PickUpActor;
 }
 
-void UObjectSpawner::SpawnPowerUpActor(FVector& location)
+AObjectActorBase* UObjectSpawner::SpawnPowerUpActor(FVector* location, FRotator* rotation)
 {
+	return nullptr;
 }
 
-void UObjectSpawner::CheckAndRemoveObjectsFromRow(int RowIndex)
+void UObjectSpawner::CheckAndRemoveObjectsFromLastRow()
 {
-	if (mObjects.Contains(RowIndex))
+	if (mObjects.Contains(mRowTracker))
 	{
-		for (int i = 0; i < mObjects[RowIndex].Num(); i++)
+		for (int i = 0; i < mObjects[mRowTracker].Num(); i++)
 		{
-			mObjects[RowIndex][0]->Destroy();
-			mObjects[RowIndex][0] = nullptr;
-			mObjects[RowIndex].RemoveAt(0);
+			mObjects[mRowTracker][0]->Destroy();
+			mObjects[mRowTracker][0] = nullptr;
+			mObjects[mRowTracker].RemoveAt(0);
 		}
-		mObjects[RowIndex].Empty();
-		mObjects.Remove(RowIndex);
+		mObjects[mRowTracker].Empty();
+		mObjects.Remove(mRowTracker);
 	}
-}
-
-void UObjectSpawner::CheckAndRemoveObjects()
-{
 }

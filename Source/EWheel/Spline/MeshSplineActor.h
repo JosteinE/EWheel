@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "EWheel/Spline/SplineActor.h"
 #include "Components/SplineMeshComponent.h"
-#include "EWheel/Spline/SplineTilePicker.h"
 #include "MeshSplineActor.generated.h"
 
 class MeshGenerator;
@@ -68,4 +67,7 @@ private:
 	MeshGenerator* MeshGen;
 	// Logs the last few rows and picks appropriate tiles for the next
 	SplineTilePicker* TilePicker;
+
+public:
+	//FORCEINLINE TArray<USplineMeshComponent*>* GetMeshSplineComponent() { return &SplineMeshComponent; };
 };

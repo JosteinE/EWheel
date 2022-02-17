@@ -83,11 +83,6 @@ private:
 	float mSplineVerticalMax = 50.f;
 	float mSplineVerticalStep = 20.f;
 
-	// Object Spawner chances (in percentages)
-	int mObstacleSpawnChance = 33;
-	int mPointSpawnChance = 8;
-	int mPowerUpSpawnChance = 1;
-
 public:
 	FORCEINLINE void SetTileSize(int tileSize) { mTileSize = tileSize; };
 	// Sets the spline for every other spline to follow
