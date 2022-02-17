@@ -51,7 +51,7 @@ UObjectSpawner::~UObjectSpawner()
 	//}
 }
 
-void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* TileLog, TArray<FVector>* tileLocations, TArray<FRotator>* tileRotations)
+void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* TileLog, TArray<FVector>& tileLocations, TArray<FRotator>& tileRotations)
 {
 	// Make an array to store potential tile indices for objects. Assumes that tilelog stores 2 rows
 	int tilesPerRow = TileLog->Num() * 0.5f;
@@ -63,14 +63,14 @@ void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* Til
 
 	int numPointObjectsSpawned = 0;
 	// Spawn point objects (regardless of hole and ramp)
-	for (int i = 0; i < possibleTilesIndices.Num(); i++)
+	for (int i = possibleTilesIndices.Num() - 1; i >= 0; i--)
 	{
 		if (FMath::RandRange(0, 99) < mPointSpawnChance)
 		{
-			AObjectActorBase* newPickup = SpawnPickUpActor((*tileLocations)[possibleTilesIndices[i]], (*tileRotations)[possibleTilesIndices[i]]);
+			AObjectActorBase* newPickup = SpawnPickUpActor(tileLocations[possibleTilesIndices[i]], tileRotations[possibleTilesIndices[i]]);
 			newPickup->mTileIndex = possibleTilesIndices[i];
 			numPointObjectsSpawned++;
-			possibleTilesIndices.RemoveAt(i, 0, false);
+			possibleTilesIndices.RemoveAt(i);
 		}
 	}
 
@@ -93,9 +93,9 @@ void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* Til
 		if (obstacleTiles.Num() == tilesPerRow - 1)
 		{
 			bool removedLastEmptyTile = false;
-			for (int i = 0; i < possibleTilesIndices.Num(); i++)
+			for (int i = possibleTilesIndices.Num() - 1; i >= 0; i--)
 			{
-				for (int ii = 0; ii < obstacleTiles.Num(); ii++)
+				for (int ii = obstacleTiles.Num() - 1; ii >= 0; ii--)
 				{
 					if (possibleTilesIndices[i] != obstacleTiles[ii])
 					{
@@ -113,20 +113,18 @@ void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* Til
 
 	if (possibleTilesIndices.Num() > 1)
 	{
-		int numPosTiles = possibleTilesIndices.Num();
 		// Check where there's a valid tile on the new row for obstacles (no holes or ramps)
-		for (int i = 0; i < numPosTiles; i++)
+		for (int i = possibleTilesIndices.Num() - 1; i >= 0; i--)
 		{
-			for (int ii = tilesPerRow; ii < TileLog->Num(); ii++)
-			{
-				if (possibleTilesIndices[i] == tilesPerRow - ii && ((*TileLog)[ii]->m_MeshCategory == MeshCategories::CATEGORY_HOLE || (*TileLog)[ii]->m_MeshCategory == MeshCategories::CATEGORY_RAMP))
+			for (int ii = TileLog->Num() - 1; ii >= tilesPerRow; ii--)
+			{ // ((*(*TileLog)[ii]).m_MeshCategory == MeshCategories::CATEGORY_HOLE || (*(*TileLog)[ii]).m_MeshCategory == MeshCategories::CATEGORY_RAMP
+				if (possibleTilesIndices[i] == ii - tilesPerRow && ((*TileLog)[ii]->m_MeshCategory == MeshCategories::CATEGORY_HOLE || (*TileLog)[ii]->m_MeshCategory == MeshCategories::CATEGORY_RAMP))
 				{
-					possibleTilesIndices.RemoveAt(i, 0, false);
+					possibleTilesIndices.RemoveAt(i);
+					break;
 				}
 			}
 		}
-
-		possibleTilesIndices.Shrink();
 	}
 
 	// Spawn obstacle if there are more than one remaining empty tile
@@ -137,7 +135,7 @@ void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* Til
 		{
 			if (FMath::RandRange(0, 99) < mObstacleSpawnChance)
 			{
-				AObjectActorBase* newObstacle = SpawnObstacleActor((*tileLocations)[possibleTilesIndices[i]], (*tileRotations)[possibleTilesIndices[i]]);
+				AObjectActorBase* newObstacle = SpawnObstacleActor(tileLocations[possibleTilesIndices[i]], tileRotations[possibleTilesIndices[i]]);
 				newObstacle->mTileIndex = possibleTilesIndices[i];
 				obstaclesSpawned++;
 			}

@@ -21,7 +21,7 @@ public:
 	~UObjectSpawner();
 
 	// Checks for spawn conditions and spawn appropriate objects based on their spawn chance
-	void CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* TileLog, TArray<FVector>* tileLocations, TArray<FRotator>* tileRotations);
+	void CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* TileLog, TArray<FVector>& tileLocations, TArray<FRotator>& tileRotations);
 	
 	// Spawn objects
 	AObjectActorBase* SpawnObstacleActor(FVector& location, FRotator& rotation);

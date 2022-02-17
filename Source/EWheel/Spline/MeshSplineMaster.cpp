@@ -160,7 +160,7 @@ void AMeshSplineMaster::AddPoint(FVector location)
 	{
 		TArray<FVector> tileLocations;
 		TArray<FRotator> tileRotations;
-		int splineIndex = mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 2;
+		int splineIndex = mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 3;
 		FVector startPoint = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(splineIndex, ESplineCoordinateSpace::World);
 		FVector endPoint = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(splineIndex + 1, ESplineCoordinateSpace::World);
 		FVector rightVector = mSplines[mMasterSplineIndex]->GetSpline()->GetRightVectorAtSplinePoint(splineIndex, ESplineCoordinateSpace::World);
@@ -171,7 +171,7 @@ void AMeshSplineMaster::AddPoint(FVector location)
 			tileRotations.Emplace(rotation);
 		}
 
-		mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(mTilePicker->GetTileLog(), &tileLocations, &tileRotations);
+		mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(mTilePicker->GetTileLog(), tileLocations, tileRotations);
 		mObjectSpawner->CheckAndRemoveObjectsFromLastRow();
 	}
 }
