@@ -41,18 +41,19 @@ public:
 protected:
 	void OnConstruction(const FTransform& Transform) override;
 
-	void ConstructMesh(int SplineIndex, UStaticMesh* inMesh = nullptr, int rot = 0);
+	void ConstructMesh(int SplineIndex, UStaticMesh* inMesh = nullptr, int rot = 0, float offset = 0);
 
 public:
 	// Adds a point to the spline
 	void AddSplinePointAndMesh(const FVector newPointLocation);
-	void AddSplinePointAndMesh(const FVector newPointLocation, UStaticMesh* staticMesh, int rot);
+	void AddSplinePointAndMesh(const FVector newPointLocation, UStaticMesh* staticMesh, int rot, float offset);
 	// Removes the first point along the spline
 	void RemoveFirstSplinePointAndMesh(bool bRemovePoint = true);
 
 	void SetDefaultMesh(UStaticMesh* StaticMesh);
 	void SetDefaultMaterial(UMaterialInterface* Material);
 	void SetNumTilesPerRow(int numTiles);
+
 private:
 	void RemoveAllSplineMesh(bool bRemovePoints = true);
 	void RemoveSplineMesh(int index, bool bRemovePoint = true);

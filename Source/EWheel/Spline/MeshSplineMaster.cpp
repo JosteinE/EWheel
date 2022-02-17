@@ -73,14 +73,14 @@ AMeshSplineActor* AMeshSplineMaster::AddSpline(int index, bool bEmplaceToArray)
 {
 	FActorSpawnParameters pathSpawnParams;
 	pathSpawnParams.Owner = this;
-	int numSplines = mSplines.Num();
-	
-	// Initial offset is half if inmesh num is even, normal if odd (offset = tileoffset/2 if num = even, offset = tileoffset if num = odd)
-	float offset = mTileSize * (0.5f * (((numSplines % 2) + 2) - 1));
-	// Let origo be the centre of the mesh
-	offset = FMath::Floor(numSplines * 0.5f) * 150 - (offset * (1 - (numSplines % 2)));
-	
-	FVector spawnVector{ 0.f, -offset + (mTileSize * index), 0.f };
+	//int numSplines = mSplines.Num();
+	//
+	//// Initial offset is half if inmesh num is even, normal if odd (offset = tileoffset/2 if num = even, offset = tileoffset if num = odd)
+	//float offset = mTileSize * (0.5f * (((numSplines % 2) + 2) - 1));
+	//// Let origo be the centre of the mesh
+	//offset = FMath::Floor(numSplines * 0.5f) * 150 - (offset * (1 - (numSplines % 2)));
+	//
+	FVector spawnVector{0.f,0.f,0.f};// { 0.f, -offset + (mTileSize * index), 0.f };
 
 	AMeshSplineActor* newSpline = GetWorld()->SpawnActor<AMeshSplineActor>(AMeshSplineActor::StaticClass(), spawnVector, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
 	newSpline->SetDefaultMaterial(DefaultMaterial);
@@ -127,14 +127,13 @@ void AMeshSplineMaster::AddPoint(FVector location)
 {
 	TArray<UStaticMesh*> newTiles = mTilePicker->GetNewTiles(mSplines.Num());
 	TArray<int> newTilesRot = mTilePicker->GetLastRowRotation(mSplines.Num());
-	
-	FVector offset = mTileSize * mSplines[mMasterSplineIndex]->GetSpline()->GetRightVectorAtSplinePoint(mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 
+	float offset = FMath::Floor(mSplines.Num() * 0.5f) * -mTileSize;
 	if (mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 1 > mMaxNumSplinePoints)
 	{
 		for (int i = 0; i < mSplines.Num(); i++)
 		{
-			mSplines[i]->AddSplinePointAndMesh(location - (offset * mMasterSplineIndex) + (offset * i), newTiles[i], newTilesRot[i]);
+			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i], offset + mTileSize * i);
 			RemoveFirstSplinePointAndMesh(i);
 		}
 	}
@@ -142,7 +141,7 @@ void AMeshSplineMaster::AddPoint(FVector location)
 	{
 		for (int i = 0; i < mSplines.Num(); i++)
 		{
-			mSplines[i]->AddSplinePointAndMesh(location - (offset * mMasterSplineIndex) + (offset * i), newTiles[i], newTilesRot[i]);
+			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i], offset + mTileSize * i);
 		}
 	}
 }

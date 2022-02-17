@@ -25,6 +25,12 @@ TArray<UStaticMesh*> SplineTilePicker::GetNewTiles(int numTiles)
 	// Remove stored tileDetails if we're about to surpass the limit
 	CheckAndEmptyLog(numTiles);
 
+	if(numTiles == 1)
+	{
+		TileMesh.Emplace(GetNewTile());
+		return TileMesh;
+	}
+
 	for (int i = 0; i < numTiles; i++)
 	{
 		// IntVector: Category, Tile and Rotation
@@ -77,6 +83,60 @@ TArray<UStaticMesh*> SplineTilePicker::GetNewTiles(int numTiles)
 	AddEdgeMesh(TileMesh, numTiles);
 
 	return TileMesh;
+}
+
+UStaticMesh* SplineTilePicker::GetNewTile()
+{
+	// Remove stored tileDetails if we're about to surpass the limit
+	CheckAndEmptyLog(1);
+	TArray<FIntVector> possibleTiles;
+	int currentIndex = TileLog.Num();
+	
+	bool bTileIsDependant = false;
+	if (CheckDependancyPrevious(currentIndex, 1)) // We know these are pits
+	{
+		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_EX, 0 });
+		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 0 });
+		bTileIsDependant = true;
+	}
+	else
+	{
+		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_DEFAULT, MeshType::DEFAULT, 0 });
+		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT, 2 });
+		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_PIT, MeshType::PIT_END_SN, 2 });
+		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_RAMP, MeshType::RAMP, 0 });
+		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_HOLE, MeshType::HOLE, 0 });
+	}
+
+	// Pick a random, possible tile
+	int randomTileIndex = 0;
+	if (!bTileIsDependant && FMath::RandRange(0, 99) < FlatBoyChance)
+	{
+		possibleTiles.Empty();
+		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_DEFAULT, MeshType::DEFAULT, 0 });
+	}
+	else
+	{
+		randomTileIndex = GetRandomIndexBasedOnWeight(possibleTiles);
+
+		if (randomTileIndex < 0)
+		{
+			possibleTiles.Empty();
+			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_DEFAULT, MeshType::DEFAULT, 0 });
+			randomTileIndex = 0;
+		}
+	}
+
+	// Import data from random possible tile to a new tile
+	TileDetails* newTile = new TileDetails;
+	newTile->m_MeshCategory = possibleTiles[randomTileIndex].X;
+	newTile->m_MeshType = possibleTiles[randomTileIndex].Y;
+	newTile->m_Rotation = possibleTiles[randomTileIndex].Z;
+
+	// Log to pair
+	TileLog.Emplace(newTile);
+
+	return MeshLib->GetMesh(newTile->m_MeshType);
 }
 
 int SplineTilePicker::GetTileRotation(int index)

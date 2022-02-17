@@ -23,6 +23,7 @@ public:
 	~SplineTilePicker();
 	
 	TArray<UStaticMesh*> GetNewTiles(int numTiles);
+
 	int GetTileRotation(int index);
 	TArray<int> GetRowRotation(int index, int numPerRow); // index should be first tile in row (left)
 	TArray<int> GetLastRowRotation(int numPerRow); // index should be first tile in row (left)
@@ -32,11 +33,11 @@ public:
 	int NumRowsToLog = 2;
 
 	// Chance to spawn a flat tile if no other tile depends on this
-	int FlatBoyChance = 0;
+	int FlatBoyChance = 75;
 	bool bAddEdges = false;
 	bool bSpawnPits = true;
 	bool bSpawnRamps = true;
-	bool bSpawnHoles = false;
+	bool bSpawnHoles = true;
 private:
 	// Deletes pointers and empties the array
 	void EmptyTileLog();
@@ -71,6 +72,8 @@ private:
 	int GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTiles);
 
 	void AddEdgeMesh(TArray<UStaticMesh*>& tileMesh, int numTilesPerRow);
+
+	UStaticMesh* GetNewTile();
 
 	// Mesh category, type and Num 90 degree rotations
 	TArray<TileDetails*> TileLog;

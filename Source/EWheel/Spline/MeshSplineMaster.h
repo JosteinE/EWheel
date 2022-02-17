@@ -9,8 +9,8 @@
 class AMeshSplineActor;
 class SplineTilePicker;
 class UStaticMesh;
-/**
- * 
+/** Master of splines
+ *  Spawns multiple splines ontop itself then offsets the splines individual tiles to maintain correct mesh deformation
  */
 UCLASS()
 class EWHEEL_API AMeshSplineMaster : public AActor
@@ -47,7 +47,6 @@ public:
 	void RemoveSplines(int num);
 	void RemoveSpline();
 
-	// Generates new point and adds it to every spline
 	FVector GenerateNewPointLocation();
 	// Adds a new point to every spline
 	void AddPoint(FVector location);
