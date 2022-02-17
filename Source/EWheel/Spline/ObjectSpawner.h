@@ -8,7 +8,7 @@
 
 class SplineTilePicker;
 struct TileDetails;
-class AOstacleActor;
+class AObstacleActor;
 class APickUpActor;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )

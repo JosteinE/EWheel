@@ -12,10 +12,6 @@ UCLASS()
 class EWHEEL_API APickUpActor : public AObjectActorBase
 {
 	GENERATED_BODY()
-	
-	/** Mesh component belonging to the pickup object */
-	UPROPERTY(Category = Mesh, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* MeshComponent;
 
 public:	
 	// Sets default values for this actor's properties
@@ -29,14 +25,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SetStaticMesh(FString& inPath);
-	void SetStaticMesh(UStaticMesh* inMesh);
+	void SetStaticMesh(UStaticMesh* inMesh) override;
 
 private:
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:
-	/** Returns the object's mesh component **/
-	FORCEINLINE UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
 };

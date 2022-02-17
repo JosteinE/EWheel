@@ -13,10 +13,6 @@ class EWHEEL_API AObstacleActor : public AObjectActorBase
 {
 	GENERATED_BODY()
 
-	/** Mesh component belonging to the obstacle */
-	UPROPERTY(Category = Mesh, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* MeshComponent;
-
 	/** Boosts the player in the reflected forward direction when colliding at a tolerated angle */
 	UPROPERTY(Category = Collision, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float ImpulseStrength = 100.f;
@@ -29,14 +25,9 @@ public:
 	// Sets default values for this actor's properties
 	AObstacleActor();
 
-	void SetStaticMesh(FString& inPath);
-	void SetStaticMesh(UStaticMesh* inMesh);
+	void SetStaticMesh(UStaticMesh* inMesh) override;
 
 private:
 	UFUNCTION()
 	void OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
-public:
-	/** Returns the object's mesh component **/
-	FORCEINLINE UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
 };

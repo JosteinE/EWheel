@@ -159,23 +159,24 @@ void AMeshSplineMaster::SpawnObjectsLastRow()
 {
 	//mObjectSpawner
 	// Check object spawn for each tile
-	int numObstaclesSpawned = 0;
-	for (int i = 0; i < mSplines.Num(); i++)
-	{
-		// Spawn a point object
-		if (mObjectSpawner->ValidateSpawnOnTile() FMath::RandRange(0, 99) < mPointSpawnChance)
-		{
-			FVector tileCentre = mSplines
-			SpawnPointObject(tileCentre);
-		}
-		// Spawn Obstacle Object
-		else if (numObstaclesSpawned < mSplines.Num() - 1 && FMath::RandRange(0, 99) < mObstacleSpawnChance)
-		{
-			FVector tileCentre = GetTileCentreLastRow(i);
-			SpawnObstacleObject(tileCentre);
-			numObstaclesSpawned++;
-		}
-	}
+	mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(mTilePicker->GetTileLog());
+	//int numObstaclesSpawned = 0;
+	//for (int i = 0; i < mSplines.Num(); i++)
+	//{
+	//	// Spawn a point object
+	//	if (mObjectSpawner->ValidateSpawnOnTile() FMath::RandRange(0, 99) < mPointSpawnChance)
+	//	{
+	//		FVector tileCentre = mSplines
+	//		SpawnPointObject(tileCentre);
+	//	}
+	//	// Spawn Obstacle Object
+	//	else if (numObstaclesSpawned < mSplines.Num() - 1 && FMath::RandRange(0, 99) < mObstacleSpawnChance)
+	//	{
+	//		FVector tileCentre = GetTileCentreLastRow(i);
+	//		SpawnObstacleObject(tileCentre);
+	//		numObstaclesSpawned++;
+	//	}
+	//}
 }
 
 void AMeshSplineMaster::RemoveFirstSplinePointAndMesh(int splineIndex)

@@ -13,17 +13,14 @@ AObjectActorBase::AObjectActorBase()
 	RootComponent = MeshComponent;
 }
 
-// Called when the game starts or when spawned
-void AObjectActorBase::BeginPlay()
+void AObjectActorBase::SetStaticMesh(FString& inPath)
 {
-	Super::BeginPlay();
-	
+	UObject* MeshAsset = StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *inPath);
+	if (MeshAsset)
+		SetStaticMesh(Cast<UStaticMesh>(MeshAsset));
 }
 
-// Called every frame
-void AObjectActorBase::Tick(float DeltaTime)
+void AObjectActorBase::SetStaticMesh(UStaticMesh* inMesh)
 {
-	Super::Tick(DeltaTime);
-
 }
 

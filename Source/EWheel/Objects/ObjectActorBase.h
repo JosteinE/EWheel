@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/StaticMeshComponent.h"
 #include "ObjectActorBase.generated.h"
 
 UCLASS()
@@ -11,16 +12,20 @@ class EWHEEL_API AObjectActorBase : public AActor
 {
 	GENERATED_BODY()
 	
+	/** Mesh component belonging to the obstacle */
+	UPROPERTY(Category = Mesh, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* MeshComponent;
+
 public:	
 	// Sets default values for this actor's properties
 	AObjectActorBase();
 
+	void SetStaticMesh(FString& inPath);
+
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void SetStaticMesh(UStaticMesh* inMesh);
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	/** Returns the object's mesh component **/
+	FORCEINLINE UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
 };

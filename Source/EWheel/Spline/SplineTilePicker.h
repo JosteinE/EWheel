@@ -6,7 +6,7 @@
 
 class MeshLibrary;
 class UStaticMesh;
-
+struct TileDetails;
 /**
  * 
  */
