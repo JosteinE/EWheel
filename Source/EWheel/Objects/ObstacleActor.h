@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "EWheel/Objects/ObjectActorBase.h"
 #include "ObstacleActor.generated.h"
 
 class UStaticMeshComponent;
 
 UCLASS()
-class EWHEEL_API AObstacleActor : public AActor
+class EWHEEL_API AObstacleActor : public AObjectActorBase
 {
 	GENERATED_BODY()
 

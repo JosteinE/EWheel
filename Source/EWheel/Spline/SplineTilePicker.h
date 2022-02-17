@@ -7,12 +7,6 @@
 class MeshLibrary;
 class UStaticMesh;
 
-struct TileDetails
-{
-	int m_MeshCategory = 0;
-	int m_MeshType = 0;
-	int m_Rotation = 0; // Multiplied by 90 degrees
-};
 /**
  * 
  */
@@ -78,4 +72,7 @@ private:
 	// Mesh category, type and Num 90 degree rotations
 	TArray<TileDetails*> TileLog;
 	MeshLibrary* MeshLib;
+
+public:
+	FORCEINLINE TArray<TileDetails*>* GetTileLog() { return &TileLog; };
 };

@@ -9,6 +9,7 @@
 class AMeshSplineActor;
 class SplineTilePicker;
 class UStaticMesh;
+class UObjectSpawner;
 /** Master of splines
  *  Spawns multiple splines ontop itself then offsets the splines individual tiles to maintain correct mesh deformation
  */
@@ -51,6 +52,8 @@ public:
 	// Adds a new point to every spline
 	void AddPoint(FVector location);
 
+	void SpawnObjectsLastRow();
+
 	// Removes the first point on every spline
 	void RemoveFirstSplinePointAndMesh(int splineIndex);
 
@@ -62,18 +65,26 @@ public:
 private:
 	TArray<AMeshSplineActor*> mSplines;
 	SplineTilePicker* mTilePicker;
+	UObjectSpawner* mObjectSpawner;
 
-	int mMasterSplineIndex = 0;
-
-	bool bAddEdges = true;
 	// Index of the controlling spline
+	int mMasterSplineIndex = 0;
+	
+	// Construction details
+	bool bAddEdges = true;
 	float mTileSize = 150.f;
 	int mMaxNumSplinePoints = 20;
-
 	float mSplineSpawnVerticalOffset = 0.f;
+
+	// Path extention limits 
 	float mSplineVerticalMin = -50.f;
 	float mSplineVerticalMax = 50.f;
 	float mSplineVerticalStep = 20.f;
+
+	// Object Spawner chances (in percentages)
+	int mObstacleSpawnChance = 33;
+	int mPointSpawnChance = 8;
+	int mPowerUpSpawnChance = 1;
 
 public:
 	FORCEINLINE void SetTileSize(int tileSize) { mTileSize = tileSize; };

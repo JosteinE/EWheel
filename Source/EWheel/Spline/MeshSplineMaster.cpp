@@ -4,11 +4,13 @@
 #include "EWheel/Spline/MeshSplineMaster.h"
 #include "EWheel/Spline/SplineTilePicker.h"
 #include "EWheel/Spline/MeshSplineActor.h"
+#include "EWheel/Spline/ObjectSpawner.h"
 
 AMeshSplineMaster::AMeshSplineMaster()
 {
 	mTilePicker = new SplineTilePicker;
 	mTilePicker->SetNumRowsToLog(2);
+	mObjectSpawner = CreateDefaultSubobject<UObjectSpawner>(TEXT("ObjectSpawner"));
 }
 
 AMeshSplineMaster::~AMeshSplineMaster()
@@ -125,9 +127,12 @@ FVector AMeshSplineMaster::GenerateNewPointLocation()
 
 void AMeshSplineMaster::AddPoint(FVector location)
 {
+	// Semi randomly pick out new tiles and their rottations
 	TArray<UStaticMesh*> newTiles = mTilePicker->GetNewTiles(mSplines.Num());
 	TArray<int> newTilesRot = mTilePicker->GetLastRowRotation(mSplines.Num());
 
+	// Spawn new spline points in the same location for all splines, but add individual offsets for each spline tile
+	// Remove oldest point if the splines will exceed the max point count. 
 	float offset = FMath::Floor(mSplines.Num() * 0.5f) * -mTileSize;
 	if (mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 1 > mMaxNumSplinePoints)
 	{
@@ -142,6 +147,33 @@ void AMeshSplineMaster::AddPoint(FVector location)
 		for (int i = 0; i < mSplines.Num(); i++)
 		{
 			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i], offset + mTileSize * i);
+		}
+	}
+
+	// Spawn Objects
+	if(mSplines.Num() >= mTilePicker->GetTileLog()->Num())
+		mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(mTilePicker->GetTileLog());
+}
+
+void AMeshSplineMaster::SpawnObjectsLastRow()
+{
+	//mObjectSpawner
+	// Check object spawn for each tile
+	int numObstaclesSpawned = 0;
+	for (int i = 0; i < mSplines.Num(); i++)
+	{
+		// Spawn a point object
+		if (mObjectSpawner->ValidateSpawnOnTile() FMath::RandRange(0, 99) < mPointSpawnChance)
+		{
+			FVector tileCentre = mSplines
+			SpawnPointObject(tileCentre);
+		}
+		// Spawn Obstacle Object
+		else if (numObstaclesSpawned < mSplines.Num() - 1 && FMath::RandRange(0, 99) < mObstacleSpawnChance)
+		{
+			FVector tileCentre = GetTileCentreLastRow(i);
+			SpawnObstacleObject(tileCentre);
+			numObstaclesSpawned++;
 		}
 	}
 }

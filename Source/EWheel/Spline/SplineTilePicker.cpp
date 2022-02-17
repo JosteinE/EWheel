@@ -3,7 +3,8 @@
 
 #include "EWheel/Spline/SplineTilePicker.h"
 #include "EWheel/Spline/MeshLibrary.h"
-#include "Engine/StaticMesh.h"
+#include "EWheel/Spline/TileDetails.h"
+#include "EWheel/Spline/MeshCategoriesAndTypes.h"
 
 SplineTilePicker::SplineTilePicker()
 {
