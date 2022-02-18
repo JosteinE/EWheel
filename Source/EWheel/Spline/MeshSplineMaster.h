@@ -76,6 +76,7 @@ private:
 	
 	// Construction details
 	bool bAddEdges = true;
+	bool bSpawnObjects = true;
 	float mTileSize = 150.f;
 	int mMaxNumSplinePoints = 20;
 	float mSplineSpawnVerticalOffset = 0.f;

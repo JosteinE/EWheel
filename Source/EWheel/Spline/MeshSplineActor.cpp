@@ -5,20 +5,20 @@
 #include "UObject/ConstructorHelpers.h"
 #include "PhysicsEngine/BodySetup.h"
 
-#include "EWheel/MeshGenerator.h"
+//#include "EWheel/MeshGenerator.h"
 #include "EWheel/Spline/SplineTilePicker.h"
 
 AMeshSplineActor::AMeshSplineActor()
 {
-	MeshGen = new MeshGenerator;
+	//MeshGen = new MeshGenerator;
 	TilePicker = new SplineTilePicker;
 	TilePicker->SetNumRowsToLog(2);
 }
 
 AMeshSplineActor::~AMeshSplineActor()
 {
-	delete MeshGen;
-	MeshGen = nullptr;
+	//delete MeshGen;
+	//MeshGen = nullptr;
 	delete TilePicker;
 	TilePicker = nullptr;
 }

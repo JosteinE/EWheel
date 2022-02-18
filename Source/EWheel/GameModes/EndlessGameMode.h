@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 
-#include "EWheel/MeshGenerator.h"
+//#include "EWheel/MeshGenerator.h"
 
 #include "EndlessGameMode.generated.h"
 /**
@@ -78,7 +78,7 @@ private:
 	// Deletes the first obstacle actor in the ObstacleMesh array when this number is reached (should be less than maxNumSplinePoints * TilesPerRow)
 	int maxNumObstacles = maxNumSplinePoints * mNumSplines;
 	// Test
-	MeshGenerator meshGen;
+	//MeshGenerator meshGen;
 	TArray<FString> meshPathLib;
 
 	int32 PointSpawnChance = 8;

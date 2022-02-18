@@ -64,7 +64,7 @@ private:
 	float tileOffset = 150.f;
 
 	// Stitches multiple StaticMesh tiles into one
-	MeshGenerator* MeshGen;
+	//MeshGenerator* MeshGen;
 	// Logs the last few rows and picks appropriate tiles for the next
 	SplineTilePicker* TilePicker;
 

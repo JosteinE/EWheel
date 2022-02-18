@@ -45,6 +45,7 @@ void AEndlessGameMode::BeginPlay()
 	mPathMaster = GetWorld()->SpawnActor<AMeshSplineMaster>(AMeshSplineMaster::StaticClass(), FVector{ 0.f, 0.f, 0.f }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
 	mPathMaster->SetDefaultMaterial(DefaultMaterial);
 	mPathMaster->SetMaxNumSplinePoints(maxNumSplinePoints);
+	mPathMaster->SetTileSize(TileSize);
 	mPathMaster->ConstructSplines(mNumSplines);
 	//lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 	//mainPath->SetNumTilesPerRow(TilesPerRow);

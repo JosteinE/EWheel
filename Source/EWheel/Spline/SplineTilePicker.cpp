@@ -756,19 +756,19 @@ int SplineTilePicker::GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTi
 				weightMap.Emplace(5);
 				break;
 			case MeshType::HOLE_4W:
-				weightMap.Emplace(5);
+				weightMap.Emplace(1);
 				break;
 			case MeshType::HOLE_END_SN:
-				weightMap.Emplace(5);
+				weightMap.Emplace(6);
 				break;
 			case MeshType::HOLE_EX:
-				weightMap.Emplace(5);
+				weightMap.Emplace(3);
 				break;
 			case MeshType::HOLE_L:
-				weightMap.Emplace(5);
+				weightMap.Emplace(2);
 				break;
 			case MeshType::HOLE_T:
-				weightMap.Emplace(5);
+				weightMap.Emplace(1);
 				break;
 			default:
 				break;

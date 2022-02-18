@@ -21,12 +21,13 @@ public:
 	~UObjectSpawner();
 
 	// Checks for spawn conditions and spawn appropriate objects based on their spawn chance
-	void CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* TileLog, TArray<FVector>& tileLocations, TArray<FRotator>& tileRotations);
+	// Wanted to pass the arrays as ptrs or references, but it kept losing the data spawning stuff in weird places
+	void CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* TileLog, TArray<FVector> tileLocations, TArray<FRotator> tileRotations);
 	
 	// Spawn objects
-	AObjectActorBase* SpawnObstacleActor(FVector& location, FRotator& rotation);
-	AObjectActorBase* SpawnPickUpActor(FVector& location, FRotator& rotation);
-	AObjectActorBase* SpawnPowerUpActor(FVector& location, FRotator& rotation);
+	AObjectActorBase* SpawnObstacleActor(FVector location, FRotator rotation);
+	AObjectActorBase* SpawnPickUpActor(FVector location, FRotator rotation);
+	AObjectActorBase* SpawnPowerUpActor(FVector location, FRotator rotation);
 
 	// Removes the objects that belonged to a row that has been removed
 	void CheckAndRemoveObjectsFromLastRow();
@@ -41,9 +42,11 @@ private:
 	int mMaxRows = 0;
 
 	// Object Spawner chances (in percentages)
-	int mObstacleSpawnChance = 100;
+	int mObstacleSpawnChance = 33;
 	int mPointSpawnChance = 8;
 	int mPowerUpSpawnChance = 1;
+	bool bSkipEveryOtherRow = true;
+	bool bSpawnedObstaclesOnLastRow = false;
 
 public:
 	FORCEINLINE void SetMaxRows(int maxRows) { mMaxRows = maxRows; };

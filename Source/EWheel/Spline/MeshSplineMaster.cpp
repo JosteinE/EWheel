@@ -156,7 +156,7 @@ void AMeshSplineMaster::AddPoint(FVector location)
 	}
 
 	// Spawn obstacles if at least two rows have spawned
-	if (mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 3 >= mTilePicker->GetTileLog()->Num())
+	if (bSpawnObjects && mSplines.Num() > 1 && mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 3 >= mTilePicker->GetTileLog()->Num() / mSplines.Num())
 	{
 		TArray<FVector> tileLocations;
 		TArray<FRotator> tileRotations;
