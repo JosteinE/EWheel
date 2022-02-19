@@ -37,6 +37,7 @@ APlayerPawn::APlayerPawn()
 	PlayerRoot->SetSimulatePhysics(true);
 	PlayerRoot->SetEnableGravity(true);
 	PlayerRoot->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
+	//PlayerRoot->SetNotifyRigidBodyCollision(true); // (Simulation generates hit events enabled)
 	PlayerRoot->SetLinearDamping(1.f);
 	PlayerRoot->SetAngularDamping(100.f);
 	PlayerRoot->SetConstraintMode(EDOFMode::Type::SixDOF);
@@ -127,7 +128,13 @@ void APlayerPawn::Tick(float DeltaTime)
 
 	if(!GetBoardMesh()->IsSimulatingPhysics())
 	{
-		ValidateGroundContact();
+		// Update our ground contact. Enable hit events if the board is in the air to avoid constant hit registers from the ground 
+		// (we need to check the ground tiles because of the mesh in the holes)
+		if (!ValidateGroundContact() && !PlayerRoot->GetBodyInstance()->bNotifyRigidBodyCollision)
+			PlayerRoot->SetNotifyRigidBodyCollision(true);
+		else if(bWheelContact && PlayerRoot->GetBodyInstance()->bNotifyRigidBodyCollision)
+			PlayerRoot->SetNotifyRigidBodyCollision(false);
+			
 		//Move the actor based on input
 		MoveBoard(DeltaTime);
 		//Rotate the actor based on input
@@ -280,14 +287,9 @@ bool APlayerPawn::ValidateGroundContact()
 
 void APlayerPawn::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("BOARD HIT! %s"), *OtherComp->GetName());
-
-	if (*OtherComp->GetName() == FString{ "PointObjectMeshComponent" })
-	{
-		//OtherActor->Destroy();
-		//OtherActor = nullptr;
-		//pointsCollected++;
-	}
+	float collisionAngle = FVector::DotProduct(OtherActor->GetActorForwardVector(), Hit.ImpactNormal);
+	if (collisionAngle < -0.785398 || collisionAngle > 0.785398) // 45 degrees
+		KillPlayer();
 }
 
 void APlayerPawn::MoveForward(float input)
