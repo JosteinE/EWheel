@@ -10,9 +10,8 @@ MeshLibrary::MeshLibrary()
 	TArray<FString> meshPaths;
 	TArray<FString> edgeMeshPaths;
 
-	bool bTeumpUseNew = true; // Will crash UE if changed
 	// Default ground
-	if (bTeumpUseNew)
+	if (bUseHighResModels)
 	{
 		meshPaths.Emplace("StaticMesh'/Game/Meshes/GroundTiles/DefaultGround_150x150_Sub_Smooth.DefaultGround_150x150_Sub_Smooth'");
 		// Pits

@@ -64,7 +64,15 @@ public:
 
 	float GetDefaultSplineOffset(int splineIndex);
 
-	//TEMP
+	void SetObstacleSpawnChance(int obstacleSpawnChance);
+	void SetPointSpawnChance(int pointSpawnChance);
+	void SetPowerUpSpawnChance(int powerUpSpawnChance);
+	void SetSpawnPits(bool spawnPits);
+	void SetSpawnRamps(bool spawnRamps);
+	void SetSpawnHoles(bool spawnHoles);
+	void SetUseHighResModels(bool highResModels);
+
+	//TEMP (for use in game mode)
 	FVector GetLocationAtSplinePoint(int pointIndex);
 private:
 	TArray<AMeshSplineActor*> mSplines;
@@ -90,7 +98,6 @@ public:
 	FORCEINLINE void SetTileSize(int tileSize) { mTileSize = tileSize; };
 	// Sets the spline for every other spline to follow
 	FORCEINLINE void SetMasterSpline(int splineIndex) { mMasterSplineIndex = splineIndex; };
-
 	FORCEINLINE void SetDefaultMaterial(UMaterialInterface* Material) { DefaultMaterial = Material; };
 	FORCEINLINE void SetAlternativeMaterial(UMaterialInterface* Material) { AlternativeMaterial = Material; };
 };

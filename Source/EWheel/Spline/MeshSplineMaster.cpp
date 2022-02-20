@@ -155,7 +155,7 @@ void AMeshSplineMaster::AddPoint(FVector location)
 		}
 	}
 
-	// Spawn obstacles if at least two rows have spawned
+	// Spawn obstacles if at least two rows of tiles have spawned
 	if (bSpawnObjects && mSplines.Num() > 1 && mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 3 >= mTilePicker->GetTileLog()->Num() / mSplines.Num())
 	{
 		TArray<FVector> tileLocations;
@@ -217,6 +217,41 @@ bool AMeshSplineMaster::GetIsAtMaxSplinePoints()
 float AMeshSplineMaster::GetDefaultSplineOffset(int splineIndex)
 {
 	return -mSplines.Num() * mTileSize * 0.5f + (mTileSize * 0.5f) + mTileSize * splineIndex;
+}
+
+void AMeshSplineMaster::SetObstacleSpawnChance(int obstacleSpawnChance)
+{
+	mObjectSpawner->SetObstacleSpawnChance(obstacleSpawnChance);
+}
+
+void AMeshSplineMaster::SetPointSpawnChance(int pointSpawnChance)
+{
+	mObjectSpawner->SetPointSpawnChance(pointSpawnChance);
+}
+
+void AMeshSplineMaster::SetPowerUpSpawnChance(int powerUpSpawnChance)
+{
+	mObjectSpawner->SetPowerUpSpawnChance(powerUpSpawnChance);
+}
+
+void AMeshSplineMaster::SetSpawnPits(bool spawnPits)
+{
+	mTilePicker->SetSpawnPits(spawnPits);
+}
+
+void AMeshSplineMaster::SetSpawnRamps(bool spawnRamps)
+{
+	mTilePicker->SetSpawnRamps(spawnRamps);
+}
+
+void AMeshSplineMaster::SetSpawnHoles(bool spawnHoles)
+{
+	mTilePicker->SetSpawnHoles(spawnHoles);
+}
+
+void AMeshSplineMaster::SetUseHighResModels(bool highResModels)
+{
+	mTilePicker->SetUseHighResModels(highResModels);
 }
 
 FVector AMeshSplineMaster::GetLocationAtSplinePoint(int pointIndex)

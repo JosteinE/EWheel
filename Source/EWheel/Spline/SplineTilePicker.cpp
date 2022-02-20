@@ -13,8 +13,8 @@ SplineTilePicker::SplineTilePicker()
 
 SplineTilePicker::~SplineTilePicker()
 {
-	delete MeshLib;
-	MeshLib = nullptr;
+	//delete MeshLib;
+	//MeshLib = nullptr;
 
 	EmptyTileLog();
 }
@@ -168,6 +168,11 @@ TArray<int> SplineTilePicker::GetLastRowRotation(int numPerRow)
 void SplineTilePicker::SetNumRowsToLog(int num)
 {
 	NumRowsToLog = num;
+}
+
+void SplineTilePicker::SetUseHighResModels(bool useHighRes)
+{
+	MeshLib->SetUseHighResModels(useHighRes);
 }
 
 void SplineTilePicker::EmptyTileLog()
@@ -747,7 +752,6 @@ int SplineTilePicker::GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTi
 				break;
 			}
 		}
-		// NEW & UNTESTED
 		else if (bSpawnHoles && possibleTiles[i].X == MeshCategories::CATEGORY_HOLE)
 		{
 			switch (possibleTiles[i].Y)
@@ -797,10 +801,8 @@ int SplineTilePicker::GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTi
 		sumRandom -= weightMap[i];
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Failed to randomly select a tile"));
-	//UE_LOG(LogTemp, Warning, TEXT("BoardRott: %f, %f, %f"));
-
-
+	//UE_LOG(LogTemp, Warning, TEXT("Failed to randomly select a tile"));
+	// Returning -1 will spawn a default tile
 	return -1;
 }
 

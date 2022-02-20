@@ -17,7 +17,12 @@ public:
 
 	UStaticMesh* GetMesh(int meshType);
 	UStaticMesh* GetEdgeMesh(int edgeMeshType);
+
+	bool bUseHighResModels = false;
 private:
 	TArray<UStaticMesh*> mLibrary;
 	TArray<UStaticMesh*> mEdgeMeshLibrary;
+
+public:
+	FORCEINLINE void SetUseHighResModels(bool useHighResModels) { bUseHighResModels = useHighResModels; };
 };

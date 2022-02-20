@@ -20,10 +20,6 @@ AEndlessGameMode::AEndlessGameMode()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Prevent the game mode from spawning in a garbage player.
-	this->bStartPlayersAsSpectators = false;
-	//this->DefaultPawnClass = nullptr;
-
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>PointObjectAsset(TEXT("StaticMesh'/Game/Meshes/PointObject.PointObject'"));
 	if (PointObjectAsset.Succeeded())
 		PointObjectMesh = PointObjectAsset.Object;
@@ -44,6 +40,7 @@ AEndlessGameMode::AEndlessGameMode()
 	if (HudAsset.Object)
 		this->HUDClass = HudAsset.Object;
 
+	this->bStartPlayersAsSpectators = false;
 	static ConstructorHelpers::FObjectFinder<UClass>PawnAsset(TEXT("Blueprint'/Game/Blueprints/PlayerPawnBP.PlayerPawnBP_C'"));
 	if (PawnAsset.Object)
 		this->DefaultPawnClass = PawnAsset.Object;
@@ -59,16 +56,29 @@ void AEndlessGameMode::BeginPlay()
 	mPathMaster->SetMaxNumSplinePoints(maxNumSplinePoints);
 	mPathMaster->SetTileSize(TileSize);
 	mPathMaster->ConstructSplines(mNumSplines);
-	//lastSplinePointLoc = mainPath->GetSpline()->GetLocationAtSplinePoint(mainPath->GetSpline()->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-	//mainPath->SetNumTilesPerRow(TilesPerRow);
-	//mainPath->SetDefaultMaterial(DefaultMaterial);
+	mPathMaster->SetUseHighResModels(false);
 
-	// Create a starting area with no obstacles
-	for (int i = 0; i < 5; i++)
+	// Create an empty starting area
+	mPathMaster->SetSpawnPits(false);
+	mPathMaster->SetSpawnRamps(false);
+	mPathMaster->SetSpawnHoles(false);
+	mPathMaster->SetObstacleSpawnChance(0);
+	mPathMaster->SetPointSpawnChance(0);
+	mPathMaster->SetPowerUpSpawnChance(0);
+
+	// Create the first few rows
+	for (int i = 0; i < 3; i++)
 	{
 		ExtendPath();
 	}
-	
+
+	mPathMaster->SetSpawnPits(true);
+	mPathMaster->SetSpawnRamps(true);
+	mPathMaster->SetSpawnHoles(true); // Should only be enabled once jump is acquired
+	mPathMaster->SetObstacleSpawnChance(33);
+	mPathMaster->SetPointSpawnChance(8);
+	mPathMaster->SetPowerUpSpawnChance(0);
+
 	// Spawn the player
 	//FActorSpawnParameters playerSpawnParams;
 	//playerSpawnParams.Owner = this;

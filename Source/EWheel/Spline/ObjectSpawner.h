@@ -50,4 +50,7 @@ private:
 
 public:
 	FORCEINLINE void SetMaxRows(int maxRows) { mMaxRows = maxRows; };
+	FORCEINLINE void SetObstacleSpawnChance(int obsSpawnChance) { mObstacleSpawnChance = obsSpawnChance; };
+	FORCEINLINE void SetPointSpawnChance(int pointSpawnChance) { mPointSpawnChance = pointSpawnChance; };
+	FORCEINLINE void SetPowerUpSpawnChance(int powerUpSpawnChance) { mPowerUpSpawnChance = powerUpSpawnChance; };
 };

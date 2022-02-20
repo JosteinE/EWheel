@@ -22,6 +22,7 @@ public:
 	TArray<int> GetRowRotation(int index, int numPerRow); // index should be first tile in row (left)
 	TArray<int> GetLastRowRotation(int numPerRow); // index should be first tile in row (left)
 	void SetNumRowsToLog(int num);
+	void SetUseHighResModels(bool useHighRes);
 
 	// Number of rows to store in TileLog. Need at least 2 to check the previous row
 	int NumRowsToLog = 2;
@@ -75,4 +76,7 @@ private:
 
 public:
 	FORCEINLINE TArray<TileDetails*>* GetTileLog() { return &TileLog; };
+	FORCEINLINE void SetSpawnPits(bool spawnPits) { bSpawnPits = spawnPits; };
+	FORCEINLINE void SetSpawnRamps(bool spawnRamps) { bSpawnRamps = spawnRamps; };
+	FORCEINLINE void SetSpawnHoles(bool spawnHoles) { bSpawnHoles = spawnHoles; };
 };
