@@ -13,6 +13,7 @@
 #include "EWheel/Objects/PickUpActor.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/HUD.h"
 
 AEndlessGameMode::AEndlessGameMode()
 {
@@ -20,7 +21,8 @@ AEndlessGameMode::AEndlessGameMode()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Prevent the game mode from spawning in a garbage player.
-	this->bStartPlayersAsSpectators = true;
+	this->bStartPlayersAsSpectators = false;
+	//this->DefaultPawnClass = nullptr;
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>PointObjectAsset(TEXT("StaticMesh'/Game/Meshes/PointObject.PointObject'"));
 	if (PointObjectAsset.Succeeded())
@@ -34,7 +36,17 @@ AEndlessGameMode::AEndlessGameMode()
 	if (DefaultMaterialAsset.Succeeded())
 		DefaultMaterial = DefaultMaterialAsset.Object;
 
-	this->HUDClass = LoadObject<UBlueprint>(NULL, TEXT("Blueprint'/Game/Blueprints/PlayerHud.PlayerHUD'"))->GeneratedClass;
+	//UObject* HudAsset = StaticLoadObject(UObject::StaticClass(), nullptr, TEXT("Blueprint'/Game/Blueprints/PlayerHud.PlayerHUD'"));
+	//if (HudAsset)
+	//	this->HUDClass = Cast<UBlueprint>(HudAsset)->GeneratedClass;
+
+	static ConstructorHelpers::FObjectFinder<UClass>HudAsset(TEXT("Blueprint'/Game/Blueprints/PlayerHud.PlayerHUD_C'"));
+	if (HudAsset.Object)
+		this->HUDClass = HudAsset.Object;
+
+	static ConstructorHelpers::FObjectFinder<UClass>PawnAsset(TEXT("Blueprint'/Game/Blueprints/PlayerPawnBP.PlayerPawnBP_C'"));
+	if (PawnAsset.Object)
+		this->DefaultPawnClass = PawnAsset.Object;
 }
 
 void AEndlessGameMode::BeginPlay()
@@ -56,14 +68,15 @@ void AEndlessGameMode::BeginPlay()
 	{
 		ExtendPath();
 	}
-
+	
 	// Spawn the player
-	auto pawnClass = LoadObject<UBlueprint>(NULL, TEXT("Blueprint'/Game/Blueprints/PlayerPawnBP.PlayerPawnBP'"))->GeneratedClass;
-	FActorSpawnParameters playerSpawnParams;
-	playerSpawnParams.Owner = this;
-	playerSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	mainPlayer = GetWorld()->SpawnActor<APlayerPawn>(pawnClass, FVector{ 150.f,0, playerSpawnHeight }, FRotator{ 0,0,0 }, playerSpawnParams);
-	GetWorld()->GetFirstPlayerController()->Possess(mainPlayer);
+	//FActorSpawnParameters playerSpawnParams;
+	//playerSpawnParams.Owner = this;
+	//playerSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	//mainPlayer = GetWorld()->SpawnActor<APlayerPawn>(pawnClass, FVector{ 150.f,0, playerSpawnHeight }, FRotator{ 0,0,0 }, playerSpawnParams);
+	//GetWorld()->GetFirstPlayerController()->Possess(mainPlayer);
+
+	mainPlayer = GetWorld()->GetFirstPlayerController()->GetPawn();
 
 	//Bind Delegates
 	Cast<APlayerPawn>(mainPlayer)->EscPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerEscapePressed);

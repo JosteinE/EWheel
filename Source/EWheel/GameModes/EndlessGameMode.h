@@ -80,6 +80,8 @@ private:
 	// Test
 	//MeshGenerator meshGen;
 	TArray<FString> meshPathLib;
+	
+	//TSubclassOf<class APlayerPawn> pawnClass = nullptr;
 
 	int32 PointSpawnChance = 8;
 	int32 ObstacleSpawnChance = 33;
