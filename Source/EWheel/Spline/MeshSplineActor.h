@@ -63,11 +63,6 @@ private:
 	int tilesPerRow = 3;
 	float tileOffset = 150.f;
 
-	// Stitches multiple StaticMesh tiles into one
-	//MeshGenerator* MeshGen;
-	// Logs the last few rows and picks appropriate tiles for the next
+	// For when 
 	SplineTilePicker* TilePicker;
-
-public:
-	//FORCEINLINE TArray<USplineMeshComponent*>* GetMeshSplineComponent() { return &SplineMeshComponent; };
 };

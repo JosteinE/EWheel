@@ -34,10 +34,6 @@ class EWHEEL_API APlayerPawn : public APawn
 	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* WheelMesh;
 
-	/** Component that binds the board and wheel mesh while allowing both to have simulate physics enabled */
-	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	UPhysicsConstraintComponent* PhysicsConstraintComponent;
-
 	/** Camera component that will be our viewpoint */
 	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* Camera;
@@ -113,7 +109,7 @@ private:
 	float boardTiltResetSpeed = 10.f;
 	float groundContactRayOffset = 14.f;
 	float groundContactRayLength = 2.f;
-	float groundContactRaySideOffset = 5.f;
+	//float groundContactRaySideOffset = 5.f;
 
 	// To track distance traveled
 	FVector2D lastPlayerLocation;
@@ -155,6 +151,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Event")
 	FOnPlayerDeath PlayerDeath;
 
+	// Enables physics simulatioon and broadcasts death to the game mode
 	void KillPlayer();
 
 	/** Returns the player mesh subobject **/

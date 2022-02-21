@@ -22,5 +22,6 @@ void AObjectActorBase::SetStaticMesh(FString& inPath)
 
 void AObjectActorBase::SetStaticMesh(UStaticMesh* inMesh)
 {
+	SetStaticMesh(inMesh);
 }
 

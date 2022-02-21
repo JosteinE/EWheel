@@ -64,10 +64,13 @@ private:
 	// Get a tile that fits with the previous and left tile, and that doesnt rely on a right tile. bool = if the tile is dependant
 	bool GetAppropriateLastTile(TArray<FIntVector>& possibleTiles, int numTilesPerRow);
 
+	// Returns a random index for the possibleTiles vector, with the index chance being based on the tiles weight
 	int GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTiles);
 
+	// Adds side mesh to the mesh vector (left side = index 0, right side = last index)
 	void AddEdgeMesh(TArray<UStaticMesh*>& tileMesh, int numTilesPerRow);
 
+	// Returns a single random tile (used for single lane paths)
 	UStaticMesh* GetNewTile();
 
 	// Mesh category, type and Num 90 degree rotations

@@ -18,18 +18,6 @@ APlayerPawn::APlayerPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Player mesh
-	//PlayerMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PlayerMeshComponent"));
-	//static ConstructorHelpers::FObjectFinder<USkeletalMesh>BoardMesh(TEXT("SkeletalMesh'/Game/Meshes/EWheel/EWheel.EWheel'"));
-	//if (BoardMesh.Succeeded())
-	//	GetMesh()->SetSkeletalMesh(BoardMesh.Object);
-	//PlayerMesh->SetCollisionProfileName("Pawn");
-	//PlayerMesh->OnComponentHit.AddDynamic(this, &APlayerPawn::OnMeshHit);
-	//RootComponent = PlayerMesh;
-
-	//static ConstructorHelpers::FClassFinder<UObject> AnimBPClass(TEXT("/Game/Vehicle/Sedan/Sedan_AnimBP"));
-	//GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
-
 	// Root component. Seperate from the mesh to avoid problems when rotating/tilting the board
 	PlayerRoot = CreateDefaultSubobject<USphereComponent>(TEXT("PlayerSphereCollider"));
 	PlayerRoot->SetCollisionProfileName("Pawn");
@@ -62,9 +50,6 @@ APlayerPawn::APlayerPawn()
 			WheelMesh->SetSimulatePhysics(false);
 			WheelMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			WheelMesh->SetupAttachment(BoardMesh);
-			//WheelMesh->AttachToComponent(BoardMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false), "WheelSocket");
-			//PhysicsConstraintComponent = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("PhysicsConstraintComponent"));
-			//PhysicsConstraintComponent->AttachTo(PlayerRoot, PlayerRoot->GetFName(), EAttachLocation::KeepWorldPosition);
 		}
 	}
 
@@ -97,34 +82,12 @@ APlayerPawn::APlayerPawn()
 void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Prevent seperation between the wheel and board using the PhysicsConstraintComponent
-	//if (PhysicsConstraintComponent)
-	//{
-	//	FConstraintInstance Constraint;
-	//	Constraint.ProfileInstance.bDisableCollision = true;
-	//	Constraint.ProfileInstance.bParentDominates = true;
-	//	Constraint.SetAngularSwing1Motion(EAngularConstraintMotion::ACM_Locked);
-	//	Constraint.SetAngularSwing2Motion(EAngularConstraintMotion::ACM_Locked);
-	//	Constraint.SetAngularTwistMotion(EAngularConstraintMotion::ACM_Locked);
-	//	Constraint.ProfileInstance.LinearLimit.bSoftConstraint = false;
-	//	Constraint.ProfileInstance.TwistLimit.bSoftConstraint = false;
-	//	PhysicsConstraintComponent->ConstraintInstance = Constraint;
-	//	PhysicsConstraintComponent->SetConstrainedComponents(WheelMesh, NAME_None, BoardMesh, NAME_None);
-	//}
 }
 
 // Called every frame
 void APlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//// Simulate physics if the board is not colliding
-	//if (!ValidateGroundContact() && !PlayerMesh->IsSimulatingPhysics())
-	//	PlayerMesh->SetSimulatePhysics(true);
-	//else if (bWheelContact && PlayerMesh->IsSimulatingPhysics() && bIsCollidingWithGround)
-	//	PlayerMesh->SetSimulatePhysics(false);
-	//bIsCollidingWithGround = false;
 
 	// Update our ground contact. Enable hit events if the board is in the air to avoid constant hit registers from the ground 
 	// (we need to check the ground tiles because of the mesh in the holes)
@@ -165,8 +128,6 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	// TEMP
 	PlayerInputComponent->BindAction("TempSpeedIncrease", IE_Pressed, this, &APlayerPawn::LShiftDown);
 	PlayerInputComponent->BindAction("TempSpeedIncrease", IE_Released, this, &APlayerPawn::LShiftUp);
-
-	//Tilt Controlls
 }
 
 void APlayerPawn::MoveBoard(float DeltaTime)
@@ -174,20 +135,10 @@ void APlayerPawn::MoveBoard(float DeltaTime)
 	FVector forwardDirection = GetActorForwardVector();
 	forwardDirection.Z = 0;
 
-	//TEST
-	//FVector LastLoc = GetActorLocation();
-
 	SetActorLocation(GetActorLocation() + forwardDirection * GetClaculatedSpeed(DeltaTime));
-	//GetMesh()->AddForce(forwardDirection * GetClaculatedSpeed(DeltaTime) * 1000.f);
-	//GetMesh()->AddTorque(GetActorRightVector() * movementInput.Y * 10000.f);
-
-	//UE_LOG(LogTemp, Warning, TEXT("deltaTime: %f"), DeltaTime);
-	//UE_LOG(LogTemp, Warning, TEXT("currentSpeed: %f"), (GetActorLocation() - LastLoc).Size());
 
 	// Roll wheel. Using Quats here to avoid gimbal locking
 	GetWheelMesh()->AddLocalTransform(FTransform(FRotator{-GetClaculatedSpeed(DeltaTime), 0.f, 0.f }.Quaternion()));
-	//GetWheelMesh()->AddRelativeRotation(FRotator{ -GetClaculatedSpeed(DeltaTime), 0.f, 0.f });
-	//UE_LOG(LogTemp, Warning, TEXT("BoardRott: %f, %f, %f"), GetWheelMesh()->GetRelativeRotation().Pitch, GetWheelMesh()->GetRelativeRotation().Yaw, GetWheelMesh()->GetRelativeRotation().Roll);
 }
 
 float APlayerPawn::GetClaculatedSpeed(float DeltaTime)
@@ -200,17 +151,12 @@ float APlayerPawn::GetClaculatedSpeed(float DeltaTime)
 		currentSpeed += currentAcceleration * movementInput.Y;
 
 	currentSpeed = FMath::Clamp(currentSpeed, 0.f, maxSpeed);
-	//currentSpeed = FMath::Clamp(currentSpeed + currentAcceleration, 0.f, maxSpeed);
 
 	return currentSpeed * DeltaTime;
 }
 
 void APlayerPawn::BoardTilt(float DeltaTime)
 {
-	//currentBoardTilt = FMath::Clamp(currentBoardTilt + movementInput.Y * boardTiltSpeed * DeltaTime, -maxBoardTiltRotation, maxBoardTiltRotation);
-	//if (movementInput.Y == 0) <----BORING
-	//	currentBoardTilt += 0 - currentBoardTilt * DeltaTime;
-
 	// Tilt the board forwards/back based on forward/back input
 	currentBoardTilt.Pitch += movementInput.Y * boardTiltSpeed * DeltaTime;
 	// Gradually reset the rotation of the board if there is no user input
@@ -229,13 +175,7 @@ void APlayerPawn::BoardTilt(float DeltaTime)
 	newRotation.Pitch = -currentBoardTilt.Pitch;
 	newRotation.Roll = currentBoardTilt.Roll;
 
-	//Move the pivot the board around the center of the wheel by first moving the mesh origin to the center of the wheel, rotating, then moving it back
-	//Couldnt get this to work without the board visually teleporting in game
-	//FVector centerOfWheel = GetActorLocation() + GetActorUpVector() * 15.f;
-	//GetMesh()->SetWorldLocation(centerOfWheel - GetActorLocation());
 	GetBoardMesh()->SetRelativeRotation(newRotation);
-	
-	//GetMesh()->SetWorldLocation(GetActorLocation() - centerOfWheel);
 }
 
 bool APlayerPawn::ValidateGroundContact()
@@ -349,4 +289,3 @@ void APlayerPawn::KillPlayer()
 	SetActorTickEnabled(false);
 	PlayerDeath.Broadcast();
 }
-

@@ -51,6 +51,7 @@ public:
 	void RemoveSpline();
 
 	FVector GenerateNewPointLocation();
+	
 	// Adds a new point to every spline
 	void AddPoint(FVector location);
 
@@ -95,9 +96,10 @@ private:
 	float mSplineVerticalStep = 20.f;
 
 public:
-	FORCEINLINE void SetTileSize(int tileSize) { mTileSize = tileSize; };
 	// Sets the spline for every other spline to follow
 	FORCEINLINE void SetMasterSpline(int splineIndex) { mMasterSplineIndex = splineIndex; };
+
+	FORCEINLINE void SetTileSize(int tileSize) { mTileSize = tileSize; };
 	FORCEINLINE void SetDefaultMaterial(UMaterialInterface* Material) { DefaultMaterial = Material; };
 	FORCEINLINE void SetAlternativeMaterial(UMaterialInterface* Material) { AlternativeMaterial = Material; };
 };

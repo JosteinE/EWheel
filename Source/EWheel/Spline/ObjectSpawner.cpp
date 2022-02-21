@@ -184,9 +184,6 @@ AObjectActorBase* UObjectSpawner::SpawnObstacleActor(FVector location, FRotator 
 	float tempHeight = FMath::RandRange(0.5f, 1.f);
 	ObstacleObject->SetActorLocation(location);
 	ObstacleObject->GetMeshComponent()->SetWorldRotation(rotation + FRotator{ 0.f, 180.f, 0.f });
-//ObstacleObject->GetMeshComponent()->SetWorldScale3D(FVector{ FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.75f, 1.5f), FMath::RandRange(0.1f, 1.f) * tempHeight });
-//ObstacleObject->GetMeshComponent()->SetRelativeRotation(FRotator{ 0.f, FMath::RandRange(0.f, 90.f), 0.f });
-//PointObject->GetMeshComponent()->RegisterComponent();
 
 	return ObstacleObject;
 }
@@ -206,7 +203,6 @@ AObjectActorBase* UObjectSpawner::SpawnPickUpActor(FVector location, FRotator ro
 	PickUpActor->SetActorLocation(location + FVector{ 0.f, 0.f, 50.f });
 	PickUpActor->GetMeshComponent()->SetWorldScale3D(FVector{ 0.33f, 0.33f, 0.33f });
 	PickUpActor->GetMeshComponent()->SetRelativeRotation(FRotator{ 90.f, 0.f, 0.f });
-//PointObject->GetMeshComponent()->RegisterComponent();
 
 	return PickUpActor;
 }

@@ -47,6 +47,6 @@ void APickUpActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 	Cast<APlayerPawn>(OtherActor)->AddToScore(1);
 	GetMeshComponent()->SetVisibility(false);
 	GetMeshComponent()->SetCollisionProfileName("NoCollision");
-	// Will be destroyed in the game mode
+	// Will be destroyed in the ObjectSpawner
 }
 
