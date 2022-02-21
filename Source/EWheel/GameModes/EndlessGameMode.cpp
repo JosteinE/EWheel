@@ -91,6 +91,7 @@ void AEndlessGameMode::BeginPlay()
 	//Bind Delegates
 	Cast<APlayerPawn>(mainPlayer)->EscPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerEscapePressed);
 	Cast<APlayerPawn>(mainPlayer)->RestartPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerRestartPressed);
+	Cast<APlayerPawn>(mainPlayer)->PlayerDeath.AddDynamic(this, &AEndlessGameMode::OnPlayerDeath);
 
 	//TEST
 	meshPathLib.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_BigRoot_150x150.Obstacle_BigRoot_150x150'");
@@ -230,4 +231,8 @@ void AEndlessGameMode::OnPlayerEscapePressed()
 void AEndlessGameMode::OnPlayerRestartPressed()
 {
 	EndGame();
+}
+
+void AEndlessGameMode::OnPlayerDeath()
+{
 }

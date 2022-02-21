@@ -40,6 +40,9 @@ public:
 
 	UFUNCTION()
 	void OnPlayerRestartPressed();
+
+	UFUNCTION()
+	void OnPlayerDeath();
 private:
 	APawn* mainPlayer;
 	AMeshSplineMaster* mPathMaster;

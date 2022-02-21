@@ -15,6 +15,7 @@ class USphereComponent;
 // Delegates
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEscapePressed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnQuickRestartPressed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDeath);
 
 UCLASS()
 class EWHEEL_API APlayerPawn : public APawn
@@ -47,7 +48,7 @@ class EWHEEL_API APlayerPawn : public APawn
 
 	/** Forward movement speed of the vehicle */
 	UPROPERTY(Category = VehicleSpecs, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	float maxSpeed = 600.f;
+	float maxSpeed = 600.f; // 600 = 21.6km/h,  833.33f = 30km/h
 
 	/** Current speed of the vehicle */
 	UPROPERTY(Category = VehicleSpecs, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -79,8 +80,14 @@ class EWHEEL_API APlayerPawn : public APawn
 
 public:
 	/** Current speed of the vehicle */
-	UPROPERTY(Category = Score, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = HUD, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int pointsCollected = 0;
+
+	UPROPERTY(Category = HUD, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float distanceTravelled = 0.f;
+
+	UPROPERTY(Category = Player, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bIsDead = false;
 
 	// Sets default values for this pawn's properties
 	APlayerPawn();
@@ -97,6 +104,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+
 	FVector movementInput;
 	FRotator currentBoardTilt;
 	float maxBoardTiltPitch = 15.f;
@@ -106,6 +114,9 @@ private:
 	float groundContactRayOffset = 14.f;
 	float groundContactRayLength = 2.f;
 	float groundContactRaySideOffset = 5.f;
+
+	// To track distance traveled
+	FVector2D lastPlayerLocation;
 
 	void MoveBoard(float DeltaTime);
 	void BoardTilt(float DeltaTime);
@@ -127,6 +138,10 @@ private:
 	void QuickRestart();
 	/** Handle pressing Space */
 	void Jump();
+	/** TEMP Handle pressing Shift TEMP */
+	void LShiftDown();
+	/** TEMP Handle releasing Shift TEMP */
+	void LShiftUp();
 public:
 	// Delegate Signatures
 	UPROPERTY(BlueprintAssignable, Category = "Event")
@@ -135,6 +150,10 @@ public:
 	// Delegate Signatures
 	UPROPERTY(BlueprintAssignable, Category = "Event")
 	FOnQuickRestartPressed RestartPressed;
+
+	// Delegate Signatures
+	UPROPERTY(BlueprintAssignable, Category = "Event")
+	FOnPlayerDeath PlayerDeath;
 
 	void KillPlayer();
 

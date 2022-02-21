@@ -126,27 +126,29 @@ void APlayerPawn::Tick(float DeltaTime)
 	//	PlayerMesh->SetSimulatePhysics(false);
 	//bIsCollidingWithGround = false;
 
-	if(!GetBoardMesh()->IsSimulatingPhysics())
-	{
-		// Update our ground contact. Enable hit events if the board is in the air to avoid constant hit registers from the ground 
-		// (we need to check the ground tiles because of the mesh in the holes)
-		if (!ValidateGroundContact() && !PlayerRoot->GetBodyInstance()->bNotifyRigidBodyCollision)
-			PlayerRoot->SetNotifyRigidBodyCollision(true);
-		else if(bWheelContact && PlayerRoot->GetBodyInstance()->bNotifyRigidBodyCollision)
-			PlayerRoot->SetNotifyRigidBodyCollision(false);
+	// Update our ground contact. Enable hit events if the board is in the air to avoid constant hit registers from the ground 
+	// (we need to check the ground tiles because of the mesh in the holes)
+	if (!ValidateGroundContact() && !PlayerRoot->GetBodyInstance()->bNotifyRigidBodyCollision)
+		PlayerRoot->SetNotifyRigidBodyCollision(true);
+	else if(bWheelContact && PlayerRoot->GetBodyInstance()->bNotifyRigidBodyCollision)
+		PlayerRoot->SetNotifyRigidBodyCollision(false);
 			
-		//Move the actor based on input
-		MoveBoard(DeltaTime);
-		//Rotate the actor based on input
-		SetActorRotation(GetActorRotation() + FRotator{ 0, movementInput.X, 0 } *turnSpeed * DeltaTime);
-		//Tilt the board in the direction of movement
-		BoardTilt(DeltaTime);
+	//Move the actor based on input
+	MoveBoard(DeltaTime);
+	//Rotate the actor based on input
+	SetActorRotation(GetActorRotation() + FRotator{ 0, movementInput.X, 0 } *turnSpeed * DeltaTime);
+	//Tilt the board in the direction of movement
+	BoardTilt(DeltaTime);
 
-		if (PlayerRoot->GetRelativeRotation().Roll > 45)
-			PlayerRoot->SetRelativeRotation(FRotator{ PlayerRoot->GetRelativeRotation().Pitch, PlayerRoot->GetRelativeRotation().Yaw, 45.f });
-		else if(PlayerRoot->GetRelativeRotation().Roll < -45)
-			PlayerRoot->SetRelativeRotation(FRotator{ PlayerRoot->GetRelativeRotation().Pitch, PlayerRoot->GetRelativeRotation().Yaw, -45.f });
-	}
+	if (PlayerRoot->GetRelativeRotation().Roll > 45)
+		PlayerRoot->SetRelativeRotation(FRotator{ PlayerRoot->GetRelativeRotation().Pitch, PlayerRoot->GetRelativeRotation().Yaw, 45.f });
+	else if(PlayerRoot->GetRelativeRotation().Roll < -45)
+		PlayerRoot->SetRelativeRotation(FRotator{ PlayerRoot->GetRelativeRotation().Pitch, PlayerRoot->GetRelativeRotation().Yaw, -45.f });
+
+	// Log to HUD
+	FVector2D playerLoc = { GetActorLocation().X, GetActorLocation().Y };
+	distanceTravelled += (playerLoc - lastPlayerLocation).Size() * 0.01f;
+	lastPlayerLocation = playerLoc;
 }
 
 // Called to bind functionality to input
@@ -159,6 +161,10 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayerPawn::Escape);
 	PlayerInputComponent->BindAction("QuickRestart", IE_Pressed, this, &APlayerPawn::QuickRestart);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerPawn::Jump);
+
+	// TEMP
+	PlayerInputComponent->BindAction("TempSpeedIncrease", IE_Pressed, this, &APlayerPawn::LShiftDown);
+	PlayerInputComponent->BindAction("TempSpeedIncrease", IE_Released, this, &APlayerPawn::LShiftUp);
 
 	//Tilt Controlls
 }
@@ -319,6 +325,16 @@ void APlayerPawn::Jump()
 		PlayerRoot->AddImpulse(GetActorUpVector() * jumpForce);
 }
 
+void APlayerPawn::LShiftDown()
+{
+	maxSpeed = 833.33f; // 30km/h
+}
+
+void APlayerPawn::LShiftUp()
+{
+	maxSpeed = 600.f; // 21.6km/h
+}
+
 void APlayerPawn::KillPlayer()
 {
 	GetBoardMesh()->SetCollisionProfileName("VehicleComponent");
@@ -328,5 +344,9 @@ void APlayerPawn::KillPlayer()
 	GetWheelMesh()->SetSimulatePhysics(true);
 	GetWheelMesh()->AddImpulse(-GetActorForwardVector() * 50.f + FVector{ 0, 0, 0.5f });
 	SpringArm->TargetArmLength = 400.0f;
+	
+	bIsDead = true;
+	SetActorTickEnabled(false);
+	PlayerDeath.Broadcast();
 }
 
