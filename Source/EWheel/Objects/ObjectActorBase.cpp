@@ -24,4 +24,3 @@ void AObjectActorBase::SetStaticMesh(UStaticMesh* inMesh)
 {
 	SetStaticMesh(inMesh);
 }
-

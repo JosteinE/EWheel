@@ -97,7 +97,7 @@ void AEndlessGameMode::Tick(float DeltaTime)
 
 void AEndlessGameMode::EndGame()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), "World'/Game/Maps/DefaultMap.DefaultMap'");
+	UGameplayStatics::OpenLevel(GetWorld(), GetWorld()->GetFName());
 }
 
 void AEndlessGameMode::OnPlayerEscapePressed()
