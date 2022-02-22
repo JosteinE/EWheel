@@ -233,7 +233,7 @@ bool APlayerPawn::ValidateGroundContact()
 
 void APlayerPawn::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	float collisionAngle = FVector::DotProduct(OtherActor->GetActorForwardVector(), Hit.ImpactNormal);
+	float collisionAngle = FVector::DotProduct(GetActorForwardVector(), Hit.ImpactNormal);
 	if (collisionAngle < -0.785398 || collisionAngle > 0.785398) // 45 degrees
 		KillPlayer();
 }

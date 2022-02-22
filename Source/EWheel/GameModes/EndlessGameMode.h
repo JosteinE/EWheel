@@ -43,7 +43,7 @@ private:
 	AMeshSplineMaster* mPathMaster;
 
 	// Number of tiles per row
-	int mNumSplines = 3;
+	int mNumSplines = 10;
 	int TileSize = 150;
 
 	// Add a new point if the player is within this range to the last spline point
