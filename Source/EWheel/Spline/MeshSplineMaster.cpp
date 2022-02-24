@@ -202,6 +202,16 @@ void AMeshSplineMaster::SetUseHighResModels(bool highResModels)
 	mTilePicker->SetUseHighResModels(highResModels);
 }
 
+void AMeshSplineMaster::LoadFromJson(TSharedPtr<FJsonObject> inJson)
+{
+	SetSpawnPits(inJson->GetBoolField("PitsEnabled"));
+	SetSpawnRamps(inJson->GetBoolField("RampsEnabled"));
+	SetSpawnHoles(inJson->GetBoolField("HolesEnabled")); // Should only be enabled once jump is acquired
+	SetObstacleSpawnChance(inJson->GetIntegerField("ObstacleSpawnChance"));
+	SetPointSpawnChance(inJson->GetIntegerField("PointSpawnChance"));
+	SetPowerUpSpawnChance(inJson->GetIntegerField("PowerupSpawnChance"));
+}
+
 FVector AMeshSplineMaster::GetLocationAtSplinePoint(int pointIndex)
 {
 	return mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(pointIndex, ESplineCoordinateSpace::World);

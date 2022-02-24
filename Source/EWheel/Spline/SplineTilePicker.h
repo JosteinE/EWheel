@@ -24,6 +24,8 @@ public:
 	void SetNumRowsToLog(int num);
 	void SetUseHighResModels(bool useHighRes);
 
+	void LoadFromJson(TSharedPtr<FJsonObject> inJson);
+
 	// Number of rows to store in TileLog. Need at least 2 to check the previous row
 	int NumRowsToLog = 2;
 
@@ -76,6 +78,7 @@ private:
 	// Mesh category, type and Num 90 degree rotations
 	TArray<TileDetails*> TileLog;
 	MeshLibrary* MeshLib;
+	TMap<int, int> WeightMap;
 
 public:
 	FORCEINLINE TArray<TileDetails*>* GetTileLog() { return &TileLog; };

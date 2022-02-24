@@ -26,6 +26,8 @@ private:
 	void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+	void SetPathValuesFromFile();
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void EndGame();
@@ -43,7 +45,7 @@ private:
 	AMeshSplineMaster* mPathMaster;
 
 	// Number of tiles per row
-	int mNumSplines = 10;
+	int mNumSplines = 3;
 	int TileSize = 150;
 
 	// Add a new point if the player is within this range to the last spline point

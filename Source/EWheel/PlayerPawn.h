@@ -108,8 +108,9 @@ private:
 	float boardTiltSpeed = 100.f;
 	float boardTiltResetSpeed = 10.f;
 	float groundContactRayOffset = 14.f;
-	float groundContactRayLength = 2.f;
+	float groundContactRayLength = 10;//2.f;
 	//float groundContactRaySideOffset = 5.f;
+	bool bCanJump = true;
 
 	// To track distance traveled
 	FVector2D lastPlayerLocation;

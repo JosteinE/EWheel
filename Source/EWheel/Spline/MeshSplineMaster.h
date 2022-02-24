@@ -28,8 +28,6 @@ public:
 	AMeshSplineMaster();
 	~AMeshSplineMaster();
 
-	void SetMaxNumSplinePoints(int maxNum);
-
 	// Initializes the splines
 	void ConstructSplines(int numSplines);
 
@@ -50,28 +48,56 @@ public:
 	void RemoveSplines(int num);
 	void RemoveSpline();
 
+	// Returns an appropriate location for the next spline point. 
 	FVector GenerateNewPointLocation();
 	
 	// Adds a new point to every spline
 	void AddPoint(FVector location);
 
+	// Calls the objectSpawner and spawns obstacles where appropriate on the last row
 	void SpawnObjectsLastRow();
 
 	// Removes the first point on every spline
 	void RemoveFirstSplinePointAndMesh(int splineIndex);
 
+	// Returns number of spline points of the master spline
 	int GetNumSplinePoints();
+
+	// Checks if the master spline is at the max number of points
 	bool GetIsAtMaxSplinePoints();
 
+	// Returns the default offset for the given spline.
 	float GetDefaultSplineOffset(int splineIndex);
 
+	//######################
+	// PATH PROPERTY SETTERS
+	//######################
+
+	// Sets the max number of spline points. Any points added after reaching this number will remove the oldest point. 
+	void SetMaxNumSplinePoints(int maxNum);
+
+	// Sets the obstacle spawn chance in the ObjectSpawner
 	void SetObstacleSpawnChance(int obstacleSpawnChance);
+
+	// Sets the point spawn chance in the ObjectSpawner
 	void SetPointSpawnChance(int pointSpawnChance);
+
+	// Sets the Powerup spawn chance in the ObjectSpawner
 	void SetPowerUpSpawnChance(int powerUpSpawnChance);
+
+	// Enables the pit tile set
 	void SetSpawnPits(bool spawnPits);
+
+	// Enables the ramp tile set
 	void SetSpawnRamps(bool spawnRamps);
+
+	// Enables the hole tile set
 	void SetSpawnHoles(bool spawnHoles);
+
+	// Enables the high resolution models
 	void SetUseHighResModels(bool highResModels);
+
+	void LoadFromJson(TSharedPtr<FJsonObject> inJson);
 
 	//TEMP (for use in game mode)
 	FVector GetLocationAtSplinePoint(int pointIndex);

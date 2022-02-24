@@ -93,8 +93,11 @@ void APlayerPawn::Tick(float DeltaTime)
 	// (we need to check the ground tiles because of the mesh in the holes)
 	if (!ValidateGroundContact() && !PlayerRoot->GetBodyInstance()->bNotifyRigidBodyCollision)
 		PlayerRoot->SetNotifyRigidBodyCollision(true);
-	else if(bWheelContact && PlayerRoot->GetBodyInstance()->bNotifyRigidBodyCollision)
+	else if (bWheelContact && PlayerRoot->GetBodyInstance()->bNotifyRigidBodyCollision)
+	{
 		PlayerRoot->SetNotifyRigidBodyCollision(false);
+		bCanJump = true;
+	}
 			
 	//Move the actor based on input
 	MoveBoard(DeltaTime);
@@ -103,6 +106,7 @@ void APlayerPawn::Tick(float DeltaTime)
 	//Tilt the board in the direction of movement
 	BoardTilt(DeltaTime);
 
+	// Clamp Roll
 	if (PlayerRoot->GetRelativeRotation().Roll > 45)
 		PlayerRoot->SetRelativeRotation(FRotator{ PlayerRoot->GetRelativeRotation().Pitch, PlayerRoot->GetRelativeRotation().Yaw, 45.f });
 	else if(PlayerRoot->GetRelativeRotation().Roll < -45)
@@ -188,8 +192,12 @@ bool APlayerPawn::ValidateGroundContact()
 
 	FHitResult ray;
 
-	DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Green, false);
+	//DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Green, false);
 	bWheelContact = GetWorld()->LineTraceSingleByChannel(ray, RaycastStartPos, RaycastEndPos, ECC_Visibility, CollisionParams);
+
+	//FVector newRot = ray.ImpactNormal;
+	//GetBoardMesh()->AddRelativeRotation(newRot * 0.001f);
+
 	return bWheelContact;
 	//FVector RaycastStartPos = GetActorLocation() - GetActorUpVector() * groundContactRayOffset;
 	//FVector RaycastEndPos = GetActorLocation() - GetActorUpVector() * (groundContactRayOffset + groundContactRayLength);
@@ -261,8 +269,11 @@ void APlayerPawn::QuickRestart()
 
 void APlayerPawn::Jump()
 {
-	if(bWheelContact)
+	if (bCanJump)
+	{
 		PlayerRoot->AddImpulse(GetActorUpVector() * jumpForce);
+		bCanJump = false;
+	}
 }
 
 void APlayerPawn::LShiftDown()

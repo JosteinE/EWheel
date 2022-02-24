@@ -15,6 +15,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/HUD.h"
 
+#include "Dom/JsonObject.h"
+
 AEndlessGameMode::AEndlessGameMode()
 {
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -45,8 +47,8 @@ void AEndlessGameMode::BeginPlay()
 	mPathMaster->SetDefaultMaterial(DefaultMaterial);
 	mPathMaster->SetMaxNumSplinePoints(maxNumSplinePoints);
 	mPathMaster->SetTileSize(TileSize);
-	mPathMaster->ConstructSplines(mNumSplines);
 	mPathMaster->SetUseHighResModels(false);
+	mPathMaster->ConstructSplines(mNumSplines);
 
 	// Create an empty starting area
 	mPathMaster->SetSpawnPits(false);
@@ -63,12 +65,13 @@ void AEndlessGameMode::BeginPlay()
 	}
 
 	// Set default path values
-	mPathMaster->SetSpawnPits(true);
-	mPathMaster->SetSpawnRamps(true);
-	mPathMaster->SetSpawnHoles(true); // Should only be enabled once jump is acquired
-	mPathMaster->SetObstacleSpawnChance(33);
-	mPathMaster->SetPointSpawnChance(8);
-	mPathMaster->SetPowerUpSpawnChance(0);
+	SetPathValuesFromFile();
+	//mPathMaster->SetSpawnPits(true);
+	//mPathMaster->SetSpawnRamps(true);
+	//mPathMaster->SetSpawnHoles(true); // Should only be enabled once jump is acquired
+	//mPathMaster->SetObstacleSpawnChance(33);
+	//mPathMaster->SetPointSpawnChance(8);
+	//mPathMaster->SetPowerUpSpawnChance(0);
 
 	// Get the player
 	mainPlayer = GetWorld()->GetFirstPlayerController()->GetPawn();
@@ -95,6 +98,34 @@ void AEndlessGameMode::Tick(float DeltaTime)
 	}
 }
 
+void AEndlessGameMode::SetPathValuesFromFile()
+{
+	// The code below was inspired by Orfeas, at https://www.orfeasel.com/parsing-json-files/
+	FString jsonString;
+	const FString JsonFilePath = FPaths::ProjectContentDir() + "/DataTables/" + "CustomEndless.json";
+	FFileHelper::LoadFileToString(jsonString, *JsonFilePath);
+
+	//Create a json object to store the information from the json string
+	//The json reader is used to deserialize the json object later on
+	TSharedPtr<FJsonObject> jasonObject = MakeShareable(new FJsonObject());
+	TSharedRef<TJsonReader<>> jsonReader = TJsonReaderFactory<>::Create(jsonString);
+
+	if (FJsonSerializer::Deserialize(jsonReader, jasonObject) && jasonObject.IsValid())
+	{
+		mPathMaster->LoadFromJson(jasonObject);
+		mPathMaster->SetSpawnPits(jasonObject->GetBoolField("PitsEnabled"));
+		mPathMaster->SetSpawnRamps(jasonObject->GetBoolField("RampsEnabled"));
+		mPathMaster->SetSpawnHoles(jasonObject->GetBoolField("HolesEnabled")); // Should only be enabled once jump is acquired
+		mPathMaster->SetObstacleSpawnChance(jasonObject->GetIntegerField("ObstacleSpawnChance"));
+		mPathMaster->SetPointSpawnChance(jasonObject->GetIntegerField("PointSpawnChance"));
+		mPathMaster->SetPowerUpSpawnChance(jasonObject->GetIntegerField("PowerupSpawnChance"));
+	}
+	else
+	{
+		GLog->Log("couldn't deserialize");
+	}
+}
+
 void AEndlessGameMode::EndGame()
 {
 	UGameplayStatics::OpenLevel(GetWorld(), GetWorld()->GetFName());
@@ -103,6 +134,7 @@ void AEndlessGameMode::EndGame()
 void AEndlessGameMode::OnPlayerEscapePressed()
 {
 	UE_LOG(LogTemp, Warning, TEXT("GameMode heard EscPressed"));
+
 	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
 }
