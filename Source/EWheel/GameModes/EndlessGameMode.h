@@ -26,8 +26,6 @@ private:
 	void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	void SetPathValuesFromFile();
-
 public:
 	UFUNCTION(BlueprintCallable)
 	void EndGame();

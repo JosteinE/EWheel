@@ -210,6 +210,8 @@ void AMeshSplineMaster::LoadFromJson(TSharedPtr<FJsonObject> inJson)
 	SetObstacleSpawnChance(inJson->GetIntegerField("ObstacleSpawnChance"));
 	SetPointSpawnChance(inJson->GetIntegerField("PointSpawnChance"));
 	SetPowerUpSpawnChance(inJson->GetIntegerField("PowerupSpawnChance"));
+
+	mTilePicker->LoadFromJson(inJson->GetObjectField("TilePicker"));
 }
 
 FVector AMeshSplineMaster::GetLocationAtSplinePoint(int pointIndex)

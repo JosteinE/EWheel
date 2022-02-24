@@ -750,22 +750,22 @@ int SplineTilePicker::GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTi
 			switch (possibleTiles[i].Y)
 			{
 			case MeshType::PIT:
-				weightMap.Emplace(4);
+				weightMap.Emplace(WeightMap[MeshType::PIT]);
 				break;
 			case MeshType::PIT_4W:
-				weightMap.Emplace(1);
+				weightMap.Emplace(WeightMap[MeshType::PIT_4W]);
 				break;
 			case MeshType::PIT_END_SN:
-				weightMap.Emplace(10);
+				weightMap.Emplace(WeightMap[MeshType::PIT_END_SN]);
 				break;
 			case MeshType::PIT_EX:
-				weightMap.Emplace(3);
+				weightMap.Emplace(WeightMap[MeshType::PIT_EX]);
 				break;
 			case MeshType::PIT_L:
-				weightMap.Emplace(3);
+				weightMap.Emplace(WeightMap[MeshType::PIT_L]);
 				break;
 			case MeshType::PIT_T:
-				weightMap.Emplace(2);
+				weightMap.Emplace(WeightMap[MeshType::PIT_T]);
 				break;
 			default:
 				break;
@@ -776,16 +776,16 @@ int SplineTilePicker::GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTi
 			switch (possibleTiles[i].Y)
 			{
 			case MeshType::RAMP:
-				weightMap.Emplace(3);
+				weightMap.Emplace(WeightMap[MeshType::RAMP]);
 				break;
 			case MeshType::RAMP_L:
-				weightMap.Emplace(5);
+				weightMap.Emplace(WeightMap[MeshType::RAMP_L]);
 				break;
 			case MeshType::RAMP_M:
-				weightMap.Emplace(2);
+				weightMap.Emplace(WeightMap[MeshType::RAMP_M]);
 				break;
 			case MeshType::RAMP_R:
-				weightMap.Emplace(5);
+				weightMap.Emplace(WeightMap[MeshType::RAMP_R]);
 				break;
 			default:
 				break;
@@ -796,22 +796,22 @@ int SplineTilePicker::GetRandomIndexBasedOnWeight(TArray<FIntVector>& possibleTi
 			switch (possibleTiles[i].Y)
 			{
 			case MeshType::HOLE:
-				weightMap.Emplace(5);
+				weightMap.Emplace(WeightMap[MeshType::HOLE]);
 				break;
 			case MeshType::HOLE_4W:
-				weightMap.Emplace(1);
+				weightMap.Emplace(WeightMap[MeshType::HOLE_4W]);
 				break;
 			case MeshType::HOLE_END_SN:
-				weightMap.Emplace(6);
+				weightMap.Emplace(WeightMap[MeshType::HOLE_END_SN]);
 				break;
 			case MeshType::HOLE_EX:
-				weightMap.Emplace(3);
+				weightMap.Emplace(WeightMap[MeshType::HOLE_EX]);
 				break;
 			case MeshType::HOLE_L:
-				weightMap.Emplace(2);
+				weightMap.Emplace(WeightMap[MeshType::HOLE_L]);
 				break;
 			case MeshType::HOLE_T:
-				weightMap.Emplace(1);
+				weightMap.Emplace(WeightMap[MeshType::HOLE_T]);
 				break;
 			default:
 				break;
