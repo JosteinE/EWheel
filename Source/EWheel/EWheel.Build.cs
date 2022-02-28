@@ -8,7 +8,7 @@ public class EWheel : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" }); // "ProceduralMeshComponent", "MeshDescription"
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Json", "JsonUtilities" }); // "ProceduralMeshComponent", "MeshDescription"
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

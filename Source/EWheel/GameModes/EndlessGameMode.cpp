@@ -16,6 +16,7 @@
 #include "GameFramework/HUD.h"
 
 #include "Dom/JsonObject.h"
+#include "Misc/FileHelper.h"
 
 AEndlessGameMode::AEndlessGameMode()
 {
@@ -40,6 +41,14 @@ AEndlessGameMode::AEndlessGameMode()
 
 void AEndlessGameMode::BeginPlay()
 {
+	// Get the player
+	mainPlayer = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+	//Bind Delegates
+	Cast<APlayerPawn>(mainPlayer)->EscPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerEscapePressed);
+	Cast<APlayerPawn>(mainPlayer)->RestartPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerRestartPressed);
+	Cast<APlayerPawn>(mainPlayer)->PlayerDeath.AddDynamic(this, &AEndlessGameMode::OnPlayerDeath);
+
 	// Spawn the path
 	FActorSpawnParameters pathSpawnParams;
 	pathSpawnParams.Owner = this;
@@ -59,6 +68,7 @@ void AEndlessGameMode::BeginPlay()
 	if (!FJsonSerializer::Deserialize(jReader, jObject) || !jObject.IsValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("couldn't deserialize"));
+		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), TEnumAsByte<EQuitPreference::Type>(EQuitPreference::Quit), true);
 	}
 
 	// Construct the desired numbers of lanes
@@ -80,14 +90,6 @@ void AEndlessGameMode::BeginPlay()
 
 	// Set default path properties
 	mPathMaster->LoadFromJson(jObject->GetObjectField("PathMaster"));
-
-	// Get the player
-	mainPlayer = GetWorld()->GetFirstPlayerController()->GetPawn();
-
-	//Bind Delegates
-	Cast<APlayerPawn>(mainPlayer)->EscPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerEscapePressed);
-	Cast<APlayerPawn>(mainPlayer)->RestartPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerRestartPressed);
-	Cast<APlayerPawn>(mainPlayer)->PlayerDeath.AddDynamic(this, &AEndlessGameMode::OnPlayerDeath);
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)
