@@ -15,9 +15,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/HUD.h"
 
-#include "Dom/JsonObject.h"
-#include "Misc/FileHelper.h"
-
 AEndlessGameMode::AEndlessGameMode()
 {
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -60,19 +57,19 @@ void AEndlessGameMode::BeginPlay()
 
 	// Get the user user defined values to construct the path
 	FString jString;
-	const FString jFilePath = FPaths::ProjectContentDir() + "/DataTables/" + "CustomEndless.json";
+	const FString jFilePath = FPaths::ProjectIntermediateDir() + "CustomEndlessSettings.json";
 	FFileHelper::LoadFileToString(jString, *jFilePath);
 	TSharedPtr<FJsonObject> jObject = MakeShareable(new FJsonObject());
 	TSharedRef<TJsonReader<>> jReader = TJsonReaderFactory<>::Create(jString);
 
-	if (!FJsonSerializer::Deserialize(jReader, jObject) || !jObject.IsValid())
+
+	if (!jObject.IsValid() || !FJsonSerializer::Deserialize(jReader, jObject))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("couldn't deserialize"));
 		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), TEnumAsByte<EQuitPreference::Type>(EQuitPreference::Quit), true);
 	}
-
 	// Construct the desired numbers of lanes
-	mPathMaster->ConstructSplines(jObject->GetIntegerField("numLanes"));
+	mPathMaster->ConstructSplines(jObject->GetIntegerField("NumLanes"));
 
 	// Create an empty starting area
 	mPathMaster->SetSpawnPits(false);
@@ -89,7 +86,7 @@ void AEndlessGameMode::BeginPlay()
 	}
 
 	// Set default path properties
-	mPathMaster->LoadFromJson(jObject->GetObjectField("PathMaster"));
+	//mPathMaster->LoadFromJson(jObject->GetObjectField("PathMaster"));
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)
