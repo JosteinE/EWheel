@@ -44,6 +44,8 @@ public:
 	int mGameMode = 0;
 
 private:
+	void GetGameModeStringFromInt(FString& returnString, int mode);
+
 	APawn* mainPlayer;
 	AMeshSplineMaster* mPathMaster;
 

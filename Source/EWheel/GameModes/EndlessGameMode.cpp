@@ -44,6 +44,9 @@ void AEndlessGameMode::BeginPlay()
 	// Set The Game Mode
 	mGameMode = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->mGameMode;
 	UE_LOG(LogTemp, Warning, TEXT("GameMode: %i"), mGameMode);
+	//UE_LOG(LogTemp, Warning, TEXT("IntermDir: %s"), *FPaths::ProjectIntermediateDir());
+	//UE_LOG(LogTemp, Warning, TEXT("LaunchDir: %s"), *FPaths::LaunchDir());
+
 
 	// Get the player
 	mainPlayer = GetWorld()->GetFirstPlayerController()->GetPawn();
@@ -63,8 +66,10 @@ void AEndlessGameMode::BeginPlay()
 	mPathMaster->SetUseHighResModels(false);
 
 	// Get the user user defined values to construct the path
+	FString modeString;
+	GetGameModeStringFromInt(modeString, mGameMode);
 	FString jString;
-	const FString jFilePath = FPaths::ProjectIntermediateDir() + "CustomEndlessSettings.json";
+	const FString jFilePath = FPaths::ProjectIntermediateDir() + modeString + "EndlessSettings.json";
 	FFileHelper::LoadFileToString(jString, *jFilePath);
 	TSharedPtr<FJsonObject> jObject = MakeShareable(new FJsonObject());
 	TSharedRef<TJsonReader<>> jReader = TJsonReaderFactory<>::Create(jString);
@@ -93,7 +98,7 @@ void AEndlessGameMode::BeginPlay()
 	}
 
 	// Set default path properties
-	//mPathMaster->LoadFromJson(jObject->GetObjectField("PathMaster"));
+	mPathMaster->LoadFromJson(jObject);
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)
@@ -132,4 +137,25 @@ void AEndlessGameMode::OnPlayerRestartPressed()
 
 void AEndlessGameMode::OnPlayerDeath()
 {
+}
+
+void AEndlessGameMode::GetGameModeStringFromInt(FString& returnString, int mode)
+{
+	switch (mode)
+	{
+	case 0:
+		returnString = FString{ "Easy" };
+		break;
+	case 1:
+		returnString = FString{ "Medium" };
+		break;
+	case 2:
+		returnString = FString{ "Hard" };
+		break;
+	case 3:
+		returnString = FString{ "Custom" };
+		break;
+	default:
+		break;
+	}
 }

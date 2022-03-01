@@ -195,23 +195,23 @@ void SplineTilePicker::SetUseHighResModels(bool useHighRes)
 
 void SplineTilePicker::LoadFromJson(TSharedPtr<FJsonObject> inJson)
 {
-	WeightMap[MeshType::DEFAULT] = inJson->GetIntegerField("Tile_Default");
-	WeightMap[MeshType::PIT] = inJson->GetIntegerField("Tile_Pit_Single");
-	WeightMap[MeshType::PIT_4W] = inJson->GetIntegerField("Tile_Pit_4w");
-	WeightMap[MeshType::PIT_END_SN] = inJson->GetIntegerField("Tile_Pit_End");
-	WeightMap[MeshType::PIT_EX] = inJson->GetIntegerField("Tile_Pit_Ex");
-	WeightMap[MeshType::PIT_L] = inJson->GetIntegerField("Tile_Pit_L");
-	WeightMap[MeshType::PIT_T] = inJson->GetIntegerField("Tile_Pit_T");
-	WeightMap[MeshType::RAMP] = inJson->GetIntegerField("Tile_Ramp_Single");
-	WeightMap[MeshType::RAMP_L] = inJson->GetIntegerField("Tile_Ramp_L");
-	WeightMap[MeshType::RAMP_M] = inJson->GetIntegerField("Tile_Ramp_M");
-	WeightMap[MeshType::RAMP_R] = inJson->GetIntegerField("Tile_Ramp_R");
-	WeightMap[MeshType::HOLE] = inJson->GetIntegerField("Tile_Hole_Single");
-	WeightMap[MeshType::HOLE_4W] = inJson->GetIntegerField("Tile_Hole_4w");
-	WeightMap[MeshType::HOLE_END_SN] = inJson->GetIntegerField("Tile_Hole_End");
-	WeightMap[MeshType::HOLE_EX] = inJson->GetIntegerField("Tile_Hole_Ex");
-	WeightMap[MeshType::HOLE_L] = inJson->GetIntegerField("Tile_Hole_L");
-	WeightMap[MeshType::HOLE_T] = inJson->GetIntegerField("Tile_Hole_T");
+	WeightMap[MeshType::DEFAULT] = inJson->GetIntegerField("Tile_Default"); // FIX THIS
+	WeightMap[MeshType::PIT] = inJson->GetIntegerField("Pit_Single");
+	WeightMap[MeshType::PIT_END_SN] = inJson->GetIntegerField("Pit_End");
+	WeightMap[MeshType::PIT_EX] = inJson->GetIntegerField("Pit_Ex");
+	WeightMap[MeshType::PIT_L] = inJson->GetIntegerField("Pit_L");
+	WeightMap[MeshType::PIT_T] = inJson->GetIntegerField("Pit_T");
+	WeightMap[MeshType::PIT_4W] = inJson->GetIntegerField("Pit_4w");
+	WeightMap[MeshType::RAMP] = inJson->GetIntegerField("Ramp_Single");
+	WeightMap[MeshType::RAMP_L] = inJson->GetIntegerField("Ramp_L");
+	WeightMap[MeshType::RAMP_M] = inJson->GetIntegerField("Ramp_M");
+	WeightMap[MeshType::RAMP_R] = inJson->GetIntegerField("Ramp_R");
+	WeightMap[MeshType::HOLE] = inJson->GetIntegerField("Hole_Single");
+	WeightMap[MeshType::HOLE_4W] = inJson->GetIntegerField("Hole_4w");
+	WeightMap[MeshType::HOLE_END_SN] = inJson->GetIntegerField("Hole_End");
+	WeightMap[MeshType::HOLE_EX] = inJson->GetIntegerField("Hole_Ex");
+	WeightMap[MeshType::HOLE_L] = inJson->GetIntegerField("Hole_L");
+	WeightMap[MeshType::HOLE_T] = inJson->GetIntegerField("Hole_T");
 }
 
 void SplineTilePicker::EmptyTileLog()
