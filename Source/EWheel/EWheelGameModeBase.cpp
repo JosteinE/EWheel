@@ -3,3 +3,10 @@
 
 #include "EWheelGameModeBase.h"
 
+AEWheelGameModeBase::AEWheelGameModeBase()
+{
+}
+
+AEWheelGameModeBase::~AEWheelGameModeBase()
+{
+}

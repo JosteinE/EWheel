@@ -14,6 +14,7 @@
 class AObstacleActor;
 class APickUpActor;
 class AMeshSplineMaster;
+class AEWheelGameStateBase;
 
 UCLASS()
 class EWHEEL_API AEndlessGameMode : public AGameModeBase
@@ -38,6 +39,9 @@ public:
 
 	UFUNCTION()
 	void OnPlayerDeath();
+
+	AEWheelGameStateBase* GetGameState();
+
 private:
 	APawn* mainPlayer;
 	AMeshSplineMaster* mPathMaster;

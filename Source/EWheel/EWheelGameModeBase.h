@@ -13,5 +13,7 @@ UCLASS()
 class EWHEEL_API AEWheelGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+	AEWheelGameModeBase();
+	~AEWheelGameModeBase();
 };

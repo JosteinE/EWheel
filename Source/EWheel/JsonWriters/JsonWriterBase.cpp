@@ -36,6 +36,32 @@ void UJsonWriterBase::SetJsonObjectField(UPARAM(ref)FJsonObjectWrapper& jObjectW
 	jObjectWrapper.JsonObject->SetObjectField(fieldName, newJObjectWrapper.JsonObject);
 }
 
+bool UJsonWriterBase::GetJsonBoolField(UPARAM(ref)FJsonObjectWrapper& jObjectWrapper, const FString& fieldName)
+{
+	return jObjectWrapper.JsonObject->GetBoolField(fieldName);
+}
+
+float UJsonWriterBase::GetJsonNumberField(UPARAM(ref)FJsonObjectWrapper& jObjectWrapper, const FString& fieldName)
+{
+	return jObjectWrapper.JsonObject->GetNumberField(fieldName);
+}
+
+FString UJsonWriterBase::GetJsonStringField(UPARAM(ref)FJsonObjectWrapper& jObjectWrapper, const FString& fieldName)
+{
+	return jObjectWrapper.JsonObject->GetStringField(fieldName);
+}
+
+bool UJsonWriterBase::GetJsonObjectField(UPARAM(ref)FJsonObjectWrapper& jObjectWrapper, const FString& fieldName, FJsonObjectWrapper& jsonObjectWrapper)
+{
+	jsonObjectWrapper.JsonObject = jObjectWrapper.JsonObject->GetObjectField(fieldName);
+	
+	if (jsonObjectWrapper.JsonObject.IsValid())
+		return true;
+
+	// returns empty json object
+	return false;
+}
+
 void UJsonWriterBase::WriteJsonToFile(UPARAM(ref)FJsonObjectWrapper& jObjectWrapper, const FString& fileName)
 {
 	// Thanks to Wraiyth for guidance on how to serialize the json http://www.wraiyth.com/?p=198
@@ -50,6 +76,24 @@ void UJsonWriterBase::WriteJsonToFile(UPARAM(ref)FJsonObjectWrapper& jObjectWrap
 		UE_LOG(LogTemp, Warning, TEXT("Saved successfully to file"))
 	else
 		UE_LOG(LogTemp, Warning, TEXT("Failed to save to file"))
+}
+
+bool UJsonWriterBase::LoadJsonFileToWrapper(FJsonObjectWrapper& NewJsonWrapper, const FString& fileName)
+{
+	FString jString;
+	const FString jFilePath = FPaths::ProjectIntermediateDir() + *fileName + ".json";
+	FFileHelper::LoadFileToString(jString, *jFilePath);
+	TSharedPtr<FJsonObject> jObject = MakeShareable(new FJsonObject());
+	TSharedRef<TJsonReader<>> jReader = TJsonReaderFactory<>::Create(jString);
+
+	if (jObject.IsValid() && FJsonSerializer::Deserialize(jReader, jObject))
+	{
+		NewJsonWrapper.JsonObject = jObject;
+		return true;
+	}
+
+	// Returns empty json object
+	return false;
 }
 
 template <class T>

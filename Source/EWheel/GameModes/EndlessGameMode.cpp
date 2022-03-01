@@ -15,10 +15,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/HUD.h"
 
+#include "EWheel/JsonWriters/HighscoreWriter.h"
+#include "EWheel/GameModes/EWheelGameStateBase.h"
+
 AEndlessGameMode::AEndlessGameMode()
 {
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
+
+	GetGameInstance();
 
 	// Get the path's default material
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface>DefaultMaterialAsset(TEXT("Material'/Game/Materials/GrassDirt_Material.GrassDirt_Material'"));
@@ -107,6 +112,8 @@ void AEndlessGameMode::Tick(float DeltaTime)
 
 void AEndlessGameMode::EndGame()
 {
+	
+
 	UGameplayStatics::OpenLevel(GetWorld(), GetWorld()->GetFName());
 }
 
