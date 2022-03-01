@@ -14,7 +14,6 @@
 class AObstacleActor;
 class APickUpActor;
 class AMeshSplineMaster;
-class AEWheelGameStateBase;
 
 UCLASS()
 class EWHEEL_API AEndlessGameMode : public AGameModeBase
@@ -40,7 +39,9 @@ public:
 	UFUNCTION()
 	void OnPlayerDeath();
 
-	AEWheelGameStateBase* GetGameState();
+	// Current Game mode, set in the main menu
+	UPROPERTY(Category = GameMode, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	int mGameMode = 0;
 
 private:
 	APawn* mainPlayer;

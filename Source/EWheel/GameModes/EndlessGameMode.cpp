@@ -16,14 +16,12 @@
 #include "GameFramework/HUD.h"
 
 #include "EWheel/JsonWriters/HighscoreWriter.h"
-#include "EWheel/GameModes/EWheelGameStateBase.h"
+#include "EWheel/GameModes/CustomGameInstance.h"
 
 AEndlessGameMode::AEndlessGameMode()
 {
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
-
-	GetGameInstance();
 
 	// Get the path's default material
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface>DefaultMaterialAsset(TEXT("Material'/Game/Materials/GrassDirt_Material.GrassDirt_Material'"));
@@ -43,6 +41,10 @@ AEndlessGameMode::AEndlessGameMode()
 
 void AEndlessGameMode::BeginPlay()
 {
+	// Set The Game Mode
+	mGameMode = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->mGameMode;
+	UE_LOG(LogTemp, Warning, TEXT("GameMode: %i"), mGameMode);
+
 	// Get the player
 	mainPlayer = GetWorld()->GetFirstPlayerController()->GetPawn();
 
@@ -112,8 +114,6 @@ void AEndlessGameMode::Tick(float DeltaTime)
 
 void AEndlessGameMode::EndGame()
 {
-	
-
 	UGameplayStatics::OpenLevel(GetWorld(), GetWorld()->GetFName());
 }
 
