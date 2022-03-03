@@ -101,6 +101,8 @@ public:
 
 	//TEMP (for use in game mode)
 	FVector GetLocationAtSplinePoint(int pointIndex);
+	void GetLocationAndRotationAtSplinePoint(FVector& returnLocation, FRotator& returnRotation, int pointIndex);
+	float FindInputKeyClosestToWorldLocation(FVector& location);
 private:
 	TArray<AMeshSplineActor*> mSplines;
 	SplineTilePicker* mTilePicker;

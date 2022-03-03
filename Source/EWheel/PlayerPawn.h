@@ -163,6 +163,10 @@ public:
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
 	/** Returns SpringArm subobject **/
 	FORCEINLINE USpringArmComponent* GetSpringArm() const { return SpringArm; }
+	/** Returns CurrentSpeed **/
+	FORCEINLINE float GetCurrentSpeed() const { return currentSpeed; }
+	/** Returns CurrentSpeed **/
+	FORCEINLINE float GetMaxSpeed() const { return maxSpeed; }
 
 	/** Adds the value to the player score **/
 	FORCEINLINE void AddToScore(int value) { pointsCollected += value; }

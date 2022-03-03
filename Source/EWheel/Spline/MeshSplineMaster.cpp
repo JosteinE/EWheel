@@ -111,8 +111,8 @@ void AMeshSplineMaster::AddPoint(FVector location)
 	{
 		for (int i = 0; i < mSplines.Num(); i++)
 		{
-			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i], GetDefaultSplineOffset(i));
 			RemoveFirstSplinePointAndMesh(i);
+			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i], GetDefaultSplineOffset(i));
 		}
 	}
 	else
@@ -159,7 +159,7 @@ int AMeshSplineMaster::GetNumSplinePoints()
 
 bool AMeshSplineMaster::GetIsAtMaxSplinePoints()
 {
-	return GetNumSplinePoints() < mMaxNumSplinePoints;
+	return GetNumSplinePoints() >= mMaxNumSplinePoints + 1;
 }
 
 float AMeshSplineMaster::GetDefaultSplineOffset(int splineIndex)
@@ -217,4 +217,15 @@ void AMeshSplineMaster::LoadFromJson(TSharedPtr<FJsonObject> inJson)
 FVector AMeshSplineMaster::GetLocationAtSplinePoint(int pointIndex)
 {
 	return mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(pointIndex, ESplineCoordinateSpace::World);
+}
+
+void AMeshSplineMaster::GetLocationAndRotationAtSplinePoint(FVector& returnLocation, FRotator& returnRotation, int pointIndex)
+{
+	returnLocation = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(pointIndex, ESplineCoordinateSpace::World);
+	returnRotation = mSplines[mMasterSplineIndex]->GetSpline()->GetRotationAtSplinePoint(pointIndex, ESplineCoordinateSpace::World);
+}
+
+float AMeshSplineMaster::FindInputKeyClosestToWorldLocation(FVector& location)
+{
+	return mSplines[mMasterSplineIndex]->GetSpline()->FindInputKeyClosestToWorldLocation(location);
 }
