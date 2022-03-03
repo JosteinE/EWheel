@@ -146,7 +146,7 @@ void AEndlessGameMode::Tick(float DeltaTime)
 
 	// Move the chase box
 	if(StartChaseBoxSpeed < ChaseBoxMaxSpeed)
-		CalculateChaseBoxSpeed(DeltaTime);
+		CalculateChaseBoxSpeed();
 	FVector chaseStartDestination;
 	FRotator chaseStartDestinationRot;
 	mPathMaster->GetLocationAndRotationAtSplineInputKey(chaseStartDestination, chaseStartDestinationRot, StartChaseBoxSplineIndex);
@@ -197,7 +197,7 @@ void AEndlessGameMode::GetGameModeStringFromInt(FString& returnString, int mode)
 	}
 }
 
-void AEndlessGameMode::CalculateChaseBoxSpeed(float deltaTime)
+void AEndlessGameMode::CalculateChaseBoxSpeed()
 {
 	StartChaseBoxSpeed = (ChaseBoxMaxSpeed - TileSize) * (1/ChaseBoxTimeToMaxSpeed) * UGameplayStatics::GetTimeSeconds(GetWorld()) + TileSize;
 	StartChaseBoxSpeed = FMath::Clamp(StartChaseBoxSpeed, 0.f, ChaseBoxMaxSpeed);

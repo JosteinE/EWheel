@@ -47,7 +47,7 @@ private:
 	//
 	void GetGameModeStringFromInt(FString& returnString, int mode);
 
-	void CalculateChaseBoxSpeed(float deltaTime);
+	void CalculateChaseBoxSpeed();
 
 	// Checks if the player is getting too close to the end
 	bool CheckShouldExtend();
@@ -78,7 +78,7 @@ private:
 	AActor* StartChaseBox;
 	float StartChaseBoxSplineIndex = 0.5f;
 	float StartChaseBoxSpeed = 150.f;
-	float ChaseBoxTimeToMaxSpeed = 60.f;
+	float ChaseBoxTimeToMaxSpeed = 5.f;
 	float ChaseBoxMaxSpeed; // Is set equal to player in begin play
 	AActor* ChaseBoxEnd;
 	float ChaseBoxDistanceThreshold = 10;
