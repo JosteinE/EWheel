@@ -101,6 +101,8 @@ public:
 
 	//TEMP (for use in game mode)
 	FVector GetLocationAtSplinePoint(int pointIndex);
+	FVector GetLocationAtSplineInputKey(float inputKey);
+	void GetLocationAndRotationAtSplineInputKey(FVector& returnLocation, FRotator& returnRotation, float inputKey);
 	void GetLocationAndRotationAtSplinePoint(FVector& returnLocation, FRotator& returnRotation, int pointIndex);
 	float FindInputKeyClosestToWorldLocation(FVector& location);
 private:

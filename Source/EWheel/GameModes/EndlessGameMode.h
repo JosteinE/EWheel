@@ -85,8 +85,8 @@ private:
 
 	TSubclassOf<AActor> ChaseBoxClass;
 	AActor* ChaseBoxStart;
-	int ChaseBoxStartSplineIndex = 0;
-	float ChaseBoxStartSpeed = 0;
+	float ChaseBoxStartSplineIndex = 0.5f;
+	float ChaseBoxStartSpeed = 150.f;
 	AActor* ChaseBoxEnd;
 	float ChaseBoxDistanceThreshold = 10;
 

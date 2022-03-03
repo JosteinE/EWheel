@@ -219,6 +219,17 @@ FVector AMeshSplineMaster::GetLocationAtSplinePoint(int pointIndex)
 	return mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(pointIndex, ESplineCoordinateSpace::World);
 }
 
+FVector AMeshSplineMaster::GetLocationAtSplineInputKey(float inputKey)
+{
+	return mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplineInputKey(inputKey, ESplineCoordinateSpace::World);
+}
+
+void AMeshSplineMaster::GetLocationAndRotationAtSplineInputKey(FVector& returnLocation, FRotator& returnRotation, float inputKey)
+{
+	returnLocation = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplineInputKey(inputKey, ESplineCoordinateSpace::World);
+	returnRotation = mSplines[mMasterSplineIndex]->GetSpline()->GetRotationAtSplineInputKey(inputKey, ESplineCoordinateSpace::World);
+}
+
 void AMeshSplineMaster::GetLocationAndRotationAtSplinePoint(FVector& returnLocation, FRotator& returnRotation, int pointIndex)
 {
 	returnLocation = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(pointIndex, ESplineCoordinateSpace::World);
