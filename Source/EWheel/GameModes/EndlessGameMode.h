@@ -47,12 +47,7 @@ private:
 	//
 	void GetGameModeStringFromInt(FString& returnString, int mode);
 
-	void CalculateExtendRate(float DeltaTime);
-
-	// Determines if the chase box meets the requirements to move towards a new spline index
-	void CalculateChaseBoxIndex();
-
-	void CalculateChaseBoxSpeed();
+	void CalculateChaseBoxSpeed(float deltaTime);
 
 	// Checks if the player is getting too close to the end
 	bool CheckShouldExtend();
@@ -64,10 +59,6 @@ private:
 	int mNumSplines = 3;
 	int TileSize = 150;
 
-	// Path extention rate in seconds
-	float pathExtendRate = 1.f;
-	float extendRateTracker = 0;
-
 	// Add a new point if the player is within this range to the last spline point
 	float minDistToSplinePoint = 225.f;
 	
@@ -78,15 +69,17 @@ private:
 	int maxNumSplinePoints = 20;
 	
 	// Tile index to extend from 
-	int extendFromSplinePoint = 5;
+	int extendFromSplinePoint = 10;
 
 	// Material to be applied to the path mesh
 	UMaterialInterface* DefaultMaterial;
 
 	TSubclassOf<AActor> ChaseBoxClass;
-	AActor* ChaseBoxStart;
-	float ChaseBoxStartSplineIndex = 0.5f;
-	float ChaseBoxStartSpeed = 150.f;
+	AActor* StartChaseBox;
+	float StartChaseBoxSplineIndex = 0.5f;
+	float StartChaseBoxSpeed = 150.f;
+	float ChaseBoxTimeToMaxSpeed = 60.f;
+	float ChaseBoxMaxSpeed; // Is set equal to player in begin play
 	AActor* ChaseBoxEnd;
 	float ChaseBoxDistanceThreshold = 10;
 
