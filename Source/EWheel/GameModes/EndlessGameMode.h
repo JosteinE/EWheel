@@ -68,5 +68,7 @@ private:
 	// Material to be applied to the path mesh
 	UMaterialInterface* DefaultMaterial;
 
+	TSubclassOf<AActor> ChaseBoxClass;
+
 	bool bSpawnedObstacleOnLast = false;
 };

@@ -24,7 +24,7 @@ AEndlessGameMode::AEndlessGameMode()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Get the path's default material
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface>DefaultMaterialAsset(TEXT("Material'/Game/Materials/GrassDirt_Material.GrassDirt_Material'"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface>DefaultMaterialAsset(TEXT("Material'/Game/Materials/GrassDirtMasked_Material.GrassDirtMasked_Material'"));
 	if (DefaultMaterialAsset.Succeeded())
 		DefaultMaterial = DefaultMaterialAsset.Object;
 
@@ -37,6 +37,10 @@ AEndlessGameMode::AEndlessGameMode()
 	static ConstructorHelpers::FObjectFinder<UClass>PawnAsset(TEXT("Blueprint'/Game/Blueprints/PlayerPawnBP.PlayerPawnBP_C'"));
 	if (PawnAsset.Object)
 		this->DefaultPawnClass = PawnAsset.Object;
+
+	static ConstructorHelpers::FObjectFinder<UClass>ChaseBoxAsset(TEXT("Blueprint'/Game/Blueprints/PlayerChaseBoxBP.PlayerChaseBoxBP_C'"));
+	if (ChaseBoxAsset.Object)
+		ChaseBoxClass = ChaseBoxAsset.Object;
 }
 
 void AEndlessGameMode::BeginPlay()
@@ -58,6 +62,7 @@ void AEndlessGameMode::BeginPlay()
 
 	// Spawn the path
 	FActorSpawnParameters pathSpawnParams;
+	pathSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	pathSpawnParams.Owner = this;
 	mPathMaster = GetWorld()->SpawnActor<AMeshSplineMaster>(AMeshSplineMaster::StaticClass(), FVector{ 0.f, 0.f, 0.f }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
 	mPathMaster->SetDefaultMaterial(DefaultMaterial);
@@ -69,7 +74,7 @@ void AEndlessGameMode::BeginPlay()
 	FString modeString;
 	GetGameModeStringFromInt(modeString, mGameMode);
 	FString jString;
-	const FString jFilePath = FPaths::ProjectIntermediateDir() + modeString + "EndlessSettings.json";
+	const FString jFilePath = FPaths::LaunchDir() + modeString + "EndlessSettings.json"; //FPaths::ProjectIntermediateDir()
 	FFileHelper::LoadFileToString(jString, *jFilePath);
 	TSharedPtr<FJsonObject> jObject = MakeShareable(new FJsonObject());
 	TSharedRef<TJsonReader<>> jReader = TJsonReaderFactory<>::Create(jString);
@@ -99,6 +104,10 @@ void AEndlessGameMode::BeginPlay()
 
 	// Set default path properties
 	mPathMaster->LoadFromJson(jObject);
+
+	// SpawnChaseBox
+	AActor* ChaseBox = GetWorld()->SpawnActor<AActor>(ChaseBoxClass, FVector{ 0.f, 0.f, 0.f }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
+	ChaseBox->SetActorScale3D(FVector{ 1.f, (float)jObject->GetIntegerField("NumLanes"), 1.f });
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)

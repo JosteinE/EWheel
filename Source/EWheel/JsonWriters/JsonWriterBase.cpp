@@ -69,7 +69,7 @@ void UJsonWriterBase::WriteJsonToFile(UPARAM(ref)FJsonObjectWrapper& jObjectWrap
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 	FJsonSerializer::Serialize(jObjectWrapper.JsonObject.ToSharedRef(), Writer);
 	
-	FString jFilePath = FPaths::ProjectIntermediateDir() + fileName + ".json";
+	FString jFilePath = FPaths::LaunchDir() + fileName + ".json"; // FPaths::ProjectIntermediateDir()
 
 	FFileHelper FileHelper;
 	if (FileHelper.SaveStringToFile(OutputString, *jFilePath))
@@ -81,7 +81,7 @@ void UJsonWriterBase::WriteJsonToFile(UPARAM(ref)FJsonObjectWrapper& jObjectWrap
 bool UJsonWriterBase::LoadJsonFileToWrapper(FJsonObjectWrapper& NewJsonWrapper, const FString& fileName)
 {
 	FString jString;
-	const FString jFilePath = FPaths::ProjectIntermediateDir() + *fileName + ".json";
+	const FString jFilePath = FPaths::LaunchDir() + *fileName + ".json"; //FPaths::ProjectIntermediateDir()
 	FFileHelper::LoadFileToString(jString, *jFilePath);
 	TSharedPtr<FJsonObject> jObject = MakeShareable(new FJsonObject());
 	TSharedRef<TJsonReader<>> jReader = TJsonReaderFactory<>::Create(jString);
