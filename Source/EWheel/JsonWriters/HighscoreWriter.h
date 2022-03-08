@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EWheel/JsonWriters/JsonWriterBase.h"
 
 struct HighscoreSlot
 {
-	int mRank;
 	FString mName;
 	int mScore;
 	FString mTime;
@@ -15,10 +15,11 @@ struct HighscoreSlot
 /**
  * 
  */
-class EWHEEL_API HighscoreWriter
+class EWHEEL_API HighscoreWriter : private UJsonWriterBase
 {
 public:
 	HighscoreWriter();
 	~HighscoreWriter();
-	void AddToHighscore(HighscoreSlot& inPlayer);
+	void AddToHighscore(HighscoreSlot& inPlayer, FString& inMode);
+	void ImportFromHighscoreData(UPARAM(ref)FJsonObjectWrapper& jObjectWrapper, HighscoreSlot& inPlayer);
 };

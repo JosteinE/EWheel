@@ -16,10 +16,11 @@ class EWHEEL_API UJsonWriterBase : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
+public:
+
 	UJsonWriterBase();
 	~UJsonWriterBase();
 
-public:
 	// Using UPARAM(ref) because without the struct parameter becomes a return value for some reason. 
 	//Json Set Functions
 	UFUNCTION(BlueprintCallable)

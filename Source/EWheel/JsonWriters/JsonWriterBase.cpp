@@ -73,7 +73,7 @@ void UJsonWriterBase::WriteJsonToFile(UPARAM(ref)FJsonObjectWrapper& jObjectWrap
 
 	FFileHelper FileHelper;
 	if (FileHelper.SaveStringToFile(OutputString, *jFilePath))
-		UE_LOG(LogTemp, Warning, TEXT("Saved successfully to file"))
+		UE_LOG(LogTemp, Warning, TEXT("Successfully saved to file"))
 	else
 		UE_LOG(LogTemp, Warning, TEXT("Failed to save to file"))
 }

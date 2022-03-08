@@ -174,6 +174,17 @@ void AEndlessGameMode::OnPlayerRestartPressed()
 
 void AEndlessGameMode::OnPlayerDeath()
 {
+	HighscoreWriter hWriter;
+	HighscoreSlot playerLog;
+	playerLog.mName = "Bob";
+	playerLog.mDistance = 100;
+	playerLog.mScore = 99;
+	playerLog.mTime = FString("01:59:00");
+
+	FString gameModeString;
+	GetGameModeStringFromInt(gameModeString, Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->mGameMode);
+
+	hWriter.AddToHighscore(playerLog, gameModeString);
 }
 
 void AEndlessGameMode::GetGameModeStringFromInt(FString& returnString, int mode)
