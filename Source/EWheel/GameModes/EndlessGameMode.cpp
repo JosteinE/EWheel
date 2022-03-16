@@ -211,7 +211,7 @@ void AEndlessGameMode::GetGameModeStringFromInt(FString& returnString, int mode)
 void AEndlessGameMode::GetGameTimeString(FString& returnString)
 {
 	const int deltatime = FMath::Floor(GetWorld()->GetTimeSeconds());
-	UE_LOG(LogTemp, Warning, TEXT("Time: %f"), GetWorld()->GetTimeSeconds());
+
 	// Minutes
 	FString minutesString;
 	int minutes = deltatime / 60;
@@ -257,7 +257,5 @@ void AEndlessGameMode::CalculateChaseBoxSpeed()
 bool AEndlessGameMode::CheckShouldExtend()
 {
 	FVector PlayerLoc = mainPlayer->GetActorLocation();
-	if (mPathMaster->FindInputKeyClosestToWorldLocation(PlayerLoc) > extendFromSplinePoint)
-		return true;
-	return false;
+	return mPathMaster->FindInputKeyClosestToWorldLocation(PlayerLoc) > extendFromSplinePoint;
 }

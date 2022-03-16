@@ -39,6 +39,9 @@ public:
 	UFUNCTION()
 	void OnPlayerDeath();
 
+	UFUNCTION(Blueprintcallable)
+	void GetGameTimeString(FString& returnString);
+
 	// Current Game mode, set in the main menu
 	UPROPERTY(Category = GameMode, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int mGameMode = 0;
@@ -46,8 +49,6 @@ public:
 private:
 	//
 	void GetGameModeStringFromInt(FString& returnString, int mode);
-
-	void GetGameTimeString(FString& returnString);
 
 	void CalculateChaseBoxSpeed();
 
