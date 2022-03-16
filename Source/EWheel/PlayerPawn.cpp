@@ -299,4 +299,5 @@ void APlayerPawn::KillPlayer()
 	bIsDead = true;
 	SetActorTickEnabled(false);
 	PlayerDeath.Broadcast();
+	PlayerDeath.Clear();
 }

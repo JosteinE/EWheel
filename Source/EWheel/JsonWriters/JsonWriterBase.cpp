@@ -53,13 +53,11 @@ FString UJsonWriterBase::GetJsonStringField(UPARAM(ref)FJsonObjectWrapper& jObje
 
 bool UJsonWriterBase::GetJsonObjectField(UPARAM(ref)FJsonObjectWrapper& jObjectWrapper, const FString& fieldName, FJsonObjectWrapper& jsonObjectWrapper)
 {
-	jsonObjectWrapper.JsonObject = jObjectWrapper.JsonObject->GetObjectField(fieldName);
-	
-	if (jsonObjectWrapper.JsonObject.IsValid())
-		return true;
+	if (!jObjectWrapper.JsonObject->HasTypedField<EJson::Object>(fieldName))
+		return false;
 
-	// returns empty json object
-	return false;
+	jsonObjectWrapper.JsonObject = jObjectWrapper.JsonObject->GetObjectField(fieldName);
+	return true;
 }
 
 void UJsonWriterBase::WriteJsonToFile(UPARAM(ref)FJsonObjectWrapper& jObjectWrapper, const FString& fileName)
@@ -73,9 +71,9 @@ void UJsonWriterBase::WriteJsonToFile(UPARAM(ref)FJsonObjectWrapper& jObjectWrap
 
 	FFileHelper FileHelper;
 	if (FileHelper.SaveStringToFile(OutputString, *jFilePath))
-		UE_LOG(LogTemp, Warning, TEXT("Successfully saved to file"))
+		UE_LOG(LogTemp, Warning, TEXT("%s was successfully saved to %s"), *fileName, *jFilePath)
 	else
-		UE_LOG(LogTemp, Warning, TEXT("Failed to save to file"))
+		UE_LOG(LogTemp, Warning, TEXT("Failed to save %s to file"), *fileName)
 }
 
 bool UJsonWriterBase::LoadJsonFileToWrapper(FJsonObjectWrapper& NewJsonWrapper, const FString& fileName)
@@ -89,6 +87,7 @@ bool UJsonWriterBase::LoadJsonFileToWrapper(FJsonObjectWrapper& NewJsonWrapper, 
 	if (jObject.IsValid() && FJsonSerializer::Deserialize(jReader, jObject))
 	{
 		NewJsonWrapper.JsonObject = jObject;
+		UE_LOG(LogTemp, Warning, TEXT("Loaded file from path: %s"), *jFilePath);
 		return true;
 	}
 

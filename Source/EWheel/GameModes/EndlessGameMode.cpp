@@ -176,7 +176,7 @@ void AEndlessGameMode::OnPlayerDeath()
 {
 	HighscoreWriter hWriter;
 	HighscoreSlot playerLog;
-	playerLog.mName = "Bob";
+	playerLog.mName = FString("Bob");
 	playerLog.mDistance = 100;
 	playerLog.mScore = 99;
 	playerLog.mTime = FString("01:59:00");
@@ -212,7 +212,7 @@ void AEndlessGameMode::CalculateChaseBoxSpeed()
 {
 	StartChaseBoxSpeed = (ChaseBoxMaxSpeed - TileSize) * (1/ChaseBoxTimeToMaxSpeed) * UGameplayStatics::GetTimeSeconds(GetWorld()) + TileSize;
 	StartChaseBoxSpeed = FMath::Clamp(StartChaseBoxSpeed, 0.f, ChaseBoxMaxSpeed);
-	UE_LOG(LogTemp, Warning, TEXT("StartChaseBoxSpeed: %f"), StartChaseBoxSpeed);
+	//UE_LOG(LogTemp, Warning, TEXT("StartChaseBoxSpeed: %f"), StartChaseBoxSpeed);
 }
 
 bool AEndlessGameMode::CheckShouldExtend()
