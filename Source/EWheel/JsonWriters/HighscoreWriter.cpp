@@ -31,7 +31,7 @@ void HighscoreWriter::AddToHighscore(HighscoreSlot& inPlayer, FString& inMode)
 		for(int i = 1; i < 16; i++)
 		{
 			// Check if the file object exists
-			if (!highscoreJsonWrapper.JsonObject->HasTypedField<EJson::Object>(FString::FromInt(i)))
+			if (!highscoreJsonWrapper.JsonObject->HasTypedField<EJson::Object>(FString::FromInt(i + bMoveDown)))
 			{
 				if (!bMoveDown)
 				{
@@ -42,7 +42,7 @@ void HighscoreWriter::AddToHighscore(HighscoreSlot& inPlayer, FString& inMode)
 			}
 
 			// Compare to rank = i
-			TSharedPtr<FJsonObject> jObject = highscoreJsonWrapper.JsonObject->GetObjectField(FString::FromInt(i));
+			TSharedPtr<FJsonObject> jObject = highscoreJsonWrapper.JsonObject->GetObjectField(FString::FromInt(i + bMoveDown));
 			if (!bMoveDown && jObject->GetNumberField("Score") < inPlayer.mScore)
 			{
 				bMoveDown = true;
@@ -51,7 +51,7 @@ void HighscoreWriter::AddToHighscore(HighscoreSlot& inPlayer, FString& inMode)
 			}
 
 			// Add object to the highscore wrapper
-			if (i < 14 || (i == 14 && bMoveDown) || (i == 15 && !bMoveDown))
+			if (i < 15 || (i == 15 && !bMoveDown))
 				highscoreJsonWrapper.JsonObject->SetObjectField(FString::FromInt(i + bMoveDown), jObject);
 		}
 	}
