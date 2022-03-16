@@ -47,6 +47,8 @@ private:
 	//
 	void GetGameModeStringFromInt(FString& returnString, int mode);
 
+	void GetGameTimeString(FString& returnString);
+
 	void CalculateChaseBoxSpeed();
 
 	// Checks if the player is getting too close to the end

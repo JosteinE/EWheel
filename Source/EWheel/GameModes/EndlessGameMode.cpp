@@ -177,9 +177,9 @@ void AEndlessGameMode::OnPlayerDeath()
 	HighscoreWriter hWriter;
 	HighscoreSlot playerLog;
 	playerLog.mName = FString("Bob");
-	playerLog.mDistance = 100;
-	playerLog.mScore = 99;
-	playerLog.mTime = FString("01:59:00");
+	playerLog.mDistance = FMath::Floor(Cast<APlayerPawn>(mainPlayer)->distanceTravelled * 100.f) / 100.f;
+	playerLog.mScore = Cast<APlayerPawn>(mainPlayer)->pointsCollected;
+	GetGameTimeString(playerLog.mTime);
 
 	FString gameModeString;
 	GetGameModeStringFromInt(gameModeString, Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->mGameMode);
@@ -206,6 +206,45 @@ void AEndlessGameMode::GetGameModeStringFromInt(FString& returnString, int mode)
 	default:
 		break;
 	}
+}
+
+void AEndlessGameMode::GetGameTimeString(FString& returnString)
+{
+	const int deltatime = FMath::Floor(GetWorld()->GetTimeSeconds());
+	UE_LOG(LogTemp, Warning, TEXT("Time: %f"), GetWorld()->GetTimeSeconds());
+	// Minutes
+	FString minutesString;
+	int minutes = deltatime / 60;
+	if (minutes > 9)
+		minutesString = FString::FromInt(minutes);
+	else
+		minutesString = FString("0" + FString::FromInt(minutes));
+
+	// Seconds
+	FString secondsString;
+	int seconds;
+	if (deltatime > 60)
+	{
+		seconds = FMath::Floor(deltatime - (FMath::Floor(deltatime / 60) * 60));
+		if (seconds > 9)
+			secondsString = FString::FromInt(seconds);
+		else
+			secondsString = FString("0" + FString::FromInt(seconds));
+	}
+	else if (deltatime > 9)
+		secondsString = FString::FromInt(deltatime);
+	else
+		secondsString = FString("0" + FString::FromInt(deltatime));
+	
+	// Milliseconds
+	FString millisecondsString;
+	int milliseconds = FMath::Floor((GetWorld()->GetTimeSeconds() - (float)deltatime) * 100.f);
+	if (milliseconds > 9)
+		millisecondsString = FString::FromInt(milliseconds);
+	else
+		millisecondsString = FString("0" + FString::FromInt(milliseconds));
+
+	returnString = FString(minutesString + ":" + secondsString + ":" + millisecondsString);
 }
 
 void AEndlessGameMode::CalculateChaseBoxSpeed()

@@ -10,7 +10,7 @@ struct HighscoreSlot
 	FString mName = "";
 	int mScore = 0;
 	FString mTime = "00:00:00";
-	int mDistance = 0;
+	float mDistance = 0.f;
 };
 
 /**

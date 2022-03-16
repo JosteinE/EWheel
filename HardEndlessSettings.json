@@ -1,0 +1,28 @@
+{
+	"NumLanes": 3,
+	"ObstacleSpawnChance": 33,
+	"PointSpawnChance": 8,
+	"PowerupSpawnChance": 2,
+	"PitsEnabled": true,
+	"RampsEnabled": true,
+	"HolesEnabled": true,
+	"TilePicker":
+	{
+		"Pit_Single": 4,
+		"Pit_End": 10,
+		"Pit_Ex": 3,
+		"Pit_L": 3,
+		"Pit_T": 2,
+		"Pit_4w": 1,
+		"Ramp_Single": 3,
+		"Ramp_L": 5,
+		"Ramp_M": 2,
+		"Ramp_R": 5,
+		"Hole_Single": 5,
+		"Hole_End": 6,
+		"Hole_Ex": 3,
+		"Hole_L": 3,
+		"Hole_T": 2,
+		"Hole_4w": 1
+	}
+}
