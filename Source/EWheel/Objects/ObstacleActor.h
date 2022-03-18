@@ -26,6 +26,7 @@ public:
 	AObstacleActor();
 
 	void SetStaticMesh(UStaticMesh* inMesh) override;
+	void SetStaticMesh(UStaticMeshComponent* meshComp, UStaticMesh* inMesh);
 
 private:
 	UFUNCTION()

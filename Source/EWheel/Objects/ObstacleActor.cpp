@@ -20,12 +20,17 @@ AObstacleActor::AObstacleActor()
 
 void AObstacleActor::SetStaticMesh(UStaticMesh* inMesh)
 {
-	GetMeshComponent()->SetStaticMesh(inMesh);
-	GetMeshComponent()->SetCollisionProfileName("PawnObstacle");
-	GetMeshComponent()->SetNotifyRigidBodyCollision(true); // Simulation Generates Hit Events
-	GetMeshComponent()->SetMobility(EComponentMobility::Movable);
+	SetStaticMesh(GetMeshComponent(), inMesh);
+}
 
-	GetMeshComponent()->OnComponentHit.AddDynamic(this, &AObstacleActor::OnMeshHit);
+void AObstacleActor::SetStaticMesh(UStaticMeshComponent* meshComp, UStaticMesh* inMesh)
+{
+	meshComp->SetStaticMesh(inMesh);
+	meshComp->SetCollisionProfileName("PawnObstacle");
+	meshComp->SetNotifyRigidBodyCollision(true); // Simulation Generates Hit Events
+	meshComp->SetMobility(EComponentMobility::Movable);
+
+	meshComp->OnComponentHit.AddDynamic(this, &AObstacleActor::OnMeshHit);
 }
 
 void AObstacleActor::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
