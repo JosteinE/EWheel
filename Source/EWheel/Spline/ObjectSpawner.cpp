@@ -5,7 +5,7 @@
 #include "EWheel/Spline/MeshCategoriesAndTypes.h"
 #include "EWheel/Spline/TileDetails.h"
 #include "EWheel/Objects/PickUpActor.h"
-#include "EWheel/Objects/ObstacleActor.h"
+#include "EWheel/Objects/ObstacleCube.h"
 #include "Engine/StaticMesh.h"
 
 
@@ -173,17 +173,20 @@ AObjectActorBase* UObjectSpawner::SpawnObstacleActor(FVector location, FRotator 
 {
 	FActorSpawnParameters ObjectSpawnParams;
 	ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
-	
+		
+	//AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
+	AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleCube::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
+
 	if (!mObjects.Contains(mRowTracker))
 		mObjects.Add(mRowTracker);
 	mObjects[mRowTracker].Emplace(ObstacleObject);
 	
-	ObstacleObject->SetStaticMesh(mLibrary[FMath::RandRange(1, 5)]);
+	//ObstacleObject->SetStaticMesh(mLibrary[FMath::RandRange(1, 5)]);
 	
-	float tempHeight = FMath::RandRange(0.5f, 1.f);
+	//float tempHeight = FMath::RandRange(0.5f, 1.f);
 	ObstacleObject->SetActorLocation(location);
-	ObstacleObject->GetMeshComponent()->SetWorldRotation(rotation + FRotator{ 0.f, 180.f, 0.f });
+	ObstacleObject->SetActorRotation(rotation);
+	Cast<AObstacleCube>(ObstacleObject)->SetHeight(FMath::RandRange(0.f, 25.f));
 
 	return ObstacleObject;
 }

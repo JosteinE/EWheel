@@ -29,5 +29,5 @@ private:
 
 public:
 	UFUNCTION()
-	void SetHeight(float height) const { MidMeshComponent->SetWorldScale3D(FVector{ MidMeshComponent->GetComponentScale().X, MidMeshComponent->GetComponentScale().Y, height }); }
+		void SetHeight(float height);
 };

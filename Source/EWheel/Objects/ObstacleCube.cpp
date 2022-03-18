@@ -42,3 +42,9 @@ void AObstacleCube::OnConstruction(const FTransform& Transform)
 	MidMeshComponent->SetRelativeLocation(FVector{ 0.f, 0.f, 7.8588f + 3.0325f * 0.5f * MidMeshComponent->GetComponentScale().Z });
 	TopMeshComponent->SetRelativeLocation(FVector{ 0.f, 0.f, 7.8588f + 3.0325f * MidMeshComponent->GetComponentScale().Z });
 }
+
+void AObstacleCube::SetHeight(float height)
+{
+	MidMeshComponent->SetWorldScale3D(FVector{ MidMeshComponent->GetComponentScale().X, MidMeshComponent->GetComponentScale().Y, height });
+	OnConstruction(GetTransform());
+}
