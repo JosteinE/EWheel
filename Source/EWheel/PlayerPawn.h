@@ -82,6 +82,10 @@ public:
 	UPROPERTY(Category = HUD, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float distanceTravelled = 0.f;
 
+	/** The player is killed if he falls below this value */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float ZKillzone = 0.f;
+
 	UPROPERTY(Category = Player, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bIsDead = false;
 

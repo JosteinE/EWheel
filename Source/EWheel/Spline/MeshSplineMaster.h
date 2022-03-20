@@ -120,12 +120,12 @@ private:
 	int mMaxNumSplinePoints = 20;
 	float mSplineSpawnVerticalOffset = 0.f;
 
+public:
 	// Path extention limits 
 	float mSplineVerticalMin = -50.f;
 	float mSplineVerticalMax = 50.f;
 	float mSplineVerticalStep = 20.f;
 
-public:
 	// Sets the spline for every other spline to follow
 	FORCEINLINE void SetMasterSpline(int splineIndex) { mMasterSplineIndex = splineIndex; };
 

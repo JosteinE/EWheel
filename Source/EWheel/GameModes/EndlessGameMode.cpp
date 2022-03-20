@@ -51,7 +51,6 @@ void AEndlessGameMode::BeginPlay()
 	//UE_LOG(LogTemp, Warning, TEXT("IntermDir: %s"), *FPaths::ProjectIntermediateDir());
 	//UE_LOG(LogTemp, Warning, TEXT("LaunchDir: %s"), *FPaths::LaunchDir());
 
-
 	// Get the player
 	mainPlayer = GetWorld()->GetFirstPlayerController()->GetPawn();
 
@@ -69,6 +68,9 @@ void AEndlessGameMode::BeginPlay()
 	mPathMaster->SetMaxNumSplinePoints(maxNumSplinePoints);
 	mPathMaster->SetTileSize(TileSize);
 	mPathMaster->SetUseHighResModels(false);
+
+	// Set the player Killzone
+	Cast<APlayerPawn>(mainPlayer)->ZKillzone = mPathMaster->mSplineVerticalMin - 1.f;
 
 	// Get the user user defined values to construct the path
 	FString modeString;
@@ -181,6 +183,7 @@ void AEndlessGameMode::OnPlayerDeath()
 	GetGameModeStringFromInt(gameModeString, Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->mGameMode);
 	bool bNewHighscore = false;
 
+	// Check if it is a new highscore, store data and add the option to enter name if true
 	if (hWriter.CheckShouldAddToHighscore(Cast<APlayerPawn>(mainPlayer)->pointsCollected, gameModeString))
 	{
 		// Store data in highscore struct
@@ -192,6 +195,7 @@ void AEndlessGameMode::OnPlayerDeath()
 		bNewHighscore = true;
 	}
 
+	// Add the game summary to the player's viewport
 	Cast<APlayerPawn>(mainPlayer)->ShowGameSummary(bNewHighscore);
 }
 

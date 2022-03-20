@@ -98,6 +98,8 @@ void APlayerPawn::Tick(float DeltaTime)
 		PlayerRoot->SetNotifyRigidBodyCollision(false);
 		bCanJump = true;
 	}
+	else if (GetActorLocation().Z < ZKillzone)
+		KillPlayer();
 			
 	//Move the actor based on input
 	MoveBoard(DeltaTime);
