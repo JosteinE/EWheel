@@ -85,6 +85,9 @@ public:
 	UPROPERTY(Category = Player, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bIsDead = false;
 
+	UPROPERTY(Category = Player, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FString PlayerName = "Player";
+
 	// Sets default values for this pawn's properties
 	APlayerPawn();
 
@@ -99,6 +102,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void ShowGameSummary(bool bWithSave);
 private:
 
 	FVector movementInput;

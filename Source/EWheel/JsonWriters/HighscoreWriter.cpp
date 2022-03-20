@@ -59,6 +59,35 @@ void HighscoreWriter::AddToHighscore(HighscoreSlot& inPlayer, FString& inMode)
 	UJsonWriterBase::WriteJsonToFile(highscoreJsonWrapper, fileName);
 }
 
+bool HighscoreWriter::CheckShouldAddToHighscore(int playerScore, FString& inMode)
+{
+	FJsonObjectWrapper highscoreJsonWrapper;
+	FJsonObjectWrapper highscoreSlotJsonWrapper;
+	UJsonWriterBase::InitJsonObject(highscoreSlotJsonWrapper);
+	FString fileName = inMode.ToUpper() + "Highscores";
+
+	if (!UJsonWriterBase::LoadJsonFileToWrapper(highscoreJsonWrapper, fileName))
+	{
+		return true;
+	}
+	else
+	{
+		for (int i = 1; i < 16; i++)
+		{
+			// Check if the file object exists
+			if (!highscoreJsonWrapper.JsonObject->HasTypedField<EJson::Object>(FString::FromInt(i)))
+				return true;
+
+			// Compare to rank = i
+			TSharedPtr<FJsonObject> jObject = highscoreJsonWrapper.JsonObject->GetObjectField(FString::FromInt(i));
+			if (jObject->GetNumberField("Score") < playerScore)
+				return true;
+		}
+
+		return false;
+	}
+}
+
 void HighscoreWriter::ImportFromHighscoreData(UPARAM(ref)FJsonObjectWrapper& jObjectWrapper, HighscoreSlot& inPlayer)
 {
 	jObjectWrapper.JsonObject->SetStringField("Name", inPlayer.mName);

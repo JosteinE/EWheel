@@ -174,17 +174,36 @@ void AEndlessGameMode::OnPlayerRestartPressed()
 
 void AEndlessGameMode::OnPlayerDeath()
 {
-	HighscoreWriter hWriter;
-	HighscoreSlot playerLog;
-	playerLog.mName = FString("Bob");
-	playerLog.mDistance = FMath::Floor(Cast<APlayerPawn>(mainPlayer)->distanceTravelled * 100.f) / 100.f;
-	playerLog.mScore = Cast<APlayerPawn>(mainPlayer)->pointsCollected;
-	GetGameTimeString(playerLog.mTime);
+	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
 
+	HighscoreWriter hWriter;
+	FString gameModeString;
+	GetGameModeStringFromInt(gameModeString, Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->mGameMode);
+	bool bNewHighscore = false;
+
+	if (hWriter.CheckShouldAddToHighscore(Cast<APlayerPawn>(mainPlayer)->pointsCollected, gameModeString))
+	{
+		// Store data in highscore struct
+		mSlot = MakeShareable(new HighscoreSlot());
+		mSlot->mDistance = FMath::Floor(Cast<APlayerPawn>(mainPlayer)->distanceTravelled * 100.f) / 100.f;
+		mSlot->mScore = Cast<APlayerPawn>(mainPlayer)->pointsCollected;
+		GetGameTimeString(mSlot->mTime);
+		//Name will be stored in the WriteToHighscores which is called after the player has reviewed their game summary
+		bNewHighscore = true;
+	}
+
+	Cast<APlayerPawn>(mainPlayer)->ShowGameSummary(bNewHighscore);
+}
+
+void AEndlessGameMode::WriteToHighscores(UPARAM(ref)FString& playerName)
+{
+	mSlot->mName = *playerName;
+
+	HighscoreWriter hWriter;
 	FString gameModeString;
 	GetGameModeStringFromInt(gameModeString, Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->mGameMode);
 
-	hWriter.AddToHighscore(playerLog, gameModeString);
+	hWriter.AddToHighscore(*mSlot, gameModeString);
 }
 
 void AEndlessGameMode::GetGameModeStringFromInt(FString& returnString, int mode)

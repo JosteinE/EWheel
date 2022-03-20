@@ -23,6 +23,7 @@ public:
 	~HighscoreWriter();
 
 	void AddToHighscore(HighscoreSlot& inPlayer, FString& inMode);
+	bool CheckShouldAddToHighscore(int playerScore, FString& inMode);
 private:
 	void ImportFromHighscoreData(UPARAM(ref)FJsonObjectWrapper& jObjectWrapper, HighscoreSlot& inPlayer);
 };

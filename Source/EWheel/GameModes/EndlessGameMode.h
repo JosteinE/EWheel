@@ -11,6 +11,7 @@
 /**
  * 
  */
+struct HighscoreSlot;
 class AObstacleActor;
 class APickUpActor;
 class AMeshSplineMaster;
@@ -39,16 +40,20 @@ public:
 	UFUNCTION()
 	void OnPlayerDeath();
 
+	UFUNCTION(BlueprintCallable)
+	void WriteToHighscores(UPARAM(ref)FString& playerName);
+
 	UFUNCTION(Blueprintcallable)
 	void GetGameTimeString(FString& returnString);
+
+	UFUNCTION(Blueprintcallable)
+	void GetGameModeStringFromInt(FString& returnString, int mode);
 
 	// Current Game mode, set in the main menu
 	UPROPERTY(Category = GameMode, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int mGameMode = 0;
 
 private:
-	//
-	void GetGameModeStringFromInt(FString& returnString, int mode);
 
 	void CalculateChaseBoxSpeed();
 
@@ -56,6 +61,7 @@ private:
 	bool CheckShouldExtend();
 
 	APawn* mainPlayer;
+	TSharedPtr<HighscoreSlot> mSlot;
 	AMeshSplineMaster* mPathMaster;
 
 	// Number of tiles per row
