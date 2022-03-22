@@ -18,5 +18,9 @@ public:
 	UPROPERTY(Category = GameMode, VisibleAnywhere, BlueprintReadWrite)
 	int mGameMode = 0;
 
+	// Becomes true after user settings has been applied after app startup
+	UPROPERTY(Category = GameMode, VisibleAnywhere, BlueprintReadWrite)
+	bool mAppConstructed = false;
+
 	FORCEINLINE int GetGameMode() const { return mGameMode; }
 };
