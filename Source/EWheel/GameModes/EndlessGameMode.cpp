@@ -76,7 +76,12 @@ void AEndlessGameMode::BeginPlay()
 	FString modeString;
 	GetGameModeStringFromInt(modeString, mGameMode);
 	FString jString;
-	const FString jFilePath = FPaths::LaunchDir() + modeString + "EndlessSettings.json"; //FPaths::ProjectIntermediateDir()
+	FString jFilePath = FPaths::LaunchDir() + modeString + "EndlessSettings.json"; //FPaths::ProjectIntermediateDir()
+
+#if WITH_EDITOR
+	jFilePath = FPaths::ProjectIntermediateDir() + modeString + "EndlessSettings.json";
+#endif
+
 	FFileHelper::LoadFileToString(jString, *jFilePath);
 	TSharedPtr<FJsonObject> jObject = MakeShareable(new FJsonObject());
 	TSharedRef<TJsonReader<>> jReader = TJsonReaderFactory<>::Create(jString);
