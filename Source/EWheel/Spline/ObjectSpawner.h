@@ -22,12 +22,12 @@ public:
 
 	// Checks for spawn conditions and spawn appropriate objects based on their spawn chance
 	// Wanted to pass the arrays as ptrs or references, but it kept losing the data spawning stuff in weird places
-	void CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* TileLog, TArray<FVector> tileLocations, TArray<FRotator> tileRotations);
+	void CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* TileLog, TArray<FVector>& tileLocations, FRotator& tileRotations);
 	
 	// Spawn objects
-	AObjectActorBase* SpawnObstacleActor(FVector location, FRotator rotation);
-	AObjectActorBase* SpawnPickUpActor(FVector location, FRotator rotation);
-	AObjectActorBase* SpawnPowerUpActor(FVector location, FRotator rotation);
+	AObjectActorBase* SpawnObstacleActor(FVector& location, FRotator& rotation);
+	AObjectActorBase* SpawnPickUpActor(FVector& location, FRotator& rotation);
+	AObjectActorBase* SpawnPowerUpActor(FVector& location, FRotator& rotation);
 
 	// Removes the objects that belonged to a row that has been removed
 	void CheckAndRemoveObjectsFromLastRow();

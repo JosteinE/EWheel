@@ -133,17 +133,22 @@ void AMeshSplineMaster::SpawnObjectsLastRow()
 	TArray<FVector> tileLocations;
 	TArray<FRotator> tileRotations;
 	int splineIndex = mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 3;
-	FVector startPoint = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(splineIndex, ESplineCoordinateSpace::World);
-	FVector endPoint = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(splineIndex + 1, ESplineCoordinateSpace::World);
-	FVector rightVector = mSplines[mMasterSplineIndex]->GetSpline()->GetRightVectorAtSplinePoint(splineIndex, ESplineCoordinateSpace::World);
-	FRotator rotation = mSplines[mMasterSplineIndex]->GetSpline()->GetRotationAtSplinePoint(splineIndex, ESplineCoordinateSpace::World);
+
+	FVector location = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplineInputKey(splineIndex + 0.5f, ESplineCoordinateSpace::World);
+	FRotator rotation = mSplines[mMasterSplineIndex]->GetSpline()->GetRotationAtSplineInputKey(splineIndex + 0.5f, ESplineCoordinateSpace::World);
+	FVector rightVector = mSplines[mMasterSplineIndex]->GetSpline()->GetRightVectorAtSplineInputKey(splineIndex + 0.5f, ESplineCoordinateSpace::World);
+
+	//FVector startPoint = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(splineIndex, ESplineCoordinateSpace::World);
+	//FVector endPoint = mSplines[mMasterSplineIndex]->GetSpline()->GetLocationAtSplinePoint(splineIndex + 1, ESplineCoordinateSpace::World);
+	//FVector rightVector = mSplines[mMasterSplineIndex]->GetSpline()->GetRightVectorAtSplinePoint(splineIndex, ESplineCoordinateSpace::World);
+	//FRotator rotation = mSplines[mMasterSplineIndex]->GetSpline()->GetRotationAtSplinePoint(splineIndex, ESplineCoordinateSpace::World);
 	for (int i = 0; i < mSplines.Num(); i++)
 	{
-		tileLocations.Emplace(startPoint + 0.5f * (endPoint - startPoint) + rightVector * GetDefaultSplineOffset(i));
-		tileRotations.Emplace(rotation);
+		//tileLocations.Emplace(startPoint + 0.5f * (endPoint - startPoint) + rightVector * GetDefaultSplineOffset(i));
+		tileLocations.Emplace(location + rightVector * GetDefaultSplineOffset(i));
 	}
 
-	mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(mTilePicker->GetTileLog(), tileLocations, tileRotations);
+	mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(mTilePicker->GetTileLog(), tileLocations, rotation);
 	mObjectSpawner->CheckAndRemoveObjectsFromLastRow();
 }
 

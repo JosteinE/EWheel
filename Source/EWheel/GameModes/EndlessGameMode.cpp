@@ -115,7 +115,7 @@ void AEndlessGameMode::BeginPlay()
 
 	// SpawnChaseBox
 	StartChaseBox = GetWorld()->SpawnActor<AActor>(ChaseBoxClass, mPathMaster->GetLocationAtSplinePoint(0) - FVector{ TileSize + TileSize * 0.5f, 0.f,0.f }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
-	StartChaseBox->SetActorScale3D(FVector{ 1.5f, (float)jObject->GetIntegerField("NumLanes") + 0.5f, 2.f });
+	StartChaseBox->SetActorScale3D(FVector{ 1.5f, (float)jObject->GetIntegerField("NumLanes") + 0.5f, 4.f });
 	ChaseBoxMaxSpeed = Cast<APlayerPawn>(mainPlayer)->GetMaxSpeed();
 }
 

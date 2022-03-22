@@ -51,7 +51,7 @@ UObjectSpawner::~UObjectSpawner()
 	//}
 }
 
-void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* TileLog, TArray<FVector> tileLocations, TArray<FRotator> tileRotations)
+void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* TileLog, TArray<FVector>& tileLocations, FRotator& tileRotations)
 {
 	if (bSpawnedObstaclesOnLastRow && bSkipEveryOtherRow)
 	{
@@ -76,7 +76,7 @@ void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* Til
 	{
 		if (FMath::RandRange(0, 99) < mPointSpawnChance)
 		{
-			AObjectActorBase* newPickup = SpawnPickUpActor(tileLocations[possibleTilesIndices[i]], tileRotations[possibleTilesIndices[i]]);
+			AObjectActorBase* newPickup = SpawnPickUpActor(tileLocations[possibleTilesIndices[i]], tileRotations);
 			newPickup->mTileIndex = possibleTilesIndices[i];
 			numPointObjectsSpawned++;
 			possibleTilesIndices.RemoveAt(i);
@@ -151,7 +151,7 @@ void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* Til
 		{
 			if (FMath::RandRange(0, 99) < mObstacleSpawnChance)
 			{
-				AObjectActorBase* newObstacle = SpawnObstacleActor(tileLocations[possibleTilesIndices[i]], tileRotations[possibleTilesIndices[i]]);
+				AObjectActorBase* newObstacle = SpawnObstacleActor(tileLocations[possibleTilesIndices[i]], tileRotations);
 				newObstacle->mTileIndex = possibleTilesIndices[i];
 				obstaclesSpawned++;
 				bSpawnedObstaclesOnLastRow = true;
@@ -169,7 +169,7 @@ void UObjectSpawner::CheckAndSpawnObjectsOnNewestTiles(TArray<TileDetails*>* Til
 		mRowTracker = 0;
 }
 
-AObjectActorBase* UObjectSpawner::SpawnObstacleActor(FVector location, FRotator rotation)
+AObjectActorBase* UObjectSpawner::SpawnObstacleActor(FVector& location, FRotator& rotation)
 {
 	FActorSpawnParameters ObjectSpawnParams;
 	ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -191,7 +191,7 @@ AObjectActorBase* UObjectSpawner::SpawnObstacleActor(FVector location, FRotator 
 	return ObstacleObject;
 }
 
-AObjectActorBase* UObjectSpawner::SpawnPickUpActor(FVector location, FRotator rotation)
+AObjectActorBase* UObjectSpawner::SpawnPickUpActor(FVector& location, FRotator& rotation)
 {
 	FActorSpawnParameters ObjectSpawnParams;
 	ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -210,7 +210,7 @@ AObjectActorBase* UObjectSpawner::SpawnPickUpActor(FVector location, FRotator ro
 	return PickUpActor;
 }
 
-AObjectActorBase* UObjectSpawner::SpawnPowerUpActor(FVector location, FRotator rotation)
+AObjectActorBase* UObjectSpawner::SpawnPowerUpActor(FVector& location, FRotator& rotation)
 {
 	return nullptr;
 }

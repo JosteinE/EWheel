@@ -21,7 +21,6 @@ public:
 	UJsonWriterBase();
 	~UJsonWriterBase();
 
-	// Using UPARAM(ref) because without the struct parameter becomes a return value for some reason. 
 	//Json Set Functions
 	UFUNCTION(BlueprintCallable)
 	static void InitJsonObject(UPARAM(ref) FJsonObjectWrapper& jObjectWrapper);
