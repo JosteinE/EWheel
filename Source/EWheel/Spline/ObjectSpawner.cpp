@@ -175,7 +175,7 @@ AObjectActorBase* UObjectSpawner::SpawnObstacleActor(FVector& location, FRotator
 	ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		
 	//AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
-	AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleCube::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
+	AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleCube::StaticClass(), location, rotation, ObjectSpawnParams);
 
 	if (!mObjects.Contains(mRowTracker))
 		mObjects.Add(mRowTracker);
@@ -184,8 +184,8 @@ AObjectActorBase* UObjectSpawner::SpawnObstacleActor(FVector& location, FRotator
 	//ObstacleObject->SetStaticMesh(mLibrary[FMath::RandRange(1, 5)]);
 	
 	//float tempHeight = FMath::RandRange(0.5f, 1.f);
-	ObstacleObject->SetActorLocation(location);
-	ObstacleObject->SetActorRotation(rotation);
+	//ObstacleObject->SetActorLocation(location);
+	//ObstacleObject->SetActorRotation(rotation);
 	Cast<AObstacleCube>(ObstacleObject)->SetHeight(FMath::RandRange(0.f, 25.f));
 
 	return ObstacleObject;
@@ -195,7 +195,7 @@ AObjectActorBase* UObjectSpawner::SpawnPickUpActor(FVector& location, FRotator& 
 {
 	FActorSpawnParameters ObjectSpawnParams;
 	ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	APickUpActor* PickUpActor = GetWorld()->SpawnActor<APickUpActor>(APickUpActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
+	APickUpActor* PickUpActor = GetWorld()->SpawnActor<APickUpActor>(APickUpActor::StaticClass(), location + FVector{ 0.f, 0.f, 50.f }, FRotator{ 90.f, 0.f, 0.f }, ObjectSpawnParams);
 	
 	if(!mObjects.Contains(mRowTracker))
 		mObjects.Add(mRowTracker);
@@ -203,9 +203,9 @@ AObjectActorBase* UObjectSpawner::SpawnPickUpActor(FVector& location, FRotator& 
 	
 	PickUpActor->SetStaticMesh(mLibrary[0]);
 	
-	PickUpActor->SetActorLocation(location + FVector{ 0.f, 0.f, 50.f });
+	//PickUpActor->SetActorLocation(location + FVector{ 0.f, 0.f, 50.f });
 	PickUpActor->GetMeshComponent()->SetWorldScale3D(FVector{ 0.33f, 0.33f, 0.33f });
-	PickUpActor->GetMeshComponent()->SetRelativeRotation(FRotator{ 90.f, 0.f, 0.f });
+	//PickUpActor->GetMeshComponent()->SetRelativeRotation(FRotator{ 90.f, 0.f, 0.f });
 
 	return PickUpActor;
 }
