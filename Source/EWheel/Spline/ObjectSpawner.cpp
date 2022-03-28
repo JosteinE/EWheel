@@ -261,7 +261,6 @@ void UObjectSpawner::CheckAndRemoveObjectsFromLastRow()
 		{
 			mObjects[mRowTracker][i]->Destroy();
 			mObjects[mRowTracker][i] = nullptr;
-			mObjects[mRowTracker].RemoveAt(i, 0, false);
 		}
 		mObjects[mRowTracker].Empty();
 		mObjects.Remove(mRowTracker);

@@ -110,18 +110,30 @@ void AMeshSplineMaster::AddPoint(FVector location)
 	// Remove oldest point if the splines will exceed the max point count. 
 	if (mSplines[mMasterSplineIndex]->GetSpline()->GetNumberOfSplinePoints() - 1 > mMaxNumSplinePoints)
 	{
-		for (int i = 0; i < mSplines.Num(); i++)
+		if (bAddEdges)
+		{
+			RemoveFirstSplinePointAndMesh(0);
+			RemoveFirstSplinePointAndMesh(mSplines.Num() - 1);
+		}
+
+		for (int i = bAddEdges; i < mSplines.Num() - bAddEdges; i++)
 		{
 			RemoveFirstSplinePointAndMesh(i);
-			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i], GetDefaultSplineOffset(i));
+			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i - bAddEdges], GetDefaultSplineOffset(i));
 		}
 	}
 	else
 	{
-		for (int i = 0; i < mSplines.Num(); i++)
+		for (int i = bAddEdges; i < mSplines.Num() - bAddEdges; i++)
 		{
-			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i], GetDefaultSplineOffset(i));
+			mSplines[i]->AddSplinePointAndMesh(location, newTiles[i], newTilesRot[i - bAddEdges], GetDefaultSplineOffset(i));
 		}
+	}
+
+	if (bAddEdges)
+	{
+		mSplines[0]->AddSplinePointAndMesh(location, newTiles[0], 0, GetDefaultSplineOffset(0));
+		mSplines[mSplines.Num() - 1]->AddSplinePointAndMesh(location, newTiles[mSplines.Num() - 1], 0, GetDefaultSplineOffset(mSplines.Num() - 1));
 	}
 
 	// Spawn obstacles if at least two rows of tiles have spawned
@@ -144,13 +156,13 @@ void AMeshSplineMaster::SpawnObjectsLastRow()
 		tileLocations.Emplace(location + rightVector * GetDefaultSplineOffset(i));
 	}
 
-	if (bAddEdges)
-	{
-		TArray<TileDetails*> tLog = mTilePicker->GetEdgeLessTileLog();
-		mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(&tLog, tileLocations, rotation);
-	}
-	else
-		mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(mTilePicker->GetTileLog(), tileLocations, rotation);
+	//if (bAddEdges)
+	//{
+	//	TArray<TileDetails*> tLog = mTilePicker->GetEdgeLessTileLog();
+	//	mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(&tLog, tileLocations, rotation);
+	//}
+	//else
+	mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(mTilePicker->GetTileLog(), tileLocations, rotation);
 
 	mObjectSpawner->CheckAndRemoveObjectsFromLastRow();
 }
