@@ -23,11 +23,6 @@ AEndlessGameMode::AEndlessGameMode()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Get the path's default material
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface>DefaultMaterialAsset(TEXT("Material'/Game/Materials/GrassDirtMasked_Material.GrassDirtMasked_Material'"));
-	if (DefaultMaterialAsset.Succeeded())
-		DefaultMaterial = DefaultMaterialAsset.Object;
-
 	// Get the player's HUD class
 	static ConstructorHelpers::FObjectFinder<UClass>HudAsset(TEXT("Blueprint'/Game/Blueprints/PlayerHud.PlayerHUD_C'"));
 	if (HudAsset.Object)
@@ -64,7 +59,7 @@ void AEndlessGameMode::BeginPlay()
 	pathSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	pathSpawnParams.Owner = this;
 	mPathMaster = GetWorld()->SpawnActor<AMeshSplineMaster>(AMeshSplineMaster::StaticClass(), FVector{ 0.f, 0.f, 0.f }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
-	mPathMaster->SetDefaultMaterial(DefaultMaterial);
+	mPathMaster->SetDefaultMaterial(Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, TEXT("Material'/Game/Stylized_Forest/Materials/landscape/M_landscape_Masked.M_landscape_Masked'"))));
 	mPathMaster->SetMaxNumSplinePoints(maxNumSplinePoints);
 	mPathMaster->SetTileSize(TileSize);
 	mPathMaster->SetUseHighResModels(false);

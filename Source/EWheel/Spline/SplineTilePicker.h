@@ -81,6 +81,7 @@ private:
 	TMap<int, int> WeightMap;
 
 public:
+	TArray<TileDetails*> GetEdgeLessTileLog();
 	FORCEINLINE TArray<TileDetails*>* GetTileLog() { return &TileLog; };
 	FORCEINLINE void SetSpawnPits(bool spawnPits) { bSpawnPits = spawnPits; };
 	FORCEINLINE void SetSpawnRamps(bool spawnRamps) { bSpawnRamps = spawnRamps; };

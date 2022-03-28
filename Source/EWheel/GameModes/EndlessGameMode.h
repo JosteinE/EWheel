@@ -80,9 +80,6 @@ private:
 	// Tile index to extend from 
 	int extendFromSplinePoint = 10;
 
-	// Material to be applied to the path mesh
-	UMaterialInterface* DefaultMaterial;
-
 	TSubclassOf<AActor> ChaseBoxClass;
 	AActor* StartChaseBox;
 	float StartChaseBoxSplineIndex = 0.5f;

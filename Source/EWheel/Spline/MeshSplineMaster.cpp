@@ -10,6 +10,7 @@ AMeshSplineMaster::AMeshSplineMaster()
 {
 	mTilePicker = new SplineTilePicker;
 	mTilePicker->SetNumRowsToLog(2);
+	mTilePicker->bAddEdges = bAddEdges;
 	mObjectSpawner = CreateDefaultSubobject<UObjectSpawner>(TEXT("ObjectSpawner"));
 }
 
@@ -28,8 +29,8 @@ void AMeshSplineMaster::SetMaxNumSplinePoints(int maxNum)
 void AMeshSplineMaster::ConstructSplines(int numSplines)
 {
 	if (numSplines < 1) return;
-	SetMasterSpline(FMath::Floor((numSplines / 2) % 2));
-	AddSplines(numSplines);
+	SetMasterSpline(FMath::Floor(((numSplines + bAddEdges * 2) / 2) % 2));
+	AddSplines(numSplines + bAddEdges * 2);
 }
 
 void AMeshSplineMaster::AttatchSpline(int index)
@@ -101,9 +102,9 @@ FVector AMeshSplineMaster::GenerateNewPointLocation()
 
 void AMeshSplineMaster::AddPoint(FVector location)
 {
-	// Semi randomly pick out new tiles and their rottations
-	TArray<UStaticMesh*> newTiles = mTilePicker->GetNewTiles(mSplines.Num());
-	TArray<int> newTilesRot = mTilePicker->GetLastRowRotation(mSplines.Num());
+	// Semi randomly pick out new tiles and their rotations
+	TArray<UStaticMesh*> newTiles = mTilePicker->GetNewTiles(mSplines.Num() - bAddEdges * 2);
+	TArray<int> newTilesRot = mTilePicker->GetLastRowRotation(mSplines.Num() - bAddEdges * 2);
 
 	// Spawn new spline points in the same location for all splines, but add individual offsets for each spline tile
 	// Remove oldest point if the splines will exceed the max point count. 
@@ -137,13 +138,20 @@ void AMeshSplineMaster::SpawnObjectsLastRow()
 	FRotator rotation = mSplines[mMasterSplineIndex]->GetSpline()->GetRotationAtSplineInputKey(splineIndex + 0.5f, ESplineCoordinateSpace::World);
 	FVector rightVector = mSplines[mMasterSplineIndex]->GetSpline()->GetRightVectorAtSplineInputKey(splineIndex + 0.5f, ESplineCoordinateSpace::World);
 
-	for (int i = 0; i < mSplines.Num(); i++)
+	for (int i = bAddEdges; i < mSplines.Num() - bAddEdges; i++)
 	{
 		//tileLocations.Emplace(startPoint + 0.5f * (endPoint - startPoint) + rightVector * GetDefaultSplineOffset(i));
 		tileLocations.Emplace(location + rightVector * GetDefaultSplineOffset(i));
 	}
 
-	mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(mTilePicker->GetTileLog(), tileLocations, rotation);
+	if (bAddEdges)
+	{
+		TArray<TileDetails*> tLog = mTilePicker->GetEdgeLessTileLog();
+		mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(&tLog, tileLocations, rotation);
+	}
+	else
+		mObjectSpawner->CheckAndSpawnObjectsOnNewestTiles(mTilePicker->GetTileLog(), tileLocations, rotation);
+
 	mObjectSpawner->CheckAndRemoveObjectsFromLastRow();
 }
 

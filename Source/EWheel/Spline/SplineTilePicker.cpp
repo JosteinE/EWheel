@@ -158,6 +158,18 @@ UStaticMesh* SplineTilePicker::GetNewTile()
 	return MeshLib->GetMesh(newTile->m_MeshType);
 }
 
+TArray<TileDetails*> SplineTilePicker::GetEdgeLessTileLog()
+{
+	TArray<TileDetails*> tLog = TileLog;
+	tLog.RemoveAt(0, 1, false);
+	tLog.RemoveAt(tLog.Num() * 0.5f - 1, 1, false);
+	tLog.RemoveAt(tLog.Num() * 0.5f, 1, false);
+	tLog.Pop(false);
+	tLog.Shrink();
+
+	return tLog;
+}
+
 int SplineTilePicker::GetTileRotation(int index)
 {
 	return TileLog[index]->m_Rotation;

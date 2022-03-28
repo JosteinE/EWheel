@@ -22,11 +22,20 @@ UObjectSpawner::UObjectSpawner()
 	meshPaths.Emplace("StaticMesh'/Game/Meshes/PointObject.PointObject'");
 
 	// Obstacles
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_BigRoot_150x150.Obstacle_BigRoot_150x150'");
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Log_150x150.Obstacle_Log_150x150'");
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_RampStone_150x150.Obstacle_RampStone_150x150'");
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Stone_150x150.Obstacle_Stone_150x150'");
-	meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Stump_150x150.Obstacle_Stump_150x150'");
+	//meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_BigRoot_150x150.Obstacle_BigRoot_150x150'");
+	//meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Log_150x150.Obstacle_Log_150x150'");
+	//meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_RampStone_150x150.Obstacle_RampStone_150x150'");
+	//meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Stone_150x150.Obstacle_Stone_150x150'");
+	//meshPaths.Emplace("StaticMesh'/Game/Meshes/Obstacles/Obstacle_Stump_150x150.Obstacle_Stump_150x150'");
+
+	meshPaths.Emplace("StaticMesh'/Game/Stylized_Forest/Meshes/stones/SM_small_stone_04.SM_small_stone_04'"); // .8 
+	meshPaths.Emplace("StaticMesh'/Game/Stylized_Forest/Meshes/stones/SM_stone_03.SM_stone_03'"); // .43
+	meshPaths.Emplace("StaticMesh'/Game/Stylized_Forest/Meshes/stones/SM_stone_02.SM_stone_02'"); // .4
+	meshPaths.Emplace("StaticMesh'/Game/Stylized_Forest/Meshes/trees/SM_stump_01.SM_stump_01'"); // .66
+	meshPaths.Emplace("StaticMesh'/Game/Stylized_Forest/Meshes/trees/SM_stump_02.SM_stump_02'"); // .66
+	meshPaths.Emplace("StaticMesh'/Game/Stylized_Forest/Meshes/trees/SM_stump_03.SM_stump_03'"); // .33
+	meshPaths.Emplace("StaticMesh'/Game/Stylized_Forest/Meshes/trees/SM_log_01.SM_log_01'"); // .28
+	meshPaths.Emplace("StaticMesh'/Game/Stylized_Forest/Meshes/trees/SM_branch_02.SM_branch_02'"); // .18
 
 	for (int i = 0; i < meshPaths.Num(); i++)
 	{
@@ -174,19 +183,48 @@ AObjectActorBase* UObjectSpawner::SpawnObstacleActor(FVector& location, FRotator
 	FActorSpawnParameters ObjectSpawnParams;
 	ObjectSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		
-	//AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleActor::StaticClass(), FVector(), FRotator(), ObjectSpawnParams);
-	AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleCube::StaticClass(), location, rotation, ObjectSpawnParams);
+	AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleActor::StaticClass(), location, FRotator{ 0.f, FMath::RandRange(0.f, 359.f), 0.f }, ObjectSpawnParams);
+	//AObstacleActor* ObstacleObject = GetWorld()->SpawnActor<AObstacleActor>(AObstacleCube::StaticClass(), location, rotation, ObjectSpawnParams);
 
 	if (!mObjects.Contains(mRowTracker))
 		mObjects.Add(mRowTracker);
 	mObjects[mRowTracker].Emplace(ObstacleObject);
 	
-	//ObstacleObject->SetStaticMesh(mLibrary[FMath::RandRange(1, 5)]);
-	
-	//float tempHeight = FMath::RandRange(0.5f, 1.f);
-	//ObstacleObject->SetActorLocation(location);
-	//ObstacleObject->SetActorRotation(rotation);
-	Cast<AObstacleCube>(ObstacleObject)->SetHeight(FMath::RandRange(0.f, 25.f));
+	int objIndex = FMath::RandRange(1, mLibrary.Num() - 1);
+	ObstacleObject->SetStaticMesh(mLibrary[objIndex]);
+
+	switch (objIndex)
+	{
+	case 1:
+		ObstacleObject->SetActorScale3D(FVector{ 0.8f });
+		break;
+	case 2:
+		ObstacleObject->SetActorScale3D(FVector{ 0.43f });
+		break;
+	case 3:
+		ObstacleObject->SetActorScale3D(FVector{ 0.4f });
+		break;
+	case 4:
+		ObstacleObject->SetActorScale3D(FVector{ 0.66f });
+		break;
+	case 5:
+		ObstacleObject->SetActorScale3D(FVector{ 0.66f });
+		break;
+	case 6:
+		ObstacleObject->SetActorScale3D(FVector{ 0.33f });
+		break;
+	case 7:
+		ObstacleObject->SetActorScale3D(FVector{ 0.28f });
+		break;
+	case 8:
+		ObstacleObject->SetActorScale3D(FVector{ 0.18f });
+		break;
+	default:
+		break;
+	}
+
+	//ObstacleObject->SetActorScale3D(FVector{ 0.33f });
+	//Cast<AObstacleCube>(ObstacleObject)->SetHeight(FMath::RandRange(0.f, 25.f));
 
 	return ObstacleObject;
 }
