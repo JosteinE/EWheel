@@ -18,6 +18,9 @@ public:
 	UPROPERTY(Category = GameMode, VisibleAnywhere, BlueprintReadWrite)
 	int mGameMode = 0;
 
+	UPROPERTY(Category = SplitScreen, VisibleAnywhere, BlueprintReadWrite)
+	int mNumLocalPlayers = 1;
+
 	// Becomes true after user settings has been applied after app startup
 	UPROPERTY(Category = GameMode, VisibleAnywhere, BlueprintReadWrite)
 	bool mAppConstructed = false;

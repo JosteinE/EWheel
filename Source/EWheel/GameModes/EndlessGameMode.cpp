@@ -48,11 +48,8 @@ void AEndlessGameMode::BeginPlay()
 
 	// Get the player
 	mainPlayer = GetWorld()->GetFirstPlayerController()->GetPawn();
-
-	//Bind Delegates
-	Cast<APlayerPawn>(mainPlayer)->EscPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerEscapePressed);
-	Cast<APlayerPawn>(mainPlayer)->RestartPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerRestartPressed);
-	Cast<APlayerPawn>(mainPlayer)->PlayerDeath.AddDynamic(this, &AEndlessGameMode::OnPlayerDeath);
+	mainPlayer->AutoPossessPlayer = EAutoReceiveInput::Player0;
+	mainPlayer->AutoReceiveInput = EAutoReceiveInput::Player0;
 
 	// Spawn the path
 	FActorSpawnParameters pathSpawnParams;
@@ -64,8 +61,8 @@ void AEndlessGameMode::BeginPlay()
 	mPathMaster->SetTileSize(TileSize);
 	mPathMaster->SetUseHighResModels(false);
 
-	// Set the player Killzone
-	Cast<APlayerPawn>(mainPlayer)->ZKillzone = mPathMaster->mSplineVerticalMin - 1.f;
+	//Bind Delegates
+	BindPlayerDelegates(mainPlayer);
 
 	// Get the user user defined values to construct the path
 	FString modeString;
@@ -117,6 +114,18 @@ void AEndlessGameMode::BeginPlay()
 	StartChaseBox = GetWorld()->SpawnActor<AActor>(ChaseBoxClass, mPathMaster->GetLocationAtSplinePoint(0) - FVector{ TileSize + TileSize * 0.5f, 0.f,0.f }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
 	StartChaseBox->SetActorScale3D(FVector{ 1.5f, (float)jObject->GetIntegerField("NumLanes") + 0.5f, 4.f });
 	ChaseBoxMaxSpeed = Cast<APlayerPawn>(mainPlayer)->GetMaxSpeed();
+
+
+	// Splitscreen
+	int numLocalPlayers = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->mNumLocalPlayers;
+	if (numLocalPlayers > 1)
+	{
+		for (int i = 1; i < numLocalPlayers; i++)
+		{
+			APawn* newLocalPlayer = UGameplayStatics::CreatePlayer(GetWorld())->GetPawn();
+			BindPlayerDelegates(newLocalPlayer);
+		}
+	}
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)
@@ -128,7 +137,7 @@ void AEndlessGameMode::Tick(float DeltaTime)
 	//if (pathIndex > mPathMaster->GetNumSplinePoints() - 1)
 	//	pathIndex = 0;
 
-	// Extend if the player is at or beyond the spline point to extend from
+	// Extend the path if the player is at or beyond the spline point to extend from
 	if (CheckShouldExtend())
 	{
 		// Teleport the start chase box to the new start of the spline
@@ -140,7 +149,7 @@ void AEndlessGameMode::Tick(float DeltaTime)
 
 		mPathMaster->AddPoint(mPathMaster->GenerateNewPointLocation());
 	}
-	// Extend if the tracker meets or exceedes the extend rate
+	// Extend the path if the tracker meets or exceedes the extend rate
 	else if ((mPathMaster->GetLocationAtSplineInputKey(StartChaseBoxSplineIndex) - StartChaseBox->GetActorLocation()).Size() < 10.f)
 	{
 		mPathMaster->AddPoint(mPathMaster->GenerateNewPointLocation());
@@ -156,9 +165,16 @@ void AEndlessGameMode::Tick(float DeltaTime)
 											   FMath::RInterpConstantTo(StartChaseBox->GetActorRotation(), chaseStartDestinationRot, DeltaTime, StartChaseBoxSpeed * 0.1f));
 }
 
+void AEndlessGameMode::RestartGame()
+{
+	RemoveLocalPlayers();
+	UGameplayStatics::OpenLevel(GetWorld(), GetWorld()->GetFName());
+}
+
 void AEndlessGameMode::EndGame()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), GetWorld()->GetFName());
+	RemoveLocalPlayers();
+	UGameplayStatics::OpenLevel(GetWorld(), FName{"MainMenuMap"});
 }
 
 void AEndlessGameMode::OnPlayerEscapePressed()
@@ -171,7 +187,7 @@ void AEndlessGameMode::OnPlayerEscapePressed()
 
 void AEndlessGameMode::OnPlayerRestartPressed()
 {
-	EndGame();
+	RestartGame();
 }
 
 void AEndlessGameMode::OnPlayerDeath()
@@ -281,4 +297,24 @@ bool AEndlessGameMode::CheckShouldExtend()
 {
 	FVector PlayerLoc = mainPlayer->GetActorLocation();
 	return mPathMaster->FindInputKeyClosestToWorldLocation(PlayerLoc) > extendFromSplinePoint;
+}
+
+void AEndlessGameMode::BindPlayerDelegates(APawn* inPlayerPawn)
+{
+	Cast<APlayerPawn>(inPlayerPawn)->EscPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerEscapePressed);
+	Cast<APlayerPawn>(inPlayerPawn)->RestartPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerRestartPressed);
+	Cast<APlayerPawn>(inPlayerPawn)->PlayerDeath.AddDynamic(this, &AEndlessGameMode::OnPlayerDeath);
+	Cast<APlayerPawn>(inPlayerPawn)->ZKillzone = mPathMaster->mSplineVerticalMin - 1.f;
+}
+
+void AEndlessGameMode::RemoveLocalPlayers()
+{
+	int numPlayers = GetNumPlayers();
+	if (numPlayers > 1)
+	{
+		for (int i = numPlayers - 1; i > 0; i--)
+		{
+			UGameplayStatics::RemovePlayer(UGameplayStatics::GetPlayerController(GetWorld(), i), true);
+		}
+	}
 }

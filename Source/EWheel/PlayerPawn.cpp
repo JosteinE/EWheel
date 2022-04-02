@@ -74,8 +74,8 @@ APlayerPawn::APlayerPawn()
 	Camera->FieldOfView = 70.f;
 
 	// Auto possess this pawn
-	AutoPossessPlayer = EAutoReceiveInput::Player0;
-	AutoReceiveInput = EAutoReceiveInput::Player0;
+	//AutoPossessPlayer = EAutoReceiveInput::Player0;
+	//AutoReceiveInput = EAutoReceiveInput::Player0;
 }
 
 // Called when the game starts or when spawned

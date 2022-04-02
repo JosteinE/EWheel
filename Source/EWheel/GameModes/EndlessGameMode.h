@@ -29,6 +29,9 @@ private:
 
 public:
 	UFUNCTION(BlueprintCallable)
+	void RestartGame();
+
+	UFUNCTION(BlueprintCallable)
 	void EndGame();
 
 	UFUNCTION()
@@ -60,7 +63,12 @@ private:
 	// Checks if the player is getting too close to the end
 	bool CheckShouldExtend();
 
+	void BindPlayerDelegates(APawn* inPlayerPawn);
+	
+	void RemoveLocalPlayers();
+
 	APawn* mainPlayer;
+
 	TSharedPtr<HighscoreSlot> mSlot;
 	AMeshSplineMaster* mPathMaster;
 
