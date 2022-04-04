@@ -194,6 +194,8 @@ void AEndlessGameMode::OnPlayerDeath()
 {
 	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
 
+
+
 	HighscoreWriter hWriter;
 	FString gameModeString;
 	GetGameModeStringFromInt(gameModeString, Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->mGameMode);

@@ -37,6 +37,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void SetJsonObjectField(UPARAM(ref) FJsonObjectWrapper& jObjectWrapper, const FString& fieldName, UPARAM(ref) FJsonObjectWrapper& newJObjectWrapper);
 
+	//UFUNCTION(BlueprintCallable)
+	//static void SetJsonArrayField(UPARAM(ref) FJsonObjectWrapper& jObjectWrapper, const FString& fieldName, const TArray<TSharedPtr<FJsonValue>>& array);
+
 	//Json Get Functions
 	UFUNCTION(BlueprintCallable)
 	static bool GetJsonBoolField(UPARAM(ref) FJsonObjectWrapper& jObjectWrapper, const FString& fieldName);
