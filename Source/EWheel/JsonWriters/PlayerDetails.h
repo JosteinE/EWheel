@@ -17,11 +17,18 @@ struct FPlayerDetails
 	int mPointsCollected = 0;
 
 	UPROPERTY(BlueprintReadWrite)
-	TArray<bool> mSkinsUnlocked{true, false, false, false};
+	bool bFender = false;
 
+	UPROPERTY(BlueprintReadWrite)
+	TArray<bool> mSkinsUnlocked;
+
+	// Rail, Bumper, Footpad, Fender
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FVector> mBoardColours;
 
-	UPROPERTY(BlueprintReadWrite)
-	bool bFender = false;
+	FPlayerDetails()
+	{
+		mSkinsUnlocked.Append({ true, false, false, false });
+		mBoardColours.Init(FVector(0), 4);
+	};
 };

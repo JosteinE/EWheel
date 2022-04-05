@@ -36,5 +36,5 @@ class EWHEEL_API UPlayerDetailsWriter : public UBlueprintFunctionLibrary
 	static void WriteFromPlayerDetailsToJson(UPARAM(ref)FPlayerDetails& playerDetails);
 
 	UFUNCTION(BlueprintCallable)
-	static FPlayerDetails LoadFromJsonToPlayerDetails();
+	static FPlayerDetails& LoadFromJsonToPlayerDetails(UPARAM(ref)FPlayerDetails& playerDetails);
 };

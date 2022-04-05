@@ -6,28 +6,36 @@
 
 void UPlayerDetailsWriter::SetPlayerName(const FString& playerName)
 {
-	FPlayerDetails playerDetails = LoadFromJsonToPlayerDetails();
+	FPlayerDetails playerDetails;
+	LoadFromJsonToPlayerDetails(playerDetails);
+
 	playerDetails.mName = playerName;
 	WriteFromPlayerDetailsToJson(playerDetails);
 }
 
 void UPlayerDetailsWriter::SetPlayerPoints(int points)
 {
-	FPlayerDetails playerDetails = LoadFromJsonToPlayerDetails();
+	FPlayerDetails playerDetails;
+	LoadFromJsonToPlayerDetails(playerDetails);
+
 	playerDetails.mPointsCollected = points;
 	WriteFromPlayerDetailsToJson(playerDetails);
 }
 
 void UPlayerDetailsWriter::SetPlayerFenderEnabled(bool bFender)
 {
-	FPlayerDetails playerDetails = LoadFromJsonToPlayerDetails();
+	FPlayerDetails playerDetails;
+	LoadFromJsonToPlayerDetails(playerDetails);
+
 	playerDetails.bFender = bFender;
 	WriteFromPlayerDetailsToJson(playerDetails);
 }
 
 void UPlayerDetailsWriter::SetPlayerSkinUnlocked(int index, bool bUnlocked)
 {
-	FPlayerDetails playerDetails = LoadFromJsonToPlayerDetails();
+	FPlayerDetails playerDetails;
+	LoadFromJsonToPlayerDetails(playerDetails);
+
 	if (index < playerDetails.mSkinsUnlocked.Num())
 	{
 		playerDetails.mSkinsUnlocked[index] = bUnlocked;
@@ -37,14 +45,17 @@ void UPlayerDetailsWriter::SetPlayerSkinUnlocked(int index, bool bUnlocked)
 
 void UPlayerDetailsWriter::SetPlayerColours(UPARAM(ref)TArray<FVector>& colours)
 {
-	FPlayerDetails playerDetails = LoadFromJsonToPlayerDetails();
+	FPlayerDetails playerDetails;
+	LoadFromJsonToPlayerDetails(playerDetails);
 
 	if (playerDetails.mBoardColours.Num() != colours.Num())
 		return;
 
-	for (int i = 0; i < playerDetails.mBoardColours.Num(); i++)
+	for (int i = 0; i < 4; i++)
 	{
-		playerDetails.mBoardColours[i] = colours[i];
+		playerDetails.mBoardColours[i].X = colours[i].X;
+		playerDetails.mBoardColours[i].Y = colours[i].Y;
+		playerDetails.mBoardColours[i].Z = colours[i].Z;
 	}
 
 	WriteFromPlayerDetailsToJson(playerDetails);
@@ -68,13 +79,14 @@ void UPlayerDetailsWriter::WriteFromPlayerDetailsToJson(UPARAM(ref)FPlayerDetail
 		SkinsUnlocked->SetBoolField(FString::FromInt(i), playerDetails.mSkinsUnlocked[i]);
 	}
 
-	jObjectWrapper.JsonObject->SetObjectField("SkinsUnlocked", SkinsUnlocked);
+	jObjectWrapper.JsonObject->SetObjectField("UnlockedSkins", SkinsUnlocked);
 
 	// Set current player vehicle colours
-	TArray<TSharedPtr<FJsonObject>> colours;
-
-	// Init 4 colours (rails, bumper, footpad, fender)
-	colours.Init(MakeShareable(new FJsonObject()), playerDetails.mBoardColours.Num());
+	TSharedPtr<FJsonObject> rails = MakeShareable(new FJsonObject());
+	TSharedPtr<FJsonObject> bumpers = MakeShareable(new FJsonObject());
+	TSharedPtr<FJsonObject> footpads = MakeShareable(new FJsonObject());
+	TSharedPtr<FJsonObject> fender = MakeShareable(new FJsonObject());
+	TArray<TSharedPtr<FJsonObject>> colours{ rails, bumpers, footpads, fender };
 	
 	for (int i = 0; i < colours.Num(); i++)
 	{
@@ -83,21 +95,19 @@ void UPlayerDetailsWriter::WriteFromPlayerDetailsToJson(UPARAM(ref)FPlayerDetail
 		colours[i]->SetNumberField(FString{ "B" }, playerDetails.mBoardColours[i].Z);
 	}
 
-	jObjectWrapper.JsonObject->SetObjectField(FString{ "Rails" }, colours[1]);
-	jObjectWrapper.JsonObject->SetObjectField(FString{ "Bumpers" }, colours[2]);
-	jObjectWrapper.JsonObject->SetObjectField(FString{ "Footpads" }, colours[3]);
-	jObjectWrapper.JsonObject->SetObjectField(FString{ "Fender" }, colours[4]);
+	jObjectWrapper.JsonObject->SetObjectField(FString{ "Rails" }, colours[0]);
+	jObjectWrapper.JsonObject->SetObjectField(FString{ "Bumpers" }, colours[1]);
+	jObjectWrapper.JsonObject->SetObjectField(FString{ "Footpads" }, colours[2]);
+	jObjectWrapper.JsonObject->SetObjectField(FString{ "Fender" }, colours[3]);
 
 	UJsonWriterBase::WriteJsonToFile(jObjectWrapper, FString{ "PlayerProfile" });
 }
 
-FPlayerDetails UPlayerDetailsWriter::LoadFromJsonToPlayerDetails()
+FPlayerDetails& UPlayerDetailsWriter::LoadFromJsonToPlayerDetails(UPARAM(ref)FPlayerDetails& playerDetails)
 {
 	FJsonObjectWrapper jObject;
 	if (!UJsonWriterBase::LoadJsonFileToWrapper(jObject, FString{ "PlayerProfile" }))
-		return FPlayerDetails();
-
-	FPlayerDetails playerDetails;
+		return playerDetails;
 
 	// Get general details
 	playerDetails.mName = jObject.JsonObject->GetStringField(FString{ "Name" });
@@ -115,11 +125,11 @@ FPlayerDetails UPlayerDetailsWriter::LoadFromJsonToPlayerDetails()
 	for (int i = 0; i < colourLabels.Num(); i++)
 	{
 		FVector colour;
-		colour.X = jObject.JsonObject->GetObjectField(colourLabels[i])->GetNumberField(FString{ "R" });
-		colour.Y = jObject.JsonObject->GetObjectField(colourLabels[i])->GetNumberField(FString{ "G" });
-		colour.Z = jObject.JsonObject->GetObjectField(colourLabels[i])->GetNumberField(FString{ "B" });
+		colour.X = jObject.JsonObject->GetObjectField(*colourLabels[i])->GetNumberField(FString{ "R" });
+		colour.Y = jObject.JsonObject->GetObjectField(*colourLabels[i])->GetNumberField(FString{ "G" });
+		colour.Z = jObject.JsonObject->GetObjectField(*colourLabels[i])->GetNumberField(FString{ "B" });
 
-		playerDetails.mBoardColours.Add(colour);
+		playerDetails.mBoardColours[i] = colour;
 	}
 
 	return playerDetails;

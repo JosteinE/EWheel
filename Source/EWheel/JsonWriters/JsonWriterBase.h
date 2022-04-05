@@ -59,8 +59,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	static bool LoadJsonFileToWrapper(FJsonObjectWrapper& NewJsonWrapper, const FString& fileName);
-private:
 
 	template <class T>
-	TSharedPtr<FJsonValue> ToJsonValue(T inValue);
+	static TSharedPtr<FJsonValue> ToJsonValue(T inValue);
 };
