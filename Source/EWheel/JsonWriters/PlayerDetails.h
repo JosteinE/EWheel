@@ -17,6 +17,9 @@ struct FPlayerDetails
 	int mPointsCollected = 0;
 
 	UPROPERTY(BlueprintReadWrite)
+	TArray<bool> mSkinsUnlocked{true, false, false, false};
+
+	UPROPERTY(BlueprintReadWrite)
 	TArray<FVector> mBoardColours;
 
 	UPROPERTY(BlueprintReadWrite)

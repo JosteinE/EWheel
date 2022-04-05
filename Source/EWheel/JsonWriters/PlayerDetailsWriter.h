@@ -18,8 +18,23 @@ class EWHEEL_API UPlayerDetailsWriter : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 	
 	UFUNCTION(BlueprintCallable)
-	static void ImportFromPlayerDetailsToJson(UPARAM(ref) FJsonObjectWrapper& jObjectWrapper, FPlayerDetails& playerDetails);
+	static void SetPlayerName(const FString& playerName);
 
 	UFUNCTION(BlueprintCallable)
-	static FPlayerDetails ExportFromJsonToPlayerDetails(UPARAM(ref) FJsonObjectWrapper& jObjectWrapper);
+	static void SetPlayerPoints(int points);
+
+	UFUNCTION(BlueprintCallable)
+	static void SetPlayerFenderEnabled(bool bFender);
+
+	UFUNCTION(BlueprintCallable)
+	static void SetPlayerSkinUnlocked(int index, bool bUnlocked);
+
+	UFUNCTION(BlueprintCallable)
+	static void SetPlayerColours(UPARAM(ref)TArray<FVector>& colours);
+
+	UFUNCTION(BlueprintCallable)
+	static void WriteFromPlayerDetailsToJson(UPARAM(ref)FPlayerDetails& playerDetails);
+
+	UFUNCTION(BlueprintCallable)
+	static FPlayerDetails LoadFromJsonToPlayerDetails();
 };
