@@ -56,7 +56,7 @@ void AEndlessGameMode::BeginPlay()
 	pathSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	pathSpawnParams.Owner = this;
 	mPathMaster = GetWorld()->SpawnActor<AMeshSplineMaster>(AMeshSplineMaster::StaticClass(), FVector{ 0.f, 0.f, 0.f }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
-	mPathMaster->SetDefaultMaterial(Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, TEXT("Material'/Game/Stylized_Forest/Materials/landscape/M_landscape_Masked.M_landscape_Masked'"))));
+	mPathMaster->SetDefaultMaterial(Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), nullptr, TEXT("Material'/Game/Materials/GrassDirtMasked_Material.GrassDirtMasked_Material'"))));// Material'/Game/Stylized_Forest/Materials/landscape/M_landscape_Masked.M_landscape_Masked'"))));
 	mPathMaster->SetMaxNumSplinePoints(maxNumSplinePoints);
 	mPathMaster->SetTileSize(TileSize);
 	mPathMaster->SetUseHighResModels(false);
@@ -187,7 +187,7 @@ void AEndlessGameMode::OnPlayerEscapePressed()
 	UE_LOG(LogTemp, Warning, TEXT("GameMode heard EscPressed"));
 
 	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
-	UGameplayStatics::SetGamePaused(GetWorld(), true);
+	//UGameplayStatics::SetGamePaused(GetWorld(), true);
 }
 
 void AEndlessGameMode::OnPlayerRestartPressed()

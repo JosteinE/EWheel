@@ -129,7 +129,7 @@ public:
 	// Sets the spline for every other spline to follow
 	FORCEINLINE void SetMasterSpline(int splineIndex) { mMasterSplineIndex = splineIndex; };
 	FORCEINLINE void SetTileSize(int tileSize) { mTileSize = tileSize; };
-	FORCEINLINE void SetDefaultMaterial(UMaterialInterface* Material) { DefaultMaterial = Material; };
+	FORCEINLINE void SetDefaultMaterial(UMaterial* Material) { DefaultMaterial = Material; };
 	FORCEINLINE void SetAlternativeMaterial(UMaterialInterface* Material) { AlternativeMaterial = Material; };
 	FORCEINLINE int GetNumSplines() { return mSplines.Num(); };
 };

@@ -41,6 +41,6 @@ void AObstacleActor::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 
 	if (FMath::RadiansToDegrees(collisionAngle) > MaxToleratedAngle)
 		Cast<APlayerPawn>(OtherActor)->KillPlayer();
-	else
+	else if (!Cast<APlayerPawn>(OtherActor)->bIsDead)
 		Cast<APlayerPawn>(OtherActor)->AddToScore(1);
 }
