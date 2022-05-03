@@ -97,5 +97,8 @@ private:
 	AActor* ChaseBoxEnd;
 	float ChaseBoxDistanceThreshold = 10;
 
+	bool bPlayerHasMoved = false;
+	int numDeaths = 0;
+
 	bool bSpawnedObstacleOnLast = false;
 };

@@ -26,13 +26,17 @@ class EWHEEL_API APlayerPawn : public APawn
 	UPROPERTY(Category = Root, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	USphereComponent* PlayerRoot;
 
-	/** Static Mesh component that will represent the wheel */
+	/** Static Mesh component that will represent the player's board */
 	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* BoardMesh;
 
-	/** Static Mesh component that will represent our Player */
+	/** Static Mesh component that will represent our player's wheel */
 	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* WheelMesh;
+
+	/** Static Mesh component that will represent our player's fender  */
+	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* FenderMesh;
 
 	/** Camera component that will be our viewpoint */
 	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -75,10 +79,11 @@ class EWHEEL_API APlayerPawn : public APawn
 	bool bWheelContact = true;
 
 public:
-	/** Current speed of the vehicle */
+	/** Number of points collected */
 	UPROPERTY(Category = HUD, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int pointsCollected = 0;
 
+	/** Distance Travelled along the path */
 	UPROPERTY(Category = HUD, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float distanceTravelled = 0.f;
 
@@ -108,25 +113,34 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void ShowGameSummary(bool bWithSave);
-private:
 
+	// Current directional input
 	FVector movementInput;
+
+private:
 	FRotator currentBoardTilt;
 	float maxBoardTiltPitch = 15.f;
 	float maxBoardTiltRoll = 35;
 	float boardTiltSpeed = 100.f;
 	float boardTiltResetSpeed = 10.f;
-	float groundContactRayOffset = 14.f;
-	float groundContactRayLength = 10;//2.f;
+	float groundContactRayOffset = 10.f;
+	float groundContactRayLength = 15;//2.f;
 	//float groundContactRaySideOffset = 5.f;
 	bool bCanJump = true;
 
 	// To track distance traveled
 	FVector2D lastPlayerLocation;
 
+	// Move the board based on user input
 	void MoveBoard(float DeltaTime);
+
+	// Tilt the board based on direction of movement
 	void BoardTilt(float DeltaTime);
-	bool ValidateGroundContact(); // Raycasts that determine if the board has sufficient contact with the ground 
+
+	// Raycasts that determine if the board has sufficient contact with the ground 
+	bool ValidateGroundContact();
+
+	// Returns the appropriate speed value given input duration
 	float GetClaculatedSpeed(float DeltaTime);
 
 
@@ -164,10 +178,12 @@ public:
 	// Enables physics simulatioon and broadcasts death to the game mode
 	void KillPlayer();
 
-	/** Returns the player mesh subobject **/
-	FORCEINLINE UStaticMeshComponent* GetWheelMesh() const { return WheelMesh; }
 	/** Returns the player's wheel mesh subobject **/
+	FORCEINLINE UStaticMeshComponent* GetWheelMesh() const { return WheelMesh; }
+	/** Returns the player's board mesh subobject **/
 	FORCEINLINE UStaticMeshComponent* GetBoardMesh() const { return BoardMesh; }
+	/** Returns the player's fender mesh subobject **/
+	FORCEINLINE UStaticMeshComponent* GetFenderMesh() const { return FenderMesh; }
 	/** Returns Camera subobject **/
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
 	/** Returns SpringArm subobject **/

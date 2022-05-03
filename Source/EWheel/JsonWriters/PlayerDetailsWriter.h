@@ -27,6 +27,9 @@ class EWHEEL_API UPlayerDetailsWriter : public UBlueprintFunctionLibrary
 	static void SetPlayerFenderEnabled(bool bFender);
 
 	UFUNCTION(BlueprintCallable)
+	static void SetPlayerSkinSelected(int skinIndex);
+
+	UFUNCTION(BlueprintCallable)
 	static void SetPlayerSkinUnlocked(int index, bool bUnlocked);
 
 	UFUNCTION(BlueprintCallable)

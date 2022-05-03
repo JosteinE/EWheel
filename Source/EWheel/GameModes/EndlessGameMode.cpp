@@ -115,7 +115,6 @@ void AEndlessGameMode::BeginPlay()
 	StartChaseBox->SetActorScale3D(FVector{ 1.5f, (float)jObject->GetIntegerField("NumLanes") + 0.5f, 4.f });
 	ChaseBoxMaxSpeed = Cast<APlayerPawn>(mainPlayer)->GetMaxSpeed();
 
-
 	// Splitscreen
 	int numLocalPlayers = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->mNumLocalPlayers;
 	if (numLocalPlayers > 1)
@@ -132,10 +131,16 @@ void AEndlessGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// If the player is further than the max distance from the last point, add a new point.
-	//int pathIndex = extendFromSplinePoint;
-	//if (pathIndex > mPathMaster->GetNumSplinePoints() - 1)
-	//	pathIndex = 0;
+	// Check if any player has moved before thinking about extending the path or moving the chase box
+	if (!bPlayerHasMoved)
+	{
+		for (int i = 0; i < GetNumPlayers(); i++)
+		{
+			if (Cast<APlayerPawn>(UGameplayStatics::GetPlayerController(GetWorld(), i)->GetPawn())->movementInput.Y != 0)
+				bPlayerHasMoved = true;
+		}
+		return;
+	}
 
 	// Extend the path if the player is at or beyond the spline point to extend from
 	if (CheckShouldExtend())
@@ -192,6 +197,10 @@ void AEndlessGameMode::OnPlayerRestartPressed()
 
 void AEndlessGameMode::OnPlayerDeath()
 {
+	numDeaths++;
+	if (numDeaths < GetNumPlayers())
+		return;
+
 	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
 
 	HighscoreWriter hWriter;
@@ -304,7 +313,7 @@ void AEndlessGameMode::BindPlayerDelegates(APawn* inPlayerPawn)
 	Cast<APlayerPawn>(inPlayerPawn)->EscPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerEscapePressed);
 	Cast<APlayerPawn>(inPlayerPawn)->RestartPressed.AddDynamic(this, &AEndlessGameMode::OnPlayerRestartPressed);
 	Cast<APlayerPawn>(inPlayerPawn)->PlayerDeath.AddDynamic(this, &AEndlessGameMode::OnPlayerDeath);
-	Cast<APlayerPawn>(inPlayerPawn)->ZKillzone = mPathMaster->mSplineVerticalMin - 1.f;
+	Cast<APlayerPawn>(inPlayerPawn)->ZKillzone = mPathMaster->mSplineVerticalMin - 20.f;
 }
 
 void AEndlessGameMode::RemoveLocalPlayers()

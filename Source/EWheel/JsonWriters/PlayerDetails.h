@@ -20,6 +20,9 @@ struct FPlayerDetails
 	bool bFender = false;
 
 	UPROPERTY(BlueprintReadWrite)
+	int mSkinSelected = 0;
+
+	UPROPERTY(BlueprintReadWrite)
 	TArray<bool> mSkinsUnlocked;
 
 	// Rail, Bumper, Footpad, Fender

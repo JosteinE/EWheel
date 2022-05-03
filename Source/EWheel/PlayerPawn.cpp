@@ -51,6 +51,15 @@ APlayerPawn::APlayerPawn()
 			WheelMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			WheelMesh->SetupAttachment(BoardMesh);
 		}
+		static ConstructorHelpers::FObjectFinder<UStaticMesh>FenderMeshAsset(TEXT("StaticMesh'/Game/Meshes/EWheel/EWheel_Fender.EWheel_Fender'"));
+		if (FenderMeshAsset.Succeeded())
+		{
+			FenderMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FenderMeshComponent"));
+			FenderMesh->SetStaticMesh(FenderMeshAsset.Object);
+			FenderMesh->SetSimulatePhysics(false);
+			FenderMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			FenderMesh->SetupAttachment(BoardMesh);
+		}
 	}
 
 	// Create a spring arm component
@@ -201,44 +210,6 @@ bool APlayerPawn::ValidateGroundContact()
 	//GetBoardMesh()->AddRelativeRotation(newRot * 0.001f);
 
 	return bWheelContact;
-	//FVector RaycastStartPos = GetActorLocation() - GetActorUpVector() * groundContactRayOffset;
-	//FVector RaycastEndPos = GetActorLocation() - GetActorUpVector() * (groundContactRayOffset + groundContactRayLength);
-	//FVector SideRayCastOffset = GetActorRightVector() * groundContactRaySideOffset;
-
-	//FCollisionQueryParams CollisionParams;
-	//CollisionParams.AddIgnoredActor(this);
-
-	//FHitResult leftRay, midRay, rightRay;
-
-	//bool checkLHit = GetWorld()->LineTraceSingleByChannel(leftRay, RaycastStartPos - SideRayCastOffset, RaycastEndPos - SideRayCastOffset, ECC_Visibility, CollisionParams);
-	//bool checkMHit = GetWorld()->LineTraceSingleByChannel(midRay, RaycastStartPos, RaycastEndPos, ECC_Visibility, CollisionParams);
-	//bool checkRHit = GetWorld()->LineTraceSingleByChannel(rightRay, RaycastStartPos + SideRayCastOffset, RaycastEndPos + SideRayCastOffset, ECC_Visibility, CollisionParams);
-
-	//// DrawDebugLines
-	//if(checkLHit)
-	//	DrawDebugLine(GetWorld(), RaycastStartPos - SideRayCastOffset, RaycastEndPos - SideRayCastOffset, FColor::Green, false);
-	//else
-	//	DrawDebugLine(GetWorld(), RaycastStartPos - SideRayCastOffset, RaycastEndPos - SideRayCastOffset, FColor::Red, false);
-
-	//if (checkMHit)
-	//	DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Green, false);
-	//else
-	//	DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Red, false);
-
-	//if (checkRHit)
-	//	DrawDebugLine(GetWorld(), RaycastStartPos + SideRayCastOffset, RaycastEndPos + SideRayCastOffset, FColor::Green, false);
-	//else
-	//	DrawDebugLine(GetWorld(), RaycastStartPos + SideRayCastOffset, RaycastEndPos + SideRayCastOffset, FColor::Red, false);
-
-	////Validate contact with surface
-	//if (checkMHit)
-	//	bWheelContact = true;
-	//else if (checkLHit && checkRHit)
-	//	bWheelContact = true;
-	//else
-	//	bWheelContact = false;
-
-	//return bWheelContact;
 }
 
 void APlayerPawn::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
