@@ -10,12 +10,21 @@
 AObstacleActor::AObstacleActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+	SetActorTickEnabled(false);
 
 	//FString tempPath = "StaticMesh'/Engine/BasicShapes/Cube.Cube'";
 	//static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(*tempPath);
 	//if (MeshAsset.Succeeded())
 	//	SetStaticMesh(MeshAsset.Object);
+}
+
+void AObstacleActor::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if(CollisionTimeTracker > 0)
+		CollisionTimeTracker -= DeltaTime;
 }
 
 void AObstacleActor::SetStaticMesh(UStaticMesh* inMesh)
@@ -37,10 +46,20 @@ void AObstacleActor::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 {
 	// Mirror the colliding actor's forward vector from the impact point and add impulse in that direction.
 	float collisionAngle = FVector::DotProduct(OtherActor->GetActorForwardVector(), Hit.ImpactNormal);
-	FVector impulseDirection = OtherActor->GetActorForwardVector() - 2 * collisionAngle * Hit.ImpactNormal;
+	//FVector impulseDirection = OtherActor->GetActorForwardVector() - 2 * collisionAngle * Hit.ImpactNormal;
 
 	if (FMath::RadiansToDegrees(collisionAngle) > MaxToleratedAngle)
 		Cast<APlayerPawn>(OtherActor)->KillPlayer();
-	else if (!Cast<APlayerPawn>(OtherActor)->bIsDead)
-		Cast<APlayerPawn>(OtherActor)->AddToScore(1);
+	else if (!Cast<APlayerPawn>(OtherActor)->bIsDead) // Necessary check, as points are sometimes otherwise given after death
+	{
+		if (CollisionTimeTracker <= 0)
+		{
+			// Grant the player style points
+			Cast<APlayerPawn>(OtherActor)->AddToScore(1);
+			CollisionTimeTracker = 1.f/PointPerSec;
+		}
+
+		if(!IsActorTickEnabled())
+			SetActorTickEnabled(true);
+	}
 }
