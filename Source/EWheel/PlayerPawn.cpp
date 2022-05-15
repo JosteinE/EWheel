@@ -81,10 +81,6 @@ APlayerPawn::APlayerPawn()
 	Camera->SetRelativeRotation(FRotator(-10.f, 0.f, 0.f));
 	Camera->bUsePawnControlRotation = false;
 	Camera->FieldOfView = 70.f;
-
-	// Auto possess this pawn
-	//AutoPossessPlayer = EAutoReceiveInput::Player0;
-	//AutoReceiveInput = EAutoReceiveInput::Player0;
 }
 
 // Called when the game starts or when spawned
@@ -105,6 +101,7 @@ void APlayerPawn::Tick(float DeltaTime)
 	else if (bWheelContact && PlayerRoot->GetBodyInstance()->bNotifyRigidBodyCollision)
 	{
 		PlayerRoot->SetNotifyRigidBodyCollision(false);
+		JumpEvent(true);
 		bCanJump = true;
 	}
 	else if (GetActorLocation().Z < ZKillzone)
@@ -140,7 +137,7 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("QuickRestart", IE_Pressed, this, &APlayerPawn::QuickRestart);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerPawn::Jump);
 
-	// TEMP
+	// TEMP - To be removed once Power-ups are added 
 	PlayerInputComponent->BindAction("TempSpeedIncrease", IE_Pressed, this, &APlayerPawn::LShiftDown);
 	PlayerInputComponent->BindAction("TempSpeedIncrease", IE_Released, this, &APlayerPawn::LShiftUp);
 }
@@ -245,6 +242,7 @@ void APlayerPawn::Jump()
 	if (bCanJump)
 	{
 		PlayerRoot->AddImpulse(GetActorUpVector() * jumpForce);
+		JumpEvent(false);
 		bCanJump = false;
 	}
 }

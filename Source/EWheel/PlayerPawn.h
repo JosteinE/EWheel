@@ -115,7 +115,14 @@ public:
 	void ShowGameSummary(bool bWithSave);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void ShowMultiplayerGameSummary();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void PlayPointSound(bool bFromObstacle);
+
+	// bLanding determines whether the event refers to the start or end of a jump
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void JumpEvent(bool bLanding);
 
 	// Current directional input
 	FVector movementInput;

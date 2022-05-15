@@ -43,8 +43,6 @@ void AEndlessGameMode::BeginPlay()
 	// Set The Game Mode
 	mGameMode = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->mGameMode;
 	UE_LOG(LogTemp, Warning, TEXT("GameMode: %i"), mGameMode);
-	//UE_LOG(LogTemp, Warning, TEXT("IntermDir: %s"), *FPaths::ProjectIntermediateDir());
-	//UE_LOG(LogTemp, Warning, TEXT("LaunchDir: %s"), *FPaths::LaunchDir());
 
 	// Get the player
 	mainPlayer = GetWorld()->GetFirstPlayerController()->GetPawn();
@@ -68,7 +66,7 @@ void AEndlessGameMode::BeginPlay()
 	FString modeString;
 	GetGameModeStringFromInt(modeString, mGameMode);
 	FString jString;
-	FString jFilePath = FPaths::LaunchDir() + modeString + "EndlessSettings.json"; //FPaths::ProjectIntermediateDir()
+	FString jFilePath = FPaths::LaunchDir() + modeString + "EndlessSettings.json";
 
 #if WITH_EDITOR
 	jFilePath = FPaths::ProjectIntermediateDir() + modeString + "EndlessSettings.json";
@@ -117,13 +115,11 @@ void AEndlessGameMode::BeginPlay()
 
 	// Splitscreen
 	int numLocalPlayers = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->mNumLocalPlayers;
-	if (numLocalPlayers > 1)
+
+	for (int i = 1; i < numLocalPlayers; i++)
 	{
-		for (int i = 1; i < numLocalPlayers; i++)
-		{
-			APawn* newLocalPlayer = UGameplayStatics::CreatePlayer(GetWorld())->GetPawn();
-			BindPlayerDelegates(newLocalPlayer);
-		}
+		APawn* newLocalPlayer = UGameplayStatics::CreatePlayer(GetWorld())->GetPawn();
+		BindPlayerDelegates(newLocalPlayer);
 	}
 }
 
@@ -205,6 +201,13 @@ void AEndlessGameMode::OnPlayerDeath()
 		return;
 
 	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
+
+	// Not logging to the highscores for multiplayer, also using a seperate game summary screen.
+	if (GetNumPlayers() > 1)
+	{
+		Cast<APlayerPawn>(mainPlayer)->ShowMultiplayerGameSummary();
+		return;
+	}
 
 	HighscoreWriter hWriter;
 	FString gameModeString;
