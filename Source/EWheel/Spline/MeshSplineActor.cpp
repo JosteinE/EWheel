@@ -63,12 +63,12 @@ void AMeshSplineActor::ConstructMesh(int SplineIndex, UStaticMesh* inMesh, int r
 
 	//Set the start and end point for the mesh
 	if (rot == 1 || rot == 3)
-	{	// Rotate the mesh sideways (-90 degrees)
+	{	// Rotate the mesh -90 degrees
 		SplineMeshComponent[SplineIndex]->SetForwardAxis(ESplineMeshAxis::Y, false);
 		SplineMeshComponent[SplineIndex]->SetStartRoll(-1.5708, false);
 		SplineMeshComponent[SplineIndex]->SetEndRoll(-1.5708, false);
 	}
-	// Inverse the mesh needs to be rotated 90 or 180 degrees
+	// Inverse the mesh that needs to be rotated 90 or 180 degrees
 	if (rot == 1 || rot == 2)
 	{
 		SplineMeshComponent[SplineIndex]->SetStartOffset(FVector2D{ -offset, 0 }, false);

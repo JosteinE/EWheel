@@ -137,7 +137,10 @@ void AEndlessGameMode::Tick(float DeltaTime)
 		for (int i = 0; i < GetNumPlayers(); i++)
 		{
 			if (Cast<APlayerPawn>(UGameplayStatics::GetPlayerController(GetWorld(), i)->GetPawn())->movementInput.Y != 0)
+			{
 				bPlayerHasMoved = true;
+				TimeBeforePlayerForwardMovement = UGameplayStatics::GetTimeSeconds(GetWorld());
+			}
 		}
 		return;
 	}
@@ -154,7 +157,7 @@ void AEndlessGameMode::Tick(float DeltaTime)
 
 		mPathMaster->AddPoint(mPathMaster->GenerateNewPointLocation());
 	}
-	// Extend the path if the tracker meets or exceedes the extend rate
+	// Extend the path if the chase box is near the current destination along the spline curve
 	else if ((mPathMaster->GetLocationAtSplineInputKey(StartChaseBoxSplineIndex) - StartChaseBox->GetActorLocation()).Size() < 10.f)
 	{
 		mPathMaster->AddPoint(mPathMaster->GenerateNewPointLocation());
@@ -297,7 +300,7 @@ void AEndlessGameMode::GetGameTimeString(FString& returnString)
 
 void AEndlessGameMode::CalculateChaseBoxSpeed()
 {
-	StartChaseBoxSpeed = (ChaseBoxMaxSpeed - TileSize) * (1/ChaseBoxTimeToMaxSpeed) * UGameplayStatics::GetTimeSeconds(GetWorld()) + TileSize;
+	StartChaseBoxSpeed = (ChaseBoxMaxSpeed - TileSize) * (1/ChaseBoxTimeToMaxSpeed) * (UGameplayStatics::GetTimeSeconds(GetWorld()) - TimeBeforePlayerForwardMovement) + TileSize;
 	StartChaseBoxSpeed = FMath::Clamp(StartChaseBoxSpeed, 0.f, ChaseBoxMaxSpeed);
 	//UE_LOG(LogTemp, Warning, TEXT("StartChaseBoxSpeed: %f"), StartChaseBoxSpeed);
 }

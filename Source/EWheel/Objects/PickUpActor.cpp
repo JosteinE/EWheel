@@ -44,7 +44,7 @@ void APickUpActor::SetStaticMesh(UStaticMesh* inMesh)
 
 void APickUpActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Cast<APlayerPawn>(OtherActor)->AddToScore(1);
+	Cast<APlayerPawn>(OtherActor)->AddToScore(1, false);
 	GetMeshComponent()->SetVisibility(false);
 	GetMeshComponent()->SetCollisionProfileName("NoCollision");
 	// Will be destroyed in the ObjectSpawner

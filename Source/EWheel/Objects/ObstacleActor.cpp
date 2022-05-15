@@ -55,7 +55,7 @@ void AObstacleActor::OnMeshHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 		if (CollisionTimeTracker <= 0)
 		{
 			// Grant the player style points
-			Cast<APlayerPawn>(OtherActor)->AddToScore(1);
+			Cast<APlayerPawn>(OtherActor)->AddToScore(1, true);
 			CollisionTimeTracker = 1.f/PointPerSec;
 		}
 

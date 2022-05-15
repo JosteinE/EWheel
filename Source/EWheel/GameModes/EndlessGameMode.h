@@ -97,7 +97,12 @@ private:
 	AActor* ChaseBoxEnd;
 	float ChaseBoxDistanceThreshold = 10;
 
+	// Determines when the chase box starts moving
 	bool bPlayerHasMoved = false;
+
+	// Value to be subtracted from the chase box's start speed.
+	float TimeBeforePlayerForwardMovement = 0.f;
+
 	int numDeaths = 0;
 
 	bool bSpawnedObstacleOnLast = false;

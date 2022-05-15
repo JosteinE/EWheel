@@ -114,6 +114,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void ShowGameSummary(bool bWithSave);
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void PlayPointSound(bool bFromObstacle);
+
 	// Current directional input
 	FVector movementInput;
 
@@ -194,5 +197,5 @@ public:
 	FORCEINLINE float GetMaxSpeed() const { return maxSpeed; }
 
 	/** Adds the value to the player score **/
-	FORCEINLINE void AddToScore(int value) { pointsCollected += value; }
+	FORCEINLINE void AddToScore(int value, bool bFromObstacle) { pointsCollected += value; PlayPointSound(bFromObstacle); }
 };
