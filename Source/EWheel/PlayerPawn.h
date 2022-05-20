@@ -136,7 +136,7 @@ private:
 	float groundContactRayOffset = 10.f;
 	float groundContactRayLength = 15;//2.f;
 	//float groundContactRaySideOffset = 5.f;
-	bool bCanJump = true;
+	bool bCanJump = false;
 
 	// To track distance traveled
 	FVector2D lastPlayerLocation;

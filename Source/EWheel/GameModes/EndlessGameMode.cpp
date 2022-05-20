@@ -121,6 +121,16 @@ void AEndlessGameMode::BeginPlay()
 		APawn* newLocalPlayer = UGameplayStatics::CreatePlayer(GetWorld())->GetPawn();
 		BindPlayerDelegates(newLocalPlayer);
 	}
+
+	// Set player start positions
+	FVector startLoc = mainPlayer->GetActorLocation();
+	float playerOffset = 33.f;
+	for (int i = 0; i < numLocalPlayers; i++)
+	{
+		FVector loc = startLoc;
+		loc.Y += -playerOffset * (numLocalPlayers * 0.5f) + (playerOffset * 0.5f) + playerOffset * i;
+		UGameplayStatics::GetPlayerController(GetWorld(), i)->GetPawn()->SetActorLocation(loc);
+	}
 }
 
 void AEndlessGameMode::Tick(float DeltaTime)

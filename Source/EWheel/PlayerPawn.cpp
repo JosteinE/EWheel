@@ -97,7 +97,9 @@ void APlayerPawn::Tick(float DeltaTime)
 	// Update our ground contact. Enable hit events if the board is in the air to avoid constant hit registers from the ground 
 	// (we need to check the ground tiles because of the mesh in the holes)
 	if (!ValidateGroundContact() && !PlayerRoot->GetBodyInstance()->bNotifyRigidBodyCollision)
+	{
 		PlayerRoot->SetNotifyRigidBodyCollision(true);
+	}
 	else if (bWheelContact && PlayerRoot->GetBodyInstance()->bNotifyRigidBodyCollision)
 	{
 		PlayerRoot->SetNotifyRigidBodyCollision(false);
@@ -200,7 +202,7 @@ bool APlayerPawn::ValidateGroundContact()
 
 	FHitResult ray;
 
-	//DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Green, false);
+	DrawDebugLine(GetWorld(), RaycastStartPos, RaycastEndPos, FColor::Green, false);
 	bWheelContact = GetWorld()->LineTraceSingleByChannel(ray, RaycastStartPos, RaycastEndPos, ECC_Visibility, CollisionParams);
 
 	//FVector newRot = ray.ImpactNormal;
@@ -239,7 +241,7 @@ void APlayerPawn::QuickRestart()
 
 void APlayerPawn::Jump()
 {
-	if (bCanJump)
+	if (bCanJump || bWheelContact)
 	{
 		PlayerRoot->AddImpulse(GetActorUpVector() * jumpForce);
 		JumpEvent(false);
