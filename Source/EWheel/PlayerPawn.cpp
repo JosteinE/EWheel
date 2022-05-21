@@ -241,6 +241,7 @@ void APlayerPawn::QuickRestart()
 
 void APlayerPawn::Jump()
 {
+	// bCanJump for the ability to jump mid fall, bWheelContact to prevent jump sometimes getting stuck
 	if (bCanJump || bWheelContact)
 	{
 		PlayerRoot->AddImpulse(GetActorUpVector() * jumpForce);
