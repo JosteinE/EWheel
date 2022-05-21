@@ -132,7 +132,7 @@ UStaticMesh* SplineTilePicker::GetNewTile()
 
 	// Pick a random, possible tile
 	int randomTileIndex = 0;
-	if (!bTileIsDependant && FMath::RandRange(0, 99) < FlatBoyChance)
+	if (!bTileIsDependant && FMath::RandRange(0, 99) < WeightMap[MeshType::DEFAULT])
 	{
 		possibleTiles.Empty();
 		possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_DEFAULT, MeshType::DEFAULT, 0 });
