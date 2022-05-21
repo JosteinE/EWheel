@@ -55,27 +55,49 @@ void AEndlessGameMode::BeginPlay()
 	pathSpawnParams.Owner = this;
 	mPathMaster = GetWorld()->SpawnActor<AMeshSplineMaster>(AMeshSplineMaster::StaticClass(), FVector{ 0.f, 0.f, 0.f }, FRotator{ 0.f, 0.f, 0.f }, pathSpawnParams);
 	mPathMaster->SetDefaultMaterial(Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), nullptr, TEXT("Material'/Game/Materials/GrassDirtMasked_Material.GrassDirtMasked_Material'"))));// Material'/Game/Stylized_Forest/Materials/landscape/M_landscape_Masked.M_landscape_Masked'"))));
-	mPathMaster->SetMaxNumSplinePoints(maxNumSplinePoints);
+	//mPathMaster->SetMaxNumSplinePoints(maxNumSplinePoints);
 	mPathMaster->SetTileSize(TileSize);
 	mPathMaster->SetUseHighResModels(false);
 
 	//Bind Delegates
 	BindPlayerDelegates(mainPlayer);
 
-	// Get the user user defined values to construct the path
-	FString modeString;
-	GetGameModeStringFromInt(modeString, mGameMode);
+
+	// READ USER SETTINGS
 	FString jString;
-	FString jFilePath = FPaths::LaunchDir() + modeString + "EndlessSettings.json";
+	FString jFilePath = FPaths::LaunchDir() + "UserSettings.json";
 
 #if WITH_EDITOR
-	jFilePath = FPaths::ProjectIntermediateDir() + modeString + "EndlessSettings.json";
+	jFilePath = FPaths::ProjectIntermediateDir() + "UserSettings.json";
 #endif
 
 	FFileHelper::LoadFileToString(jString, *jFilePath);
 	TSharedPtr<FJsonObject> jObject = MakeShareable(new FJsonObject());
 	TSharedRef<TJsonReader<>> jReader = TJsonReaderFactory<>::Create(jString);
 
+
+	if (!jObject.IsValid() || !FJsonSerializer::Deserialize(jReader, jObject))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("couldn't deserialize"));
+		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), TEnumAsByte<EQuitPreference::Type>(EQuitPreference::Quit), true);
+	}
+
+	// Set number of rows
+	UE_LOG(LogTemp, Warning, TEXT("NumRows: %i"), jObject->GetIntegerField("NumRows"));
+	mPathMaster->SetMaxNumSplinePoints(jObject->GetIntegerField("NumRows"));
+	
+	// READ ENDLESS SETTINGS
+	// Get the user user defined values to construct the path
+	FString modeString;
+	GetGameModeStringFromInt(modeString, mGameMode);
+	jFilePath = FPaths::LaunchDir() + modeString + "EndlessSettings.json";
+
+#if WITH_EDITOR
+	jFilePath = FPaths::ProjectIntermediateDir() + modeString + "EndlessSettings.json";
+#endif
+
+	FFileHelper::LoadFileToString(jString, *jFilePath);
+	jReader = TJsonReaderFactory<>::Create(jString);
 
 	if (!jObject.IsValid() || !FJsonSerializer::Deserialize(jReader, jObject))
 	{

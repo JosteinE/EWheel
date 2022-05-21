@@ -69,7 +69,7 @@ TArray<UStaticMesh*> SplineTilePicker::GetNewTiles(int numTiles)
 
 		// Pick a random, possible tile
 		int randomTileIndex = 0;
-		if (!bTileIsDependant && FMath::RandRange(0, 99) < FlatBoyChance)
+		if (!bTileIsDependant && FMath::RandRange(0, 99) < WeightMap[MeshType::DEFAULT])
 		{
 			possibleTiles.Empty();
 			possibleTiles.Emplace(FIntVector{ MeshCategories::CATEGORY_DEFAULT, MeshType::DEFAULT, 0 });
@@ -206,7 +206,7 @@ void SplineTilePicker::SetUseHighResModels(bool useHighRes)
 
 void SplineTilePicker::LoadFromJson(TSharedPtr<FJsonObject> inJson)
 {
-	WeightMap[MeshType::DEFAULT] = inJson->GetIntegerField("Tile_Default"); // FIX THIS
+	WeightMap[MeshType::DEFAULT] = inJson->GetIntegerField("Default_Flat");
 	WeightMap[MeshType::PIT] = inJson->GetIntegerField("Pit_Single");
 	WeightMap[MeshType::PIT_END_SN] = inJson->GetIntegerField("Pit_End");
 	WeightMap[MeshType::PIT_EX] = inJson->GetIntegerField("Pit_Ex");
